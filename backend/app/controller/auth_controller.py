@@ -1,0 +1,93 @@
+from app.models.auth_model import SignupRequest, LoginRequest
+from fastapi import HTTPException,BackgroundTasks
+from app.database import get_database
+from app.constant.constants import DbCollections
+import re
+from app.services.auth_service import create_access_token, get_password_hash, verify_password
+
+
+from fastapi.responses import JSONResponse
+class Auth():
+    async def signup_controller(data: SignupRequest, background_tasks: BackgroundTasks):
+        try:
+           db= get_database()
+           user_collection= db[DbCollections.USER_COLLECTION]
+           phone_regex = r"^\+91\d{10}$"
+           data.phone_no = f"+91{data.phone_no}" 
+           if not re.match(phone_regex, data.phone_no):
+             raise HTTPException(status_code=400, detail="Invalid phone number format.")
+           response = await Auth.signup(collection=user_collection, data=data,background_tasks=background_tasks)
+           return JSONResponse(content=response, status_code=200)
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Error during signup : error: {str(e)}"
+            )
+
+
+    async def signup(collection, data: SignupRequest, background_tasks: BackgroundTasks):
+        db=get_database()
+        email=data.email.lower()
+        existing_user = await collection.find_one({"email": email,"is_active":True})
+        user_phone_no=await collection.find_one({"phone_no": data.phone_no,"is_active":True})
+        try:
+            if existing_user:
+                    raise HTTPException(status_code=400, detail="User with this email already exists") 
+            if user_phone_no:
+                raise HTTPException(status_code=400, detail="User with this Phone number already exists")
+
+            new_user = {
+                "fullname": data.fullname,
+                "phone_no": data.phone_no,
+                "email": email,
+                "password": data.password, 
+                "confirm_password":data.confirm_password,
+                }
+            
+            validated_user = SignupRequest(**new_user)
+
+            user_to_insert = validated_user.model_dump(exclude={"confirm_password"})
+            user_to_insert["password"] = get_password_hash(validated_user.password)
+            await collection.insert_one(user_to_insert)
+
+
+            return {"msg": "Signup successful ✅"}  # <-- Add this
+        
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Error during signup : error: {str(e)}"
+            )
+        
+    async def login(data: LoginRequest):
+        try:
+            db = get_database()
+            collection = db[DbCollections.USER_COLLECTION]
+
+            user = await collection.find_one({"email": data.email.lower(), "is_active": True})
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            if not verify_password(data.password, user["password"]):
+                raise HTTPException(status_code=401, detail="Invalid password")
+
+            payload = {
+                "sub": str(user["_id"]),
+                "email": user["email"],
+                "fullname": user["fullname"]
+            }
+            token = create_access_token(payload)
+
+            return {
+                "access_token": token,
+                "token_type": "bearer",
+                "msg": "Login successful"
+            }
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
