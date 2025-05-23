@@ -35,3 +35,4 @@ venv.bak/
 /Lib
 /Scripts
 /node_modules
+/backend/venv
