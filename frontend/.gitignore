@@ -21,3 +21,20 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+
+# Environments 
+.env 
+.venv
+env/ 
+env2/ 
+venv/ 
+ENV/ 
+env.bak/ 
+venv.bak/ 
+/env
+/Lib
+/Scripts
+/node_modules
+/backend/venv
