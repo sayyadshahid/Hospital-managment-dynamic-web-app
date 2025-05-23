@@ -1,0 +1,60 @@
+.main-page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center; /* Vertical centering */
+  justify-content: center; /* No horizontal centering */
+  padding-left: 20px; /* Optional: small left padding */
+}
+  
+  /* Style the register box */
+  .login {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+  
+  /* Common style for each input section */
+  .login > div {
+    margin-bottom: 15px;
+  }
+  
+  .login label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 400;
+    font-size: 14px;
+  }
+  
+  .login input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    
+    border: none;
+    border-bottom: 2px solid #bfc0c2; /* bottom border only */
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .login input:focus {
+    border-bottom: 2px solid #0056b3; /* highlight on focus */
+  }
+  /* Button style */
+  .login .btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #fa6039;
+    border: none;
+    color: white;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .login .btn:hover {
+    background-color: #ec6b4b;
+  }
+  

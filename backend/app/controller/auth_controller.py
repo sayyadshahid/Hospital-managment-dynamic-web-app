@@ -1,4 +1,5 @@
 from app.models.auth_model import SignupRequest, LoginRequest
+from bson import ObjectId
 from fastapi import HTTPException,BackgroundTasks
 from app.database import get_database
 from app.constant.constants import DbCollections
@@ -53,7 +54,7 @@ class Auth():
             await collection.insert_one(user_to_insert)
 
 
-            return {"msg": "Signup successful ✅"}  # <-- Add this
+            return {"msg": "Signup successful Please Login Again ✅ "}  # <-- Add this
         
         except HTTPException as exc:
             raise exc
@@ -76,18 +77,40 @@ class Auth():
                 raise HTTPException(status_code=401, detail="Invalid password")
 
             payload = {
-                "sub": str(user["_id"]),
+                "id": str(user["_id"]),
                 "email": user["email"],
                 "fullname": user["fullname"]
             }
+
             token = create_access_token(payload)
 
             return {
                 "access_token": token,
                 "token_type": "bearer",
+                 "id": str(user["_id"]),
                 "msg": "Login successful"
             }
         except HTTPException as e:
             raise e
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+        
+
+    async def get_user_by_id(id: str):
+        try:
+            db= get_database()
+            user_collection= db[DbCollections.USER_COLLECTION]
+            if not ObjectId.is_valid(id):
+                raise HTTPException(status_code=400, detail='Invalid user ID format')
+
+            user = await user_collection.find_one({'_id': ObjectId(id)}, {"password": 0})
+            if not user:
+                raise HTTPException(status_code=400, detail="User not found")
+            
+            user["id"] = str(user.pop("_id"))
+            return {"user": user}
+
+        except HTTPException as http_err:
+            raise http_err
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error retrieving user: err :{str(e)} ")
