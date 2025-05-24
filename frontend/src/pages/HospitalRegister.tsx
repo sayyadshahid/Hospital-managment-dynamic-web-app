@@ -1,16 +1,12 @@
+import React from 'react';
 import { useState, ChangeEvent } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  TextField,
-  Rating,
-} from "@mui/material";
+import { Box, Typography, Button, TextField, Rating } from "@mui/material";
 import NavBar from "../components/header";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+
 
 const HospitalRegister = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -139,12 +135,9 @@ const HospitalRegister = () => {
             rows={2}
             fullWidth
             error={
-              formik.touched.description &&
-              Boolean(formik.errors.description)
+              formik.touched.description && Boolean(formik.errors.description)
             }
-            helperText={
-              formik.touched.description && formik.errors.description
-            }
+            helperText={formik.touched.description && formik.errors.description}
           />
 
           <TextField

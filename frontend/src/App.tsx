@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import RegisterForm from "./pages/auth/register";
@@ -5,6 +6,7 @@ import LoginForm from "./pages/auth/Login";
 import LandingPage from "./pages/Home";
 import HospitalList from "./pages/HospitalList";
 import HospitalRegister from "./pages/HospitalRegister";
+
 
 function App() {
   return (

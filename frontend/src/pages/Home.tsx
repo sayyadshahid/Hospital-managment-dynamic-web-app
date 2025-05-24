@@ -1,6 +1,8 @@
+import React from 'react';
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Home.css";
 import NavBar from "../components/header";
+
 
 import { useEffect, useState } from "react";
 import axios from "axios";
