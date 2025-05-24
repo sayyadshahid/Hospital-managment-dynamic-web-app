@@ -1,6 +1,7 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./Home.css";
-import hospitalImg from "./hospital.png";
+import NavBar from "../components/header";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -30,36 +31,29 @@ const LandingPage = () => {
     <>
       <div className="main-p">
         <div className="landingpage">
-          <div className="nav">
-            <div className="logo">
-              <h2>Jacsto</h2>
-            </div>
-            <div className="list">
-              <ul>
-                <li>home</li>
-                <li>about</li>
-                <li onClick={() => navigate("/login")}>Login</li>
-                <li onClick={() => navigate("/register")}>Signin</li>
-                <li id="sos-btn">
-                  <button>SOS</button>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <NavBar />
           <div className="container">
             <div className="left">
               <div className="content-left">
                 <h1>The Jacsto,</h1>
                 <p>This Is A Largest Hospital Management Website,</p>
-                <p>To Book Yours Good Hospital With Better Treatment, so what you think <br /> "{name}"</p>
-                <button className="left-btn" id="book-host">
+                <p>
+                  To Book Yours Good Hospital With Better Treatment, so what you
+                  think <br />{" "}
+                  <span style={{ fontWeight: 600, lineHeight: 4 }}>{name}</span>
+                </p>
+                <button
+                  className="left-btn"
+                  id="book-host"
+                  onClick={() => navigate("/hospitalList")}
+                >
                   Book Your Hospital
                 </button>
               </div>
             </div>
             <div className="right">
               <div className="img">
-                <img src={hospitalImg} alt="hospital" />
+                <img src="./hospital.png" alt="hospital" />
               </div>
             </div>
           </div>

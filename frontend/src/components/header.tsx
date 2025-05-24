@@ -16,8 +16,8 @@ const NavBar = () => {
             </div>
             <div className="list">
               <ul>
-                <li>home</li>
-                <li>about</li>
+                <li  onClick={() => navigate("/")}>home</li>
+                <li  onClick={() => navigate("#")}>about</li>
                 <li onClick={() => navigate("/login")}>Login</li>
                 <li onClick={() => navigate("/register")}>Signin</li>
                 <li id="sos-btn">
