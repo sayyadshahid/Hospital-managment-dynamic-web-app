@@ -2,11 +2,14 @@ from fastapi import FastAPI, HTTPException,Request
 from fastapi.responses import JSONResponse
 from app.database import connect_to_mongo,close_mongo_connection
 from app.routes.auth_user_route import auth_router
+from app.routes.HospitalRegister_route import hospitalregister_router
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 app = FastAPI()
 
 
 app.include_router(auth_router,prefix='/api')
+app.include_router(hospitalregister_router, prefix='/api')
 
 
 
@@ -19,8 +22,7 @@ app.include_router(auth_router,prefix='/api')
 
 
 
-
-
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 #mongoDB only:
 @app.on_event("startup") 
