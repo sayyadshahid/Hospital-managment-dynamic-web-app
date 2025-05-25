@@ -25,7 +25,7 @@ const NavBar: React.FC = () => {
 
   const navItems: { label: string; path: string }[] = [
     { label: "Home", path: "/" },
-    { label: "About", path: "#" },
+    { label: "About", path: "/aboutUs" },
     { label: "Login", path: "/login" },
     { label: "Signin", path: "/register" },
   ];
@@ -76,6 +76,7 @@ const NavBar: React.FC = () => {
                         textTransform: "none",
                         width: "100%",
                       }}
+                       onClick={() => navigate("/chat")}
                     >
                       AI
                     </Button>
@@ -99,6 +100,7 @@ const NavBar: React.FC = () => {
                 fontWeight: "bold",
                 textTransform: "none",
               }}
+               onClick={() => navigate("/chat")}
             >
               AI
             </Button>

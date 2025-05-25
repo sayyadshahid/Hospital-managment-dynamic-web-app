@@ -1,12 +1,10 @@
-import React from 'react';
-import { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { Box, Typography, Button, TextField, Rating } from "@mui/material";
 import NavBar from "../components/header";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-
 
 const HospitalRegister = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -15,32 +13,37 @@ const HospitalRegister = () => {
   const formik = useFormik({
     initialValues: {
       title: "",
-      image: "",
       description: "",
       address: "",
       rating: 0,
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
-      image: Yup.string().required("Image is required"),
       description: Yup.string().required("Description is required"),
       address: Yup.string().required("Address is required"),
     }),
     onSubmit: async (values) => {
-      const payload = {
-        title: values.title,
-        image: values.image,
-        description: values.description,
-        address: values.address,
-        rating: values.rating,
-      };
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("address", values.address);
+      formData.append("file", file as File);
+      formData.append("is_active", "true");
 
       try {
-        const res = await axios.post("/", payload); // Update the API endpoint as needed
-        toast.success(res.data.msg || "Registered Successfully!");
+        const res = await axios.post(
+          "http://localhost:8000/api/register-hospital/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        toast.success(res.data?.msg || "Registered Successfully!");
       } catch (error: any) {
         const errMsg =
-          error?.response?.data?.msg ||
+          error?.response?.data?.detail ||
           "Hospital Registration Failed. Please try again.";
         toast.error(errMsg);
       } finally {
@@ -50,12 +53,11 @@ const HospitalRegister = () => {
   });
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
-      const objectUrl = URL.createObjectURL(file);
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setFile(selected);
+      const objectUrl = URL.createObjectURL(selected);
       setSelectedImage(objectUrl);
-      formik.setFieldValue("image", objectUrl); // Can also use the File object directly if uploading
     }
   };
 
@@ -107,12 +109,6 @@ const HospitalRegister = () => {
             onChange={handleImageChange}
             style={{ marginTop: "8px" }}
           />
-          {formik.touched.image && formik.errors.image && (
-            <Typography color="error" variant="caption">
-              {formik.errors.image}
-            </Typography>
-          )}
-
           {selectedImage && (
             <img
               src={selectedImage}

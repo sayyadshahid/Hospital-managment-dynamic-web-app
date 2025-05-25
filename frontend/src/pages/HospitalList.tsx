@@ -1,5 +1,4 @@
-import React from 'react';
-import "./Home.css";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -9,55 +8,57 @@ import {
   Card,
   CardContent,
   CardMedia,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavBar from "../components/header";
+import axios from "axios";
 
-// Sample hospital data
-const hospitals = [
-  {
-    id: 1,
-    name: "Sunshine Hospital",
-    image: "https://via.placeholder.com/345x180",
-    rating: 4.5,
-    description: "24/7 emergency care and advanced medical services.",
-    address: "123 Health Street, Metro City",
-  },
-  {
-    id: 2,
-    name: "City Care Clinic",
-    image: "./hospital.png",
-    rating: 4.0,
-    description: "Family-friendly clinic with experienced staff.",
-    address: "456 Clinic Avenue, New Town",
-  },
-  {
-    id: 3,
-    name: "City Care Clinic",
-    image: "./hospital.png",
-    rating: 4.0,
-    description: "Family-friendly clinic with experienced staff.",
-    address: "456 Clinic Avenue, New Town",
-  },
-  {
-    id:4,
-    name: "City Care Clinic",
-    image: "./hospital.png",
-    rating: 4.0,
-    description: "Family-friendly clinic with experienced staff.",
-    address: "456 Clinic Avenue, New Town",
-  },
-  {
-    id: 5,
-    name: "Green Valley Hospital",
-    image: "https://via.placeholder.com/345x180",
-    rating: 3.5,
-    description: "Known for maternity care and pediatric services.",
-    address: "789 Wellness Road, Greenfield",
-  },
-];
+interface Hospital {
+  id: string;
+  title: string;
+  description: string;
+  address: string;
+  file_path: string;
+  rating: number;
+}
 
 const HospitalList = () => {
   const navigate = useNavigate();
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [anchorEl, setAnchorEl] = useState<{
+    [key: string]: HTMLElement | null;
+  }>({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/hospitals");
+        if (Array.isArray(res.data.Hospitals)) {
+          setHospitals(res.data.Hospitals);
+        } else {
+          console.error("Expected 'Hospitals' to be an array, got:", res.data.Hospitals);
+          setHospitals([]);
+        }
+      } catch (error) {
+        console.error("Error fetching hospitals:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleDeleteHospital = async (id: string) => {
+    try {
+      await axios.post(`http://localhost:8000/api/delete_hospital/${id}`);
+      setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
+    } catch (error) {
+      console.error("Error deleting hospital:", error);
+      alert("Failed to delete the hospital.");
+    }
+  };
 
   return (
     <Box>
@@ -78,9 +79,7 @@ const HospitalList = () => {
               fontSize: 14,
               fontWeight: 600,
               color: "white",
-              "&:hover": {
-                bgcolor: "darkred",
-              },
+              "&:hover": { bgcolor: "darkred" },
             }}
             onClick={() => navigate("/hospitalregister")}
           >
@@ -88,8 +87,11 @@ const HospitalList = () => {
           </Button>
         </Box>
 
-        {/* Hospital Cards */}
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+          {hospitals.length === 0 && (
+            <Typography>No hospitals found.</Typography>
+          )}
+
           {hospitals.map((hospital) => (
             <Card
               key={hospital.id}
@@ -98,17 +100,59 @@ const HospitalList = () => {
                 flex: "1 1 300px",
                 borderRadius: 2,
                 overflow: "hidden",
+                position: "relative",
               }}
             >
+              {/* Three Dots Menu */}
+              <Box sx={{ position: "absolute", top: 8, right: 8, zIndex: 1 }}>
+                <IconButton
+                  aria-label="more"
+                  aria-controls={`menu-${hospital.id}`}
+                  aria-haspopup="true"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setAnchorEl((prev) => ({
+                      ...prev,
+                      [hospital.id]: event.currentTarget,
+                    }));
+                  }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id={`menu-${hospital.id}`}
+                  anchorEl={anchorEl[hospital.id]}
+                  open={Boolean(anchorEl[hospital.id])}
+                  onClose={() =>
+                    setAnchorEl((prev) => ({
+                      ...prev,
+                      [hospital.id]: null,
+                    }))
+                  }
+                >
+                  <MenuItem
+                    onClick={async () => {
+                      await handleDeleteHospital(hospital.id);
+                      setAnchorEl((prev) => ({
+                        ...prev,
+                        [hospital.id]: null,
+                      }));
+                    }}
+                  >
+                    Delete
+                  </MenuItem>
+                </Menu>
+              </Box>
+
               <CardMedia
                 component="img"
                 height="180"
-                image={hospital.image}
-                alt={hospital.name}
+                image={`http://localhost:8000/${hospital.file_path}`}
+                alt={hospital.title}
               />
               <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {hospital.name}
+                <Typography variant="h6" gutterBottom>
+                  {hospital.title}
                 </Typography>
                 <Rating value={hospital.rating} precision={0.5} readOnly />
                 <Typography
