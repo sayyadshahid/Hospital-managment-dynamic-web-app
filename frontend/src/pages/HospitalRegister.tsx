@@ -5,28 +5,33 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
 
 const HospitalRegister = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
       title: "",
       description: "",
       address: "",
+      about: "",
       rating: 0,
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
       description: Yup.string().required("Description is required"),
       address: Yup.string().required("Address is required"),
+      about: Yup.string().required("about field is required"),
     }),
     onSubmit: async (values) => {
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
       formData.append("address", values.address);
+      formData.append("about", values.about);
       formData.append("file", file as File);
       formData.append("is_active", "true");
 
@@ -41,6 +46,7 @@ const HospitalRegister = () => {
           }
         );
         toast.success(res.data?.msg || "Registered Successfully!");
+         navigate(`/hospitalList`)
       } catch (error: any) {
         const errMsg =
           error?.response?.data?.detail ||
@@ -146,6 +152,18 @@ const HospitalRegister = () => {
             helperText={formik.touched.address && formik.errors.address}
           />
 
+          <TextField
+            label="About"
+            name="about"
+            onChange={formik.handleChange}
+            value={formik.values.about}
+            multiline
+            rows={2}
+            fullWidth
+            error={formik.touched.about && Boolean(formik.errors.about)}
+            helperText={formik.touched.about && formik.errors.about}
+          />
+
           <Rating
             name="rating"
             value={formik.values.rating}
@@ -158,6 +176,7 @@ const HospitalRegister = () => {
             type="submit"
             variant="contained"
             sx={{ bgcolor: "red", color: "white", fontWeight: 600 }}
+           
           >
             Add Hospital
           </Button>

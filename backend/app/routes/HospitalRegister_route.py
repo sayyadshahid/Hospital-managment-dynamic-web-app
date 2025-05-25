@@ -12,6 +12,7 @@ async def create_upload_file(
     title: str = Form(...),
     description: str = Form(...),
     address: str = Form(...),
+    about: str = Form(...),
     is_active: bool = Form(...),
     file: UploadFile = File(...)
 ):
@@ -20,6 +21,7 @@ async def create_upload_file(
             title=title,
             description=description,
             address=address,
+            about=about,
             is_active=is_active
         )
         response = await HospitalRegister.hospital_register(data, file)
@@ -39,6 +41,6 @@ async def get_all_hospitals():
     return response
 
 
-@hospitalregister_router.post("/delete_hospital/{id}")
+@hospitalregister_router.delete("/delete_hospital/{id}")
 async def delete_hospital(id:str):
     return await HospitalRegister.delete_hospital(id)

@@ -21,6 +21,7 @@ interface Hospital {
   title: string;
   description: string;
   address: string;
+  about: string;
   file_path: string;
   rating: number;
 }
@@ -39,7 +40,10 @@ const HospitalList = () => {
         if (Array.isArray(res.data.Hospitals)) {
           setHospitals(res.data.Hospitals);
         } else {
-          console.error("Expected 'Hospitals' to be an array, got:", res.data.Hospitals);
+          console.error(
+            "Expected 'Hospitals' to be an array, got:",
+            res.data.Hospitals
+          );
           setHospitals([]);
         }
       } catch (error) {
@@ -52,7 +56,7 @@ const HospitalList = () => {
 
   const handleDeleteHospital = async (id: string) => {
     try {
-      await axios.post(`http://localhost:8000/api/delete_hospital/${id}`);
+      await axios.delete(`http://localhost:8000/api/delete_hospital/${id}`);
       setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
     } catch (error) {
       console.error("Error deleting hospital:", error);
@@ -101,8 +105,9 @@ const HospitalList = () => {
                 borderRadius: 2,
                 overflow: "hidden",
                 position: "relative",
+                cursor: "pointer",
               }}
-            >
+              >
               {/* Three Dots Menu */}
               <Box sx={{ position: "absolute", top: 8, right: 8, zIndex: 1 }}>
                 <IconButton
@@ -149,6 +154,10 @@ const HospitalList = () => {
                 height="180"
                 image={`http://localhost:8000/${hospital.file_path}`}
                 alt={hospital.title}
+                onClick={() => {
+                  console.log("Navigating to hospital ID:", hospital.id);
+                  navigate(`/hospital/${hospital.id}`);
+                }}
               />
               <CardContent>
                 <Typography variant="h6" gutterBottom>
