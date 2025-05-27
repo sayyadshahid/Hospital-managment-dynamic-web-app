@@ -1,3 +1,5 @@
+from app.constant.constants import DbCollections
+from app.database import get_database
 import jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
@@ -20,3 +22,50 @@ def get_password_hash(password: str):
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+
+
+async def authenticate_user(email: str, password: str):
+    try:
+        db=get_database()
+        user_collection= db[DbCollections.USER_COLLECTION]
+        user = await user_collection.find_one({"email": email,"is_active": True})
+
+        if not user or not verify_password(password, user["password"]):
+            return None 
+
+        access_token = create_access_token(data={"sub": str(user["_id"])})
+        return {
+            "token": access_token,
+            "msg": "Login successful",
+            "user": {
+                "user_id":str(user["_id"]),
+                "email": user["email"],
+                "fullname": user.get("fullname", ""),
+                "phone_no": user.get("phone_no", ""),
+                "created_at": user.get("created_at", ""),
+                    }
+        }
+
+    except Exception as e:
+        print(f"Error during authentication: {str(e)}")
+        return None
+    
+    
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        # Check if user exists in the database
+        db = get_database()
+        user_collection = db[DbCollections.USER_COLLECTION]
+        user = user_collection.find_one({"_id": user_id, "is_active": True})
+        if not user:
+            return {"detail": "User no longer exists or is inactive"}
+
+        return payload
+    except jwt.ExpiredSignatureError:
+        return {"detail": "Token has expired"}
+    except jwt.JWTError:
+        return {"detail": "Invalid token"}
+ 

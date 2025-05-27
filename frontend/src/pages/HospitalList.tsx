@@ -15,6 +15,8 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavBar from "../components/header";
 import axios from "axios";
+import { keyframes } from "@emotion/react";
+import Footer from "../components/footer";
 
 interface Hospital {
   id: string;
@@ -26,9 +28,20 @@ interface Hospital {
   rating: number;
 }
 
+// Shimmer animation
+const shimmer = keyframes`
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+`;
+
 const HospitalList = () => {
   const navigate = useNavigate();
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [anchorEl, setAnchorEl] = useState<{
     [key: string]: HTMLElement | null;
   }>({});
@@ -48,6 +61,8 @@ const HospitalList = () => {
         }
       } catch (error) {
         console.error("Error fetching hospitals:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -77,112 +92,174 @@ const HospitalList = () => {
           }}
         >
           <Typography variant="h6">Hospital List</Typography>
-          <Button
+          <Box
             sx={{
-              bgcolor: "red",
-              fontSize: 14,
-              fontWeight: 600,
-              color: "white",
-              "&:hover": { bgcolor: "darkred" },
+              display: "flex",
+              gap: "10px",
             }}
-            onClick={() => navigate("/hospitalregister")}
           >
-            Add Hospital
-          </Button>
+            <Button
+              sx={{
+                bgcolor: "red",
+                fontSize: 14,
+                fontWeight: 600,
+                color: "white",
+                "&:hover": { bgcolor: "darkred" },
+              }}
+            >
+              SORT
+            </Button>
+            <Button
+              sx={{
+                bgcolor: "red",
+                fontSize: 14,
+                fontWeight: 600,
+                color: "white",
+                "&:hover": { bgcolor: "darkred" },
+              }}
+              onClick={() => navigate("/hospitalregister")}
+            >
+              Add Hospital
+            </Button>
+          </Box>
         </Box>
 
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          {hospitals.length === 0 && (
-            <Typography>No hospitals found.</Typography>
-          )}
-
-          {hospitals.map((hospital) => (
-            <Card
-              key={hospital.id}
-              sx={{
-                maxWidth: 345,
-                flex: "1 1 300px",
-                borderRadius: 2,
-                overflow: "hidden",
-                position: "relative",
-                cursor: "pointer",
-              }}
+          {loading ? (
+            Array.from({ length: 9 }).map((_, index) => (
+              <Card
+                key={index}
+                sx={{
+                  maxWidth: 345,
+                  flex: "1 1 300px",
+                  borderRadius: 2,
+                  p: 2,
+                }}
               >
-              {/* Three Dots Menu */}
-              <Box sx={{ position: "absolute", top: 8, right: 8, zIndex: 1 }}>
-                <IconButton
-                  aria-label="more"
-                  aria-controls={`menu-${hospital.id}`}
-                  aria-haspopup="true"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setAnchorEl((prev) => ({
-                      ...prev,
-                      [hospital.id]: event.currentTarget,
-                    }));
+                <Box
+                  sx={{
+                    height: 180,
+                    borderRadius: 2,
+                    background: `linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%)`,
+                    backgroundSize: "400% 100%",
+                    animation: `${shimmer} 1.5s infinite`,
                   }}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu
-                  id={`menu-${hospital.id}`}
-                  anchorEl={anchorEl[hospital.id]}
-                  open={Boolean(anchorEl[hospital.id])}
-                  onClose={() =>
-                    setAnchorEl((prev) => ({
-                      ...prev,
-                      [hospital.id]: null,
-                    }))
-                  }
-                >
-                  <MenuItem
-                    onClick={async () => {
-                      await handleDeleteHospital(hospital.id);
+                />
+                <Box
+                  sx={{
+                    height: 20,
+                    width: "60%",
+                    borderRadius: 1,
+                    mt: 2,
+                    background: `linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%)`,
+                    backgroundSize: "400% 100%",
+                    animation: `${shimmer} 1.5s infinite`,
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: 20,
+                    width: "40%",
+                    borderRadius: 1,
+                    mt: 1,
+                    background: `linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%)`,
+                    backgroundSize: "400% 100%",
+                    animation: `${shimmer} 1.5s infinite`,
+                  }}
+                />
+              </Card>
+            ))
+          ) : hospitals.length === 0 ? (
+            <Typography>No hospitals found.</Typography>
+          ) : (
+            hospitals.map((hospital) => (   
+              <Card
+                key={hospital.id}
+                sx={{
+                  maxWidth: 345,
+                  flex: "1 1 300px",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                {/* Three Dots Menu */}
+                <Box sx={{ position: "absolute", top: 8, right: 8, zIndex: 1 }}>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls={`menu-${hospital.id}`}
+                    aria-haspopup="true"
+                    onClick={(event) => {
+                      event.stopPropagation();
                       setAnchorEl((prev) => ({
                         ...prev,
-                        [hospital.id]: null,
+                        [hospital.id]: event.currentTarget,
                       }));
                     }}
                   >
-                    Delete
-                  </MenuItem>
-                </Menu>
-              </Box>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu
+                    id={`menu-${hospital.id}`}
+                    anchorEl={anchorEl[hospital.id]}
+                    open={Boolean(anchorEl[hospital.id])}
+                    onClose={() =>
+                      setAnchorEl((prev) => ({
+                        ...prev,
+                        [hospital.id]: null,
+                      }))
+                    }
+                  >
+                    <MenuItem
+                      onClick={async () => {
+                        await handleDeleteHospital(hospital.id);
+                        setAnchorEl((prev) => ({
+                          ...prev,
+                          [hospital.id]: null,
+                        }));
+                      }}
+                    >
+                      Delete
+                    </MenuItem>
+                  </Menu>
+                </Box>
 
-              <CardMedia
-                component="img"
-                height="180"
-                image={`http://localhost:8000/${hospital.file_path}`}
-                alt={hospital.title}
-                onClick={() => {
-                  console.log("Navigating to hospital ID:", hospital.id);
-                  navigate(`/hospital/${hospital.id}`);
-                }}
-              />
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {hospital.title}
-                </Typography>
-                <Rating value={hospital.rating} precision={0.5} readOnly />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  {hospital.description}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1, fontWeight: 500 }}
-                >
-                  📍 {hospital.address}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+                <CardMedia
+                  component="img"
+                  height="180"
+                  image={`http://localhost:8000/${hospital.file_path}`}
+                  alt={hospital.title}
+                  onClick={() => {
+                    navigate(`/hospital/${hospital.id}`);
+                  }}
+                />
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    {hospital.title}
+                  </Typography>
+                  <Rating value={hospital.rating} precision={0.5} readOnly />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1 }}
+                  >
+                    {hospital.description}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1, fontWeight: 500 }}
+                  >
+                    📍 {hospital.address}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </Box>
       </Box>
+    <Footer/>
     </Box>
   );
 };

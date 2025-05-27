@@ -1,11 +1,16 @@
-import React from 'react';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import "./Home.css";
-import NavBar from "../components/header";
-
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {
+  Box,
+  Button,
+  Typography,
+  Container,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import NavBar from "../components/header";
+import "@fontsource/montserrat";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -13,55 +18,124 @@ const LandingPage = () => {
   const { id } = location.state || {};
   const [name, setName] = useState<string>("");
 
+  const theme = useTheme();
+  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMdDown = useMediaQuery(theme.breakpoints.down("md"));
+
   useEffect(() => {
     const fetchName = async () => {
       try {
         const res = await axios.get(`http://localhost:8000/api/users/${id}`);
         setName(res.data.user["fullname"]);
-      } catch (error: any) {
-        // const errMsg = error?.response?.data?.msg || "Somthing Went Wrong !!";
-        // toast.error(errMsg);
-        console.log(error);
-      } finally {
-        console.log("heyyyyyyyyyyyyy");
+      } catch (error) {
+        console.error("Error fetching name:", error);
       }
     };
-    fetchName();
-  }, []);
+
+    if (id) fetchName();
+  }, [id]);
 
   return (
-    <>
-      <div className="main-p">
-        <div className="landingpage">
-          <NavBar />
-          <div className="container">
-            <div className="left">
-              <div className="content-left">
-                <h1>The Jacsto,</h1>
-                <p>This Is A Largest Hospital Management Website,</p>
-                <p>
-                  To Book Yours Good Hospital With Better Treatment, so what you
-                  think <br />{" "}
-                  <span style={{ fontWeight: 600, lineHeight: 4 }}>{name}</span>
-                </p>
-                <button
-                  className="left-btn"
-                  id="book-host"
-                  onClick={() => navigate("/hospitalList")}
+    <Box>
+      <NavBar />
+      <Box
+        sx={{
+          backgroundColor: "#fff",
+          minHeight: "95vh",
+          display: "flex",
+          alignItems: "center",
+          fontFamily: "Montserrat, sans-serif",
+          pt: 4,
+          pb: 6,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 4,
+            }}
+          >
+            {/* Left Section */}
+            <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+              <Typography
+                variant={isSmDown ? "h4" : "h3"}
+                gutterBottom
+                sx={{
+                  transition: "transform 2s ease",
+                  "&:hover": {
+                    transform: "translateX(40px)",
+                  },
+                }}
+              >
+                The Jacsto,
+              </Typography>
+
+              <Typography variant="subtitle1" gutterBottom>
+                This is the largest Hospital Management Website.
+              </Typography>
+
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                Book your good hospital with better treatment.
+                <br />
+                <Typography
+                  component="span"
+                  fontWeight={600}
+                  sx={{ lineHeight: 2 }}
                 >
-                  Book Your Hospital
-                </button>
-              </div>
-            </div>
-            <div className="right">
-              <div className="img">
-                <img src="./hospital.png" alt="hospital" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+                  {name}
+                </Typography>
+              </Typography>
+
+              <Button
+                variant="contained"
+                onClick={() => navigate("/hospitalList")}
+                sx={{
+                  bgcolor: "red",
+                  fontWeight: 600,
+                  borderRadius: 1,
+                  fontSize: "14px",
+                  px: 2,
+                  py: 1,
+                  mt: 2,
+                  "&:hover": {
+                    transform: "rotate(5deg) scale(1.05)",
+                    transition: "transform 0.5s ease",
+                    backgroundColor: "rgba(255, 0, 0, 0.85)",
+                  },
+                }}
+              >
+                Book Your Appointment
+              </Button>
+            </Box>
+
+            {/* Right Section */}
+            <Box
+              sx={{
+                width: { xs: "100%", md: "50%" },
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Box
+                component="img"
+                src="./hospital.png"
+                alt="hospital"
+                sx={{
+                  width: { xs: "80%", sm: 300, md: 350 },
+                  maxWidth: "100%",
+                  height: "auto",
+                }}
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    </Box>
   );
 };
 

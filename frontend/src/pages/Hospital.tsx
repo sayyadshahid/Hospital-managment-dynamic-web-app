@@ -10,6 +10,8 @@ import {
 import NavBar from "../components/header";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { PatientReviews } from "./Review";
+import Footer from "../components/footer";
 
 interface Hospital {
   id: string;
@@ -89,29 +91,12 @@ const Hospital = () => {
                 Book an Appointment
               </Button>
             </Box>
+            <PatientReviews />
           </Paper>
         ))}
 
         {/* Footer */}
-        <Box sx={{ textAlign: "center", mt: 4, color: "text.secondary" }}>
-          <Divider sx={{ mb: 2 }} />
-          <Typography variant="body2">
-            ©2024 HealthHub. All rights reserved.
-          </Typography>
-          <Box
-            sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 3 }}
-          >
-            <Typography variant="body2" sx={{ cursor: "pointer" }}>
-              Contact
-            </Typography>
-            <Typography variant="body2" sx={{ cursor: "pointer" }}>
-              Privacy Policy
-            </Typography>
-            <Typography variant="body2" sx={{ cursor: "pointer" }}>
-              Terms of Service
-            </Typography>
-          </Box>
-        </Box>
+        <Footer />
       </Container>
     </Box>
   );

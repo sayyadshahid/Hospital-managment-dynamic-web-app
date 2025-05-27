@@ -12,12 +12,15 @@ class Auth():
     async def signup_controller(data: SignupRequest, background_tasks: BackgroundTasks):
         try:
            db= get_database()
-           user_collection= db[DbCollections.USER_COLLECTION]
+           if data.role == "doctor":
+                collection = db[DbCollections.DOCTOR_COLLECTION]
+           else:
+                collection = db[DbCollections.USER_COLLECTION]
            phone_regex = r"^\+91\d{10}$"
            data.phone_no = f"+91{data.phone_no}" 
            if not re.match(phone_regex, data.phone_no):
              raise HTTPException(status_code=400, detail="Invalid phone number format.")
-           response = await Auth.signup(collection=user_collection, data=data,background_tasks=background_tasks)
+           response = await Auth.signup(collection=collection, data=data,background_tasks=background_tasks)
            return JSONResponse(content=response, status_code=200)
         except HTTPException as exc:
             raise exc
@@ -45,6 +48,7 @@ class Auth():
                 "email": email,
                 "password": data.password, 
                 "confirm_password":data.confirm_password,
+                "role": data.role
                 }
             
             validated_user = SignupRequest(**new_user)
@@ -54,8 +58,8 @@ class Auth():
             await collection.insert_one(user_to_insert)
 
 
-            return {"msg": "Signup successful Please Login Again ✅ "}  # <-- Add this
-        
+            return {"msg": f"Signup successful as {data.role}. Please Login Again ✅"}
+
         except HTTPException as exc:
             raise exc
         except Exception as e:
@@ -67,8 +71,11 @@ class Auth():
     async def login(data: LoginRequest):
         try:
             db = get_database()
-            collection = db[DbCollections.USER_COLLECTION]
-
+            if data.role == "doctor":
+                collection = db[DbCollections.DOCTOR_COLLECTION]
+            else:
+                collection = db[DbCollections.USER_COLLECTION]
+                
             user = await collection.find_one({"email": data.email.lower(), "is_active": True})
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
@@ -87,7 +94,8 @@ class Auth():
             return {
                 "access_token": token,
                 "token_type": "bearer",
-                 "id": str(user["_id"]),
+                "id": str(user["_id"]),
+                "role": data.role,
                 "msg": "Login successful"
             }
         except HTTPException as e:
