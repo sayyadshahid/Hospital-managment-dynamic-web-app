@@ -6,7 +6,7 @@ from app.services.auth_service import verify_token
 class JWTAuthenticationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         unprotected_paths = ["/api/signup", "/api/login","/docs", "/redoc", "/openapi.json","/api/docs", "/api/redoc",
-                             "/media/",' /register-hospital/', '/hospital_id/{id}', '/hospitals', '/delete_hospital/{id}'
+                             "/uploads/","/register-hospital/", "/api/hospitals"
                              ]
 
         if any(request.url.path.startswith(path) for path in unprotected_paths):

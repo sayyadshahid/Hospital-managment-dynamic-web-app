@@ -43,7 +43,15 @@ const LoginForm = () => {
           payload
         );
         const userId = res.data.id;
+        const user_role = res.data.role;
+        const access_token = res.data.access_token;
+
         localStorage.setItem("user_id", userId);
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("user_role", user_role);
+
+        const userRole = res.data.role || payload.role;
+        console.log(userRole);
 
         navigate("/", { state: { id: userId } });
         toast.success(res.data.msg || "Login Successful!");
@@ -106,9 +114,7 @@ const LoginForm = () => {
               variant="standard"
               value={formik.values.password}
               onChange={formik.handleChange}
-              error={
-                formik.touched.password && Boolean(formik.errors.password)
-              }
+              error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
             />
           </Box>

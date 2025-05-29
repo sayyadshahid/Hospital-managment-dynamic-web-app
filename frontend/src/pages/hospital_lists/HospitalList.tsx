@@ -13,10 +13,10 @@ import {
   MenuItem,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import NavBar from "../components/header";
+import NavBar from "../../components/header";
 import axios from "axios";
 import { keyframes } from "@emotion/react";
-import Footer from "../components/footer";
+import Footer from "../../components/footer";
 
 interface Hospital {
   id: string;
@@ -45,6 +45,11 @@ const HospitalList = () => {
   const [anchorEl, setAnchorEl] = useState<{
     [key: string]: HTMLElement | null;
   }>({});
+  const role = localStorage.getItem("user_role");
+  const isDoctor = role === "doctor";
+  // const storedData = localStorage.getItem("user_role");
+  // const userData = storedData ? JSON.parse(storedData) : null;
+  // console.log('==========================doctor====================', userData)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +76,17 @@ const HospitalList = () => {
 
   const handleDeleteHospital = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:8000/api/delete_hospital/${id}`);
+      const token = localStorage.getItem("access_token");  
+      if (!token) {
+        alert("You need to log in first!");
+        return;  
+      }
+
+      await axios.delete(`http://localhost:8000/api/delete_hospital/${id}`, {
+        headers: {
+          Authorization: token,  
+        },
+      });
       setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
     } catch (error) {
       console.error("Error deleting hospital:", error);
@@ -109,18 +124,20 @@ const HospitalList = () => {
             >
               SORT
             </Button>
-            <Button
-              sx={{
-                bgcolor: "red",
-                fontSize: 14,
-                fontWeight: 600,
-                color: "white",
-                "&:hover": { bgcolor: "darkred" },
-              }}
-              onClick={() => navigate("/hospitalregister")}
-            >
-              Add Hospital
-            </Button>
+            {isDoctor && (
+              <Button
+                sx={{
+                  bgcolor: "red",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "white",
+                  "&:hover": { bgcolor: "darkred" },
+                }}
+                onClick={() => navigate("/hospitalregister")}
+              >
+                Add Hospital
+              </Button>
+            )}
           </Box>
         </Box>
 
@@ -172,7 +189,7 @@ const HospitalList = () => {
           ) : hospitals.length === 0 ? (
             <Typography>No hospitals found.</Typography>
           ) : (
-            hospitals.map((hospital) => (   
+            hospitals.map((hospital) => (
               <Card
                 key={hospital.id}
                 sx={{
@@ -259,7 +276,7 @@ const HospitalList = () => {
           )}
         </Box>
       </Box>
-    <Footer/>
+      <Footer />
     </Box>
   );
 };

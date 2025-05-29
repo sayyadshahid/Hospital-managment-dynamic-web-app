@@ -9,7 +9,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import NavBar from "../components/header";
+import NavBar from "../../components/header";
 import "@fontsource/montserrat";
 
 const LandingPage = () => {

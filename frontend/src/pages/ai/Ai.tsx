@@ -17,7 +17,7 @@ import {
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import BuildIcon from '@mui/icons-material/Build';
-import NavBar from '../components/header';
+import NavBar from '../../components/header';
 
 const darkTheme = createTheme({
   palette: {

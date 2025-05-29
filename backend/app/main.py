@@ -49,7 +49,7 @@ async def custom_http_exception_handler(request: Request, exc: HTTPException):
 
 
 
-# app.add_middleware(JWTAuthenticationMiddleware)
+app.add_middleware(JWTAuthenticationMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],    
@@ -57,5 +57,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# app.mount("/static", StaticFiles(directory="static"), name="static") 
-# app.mount("/media", StaticFiles(directory="media"), name="media")
+app.mount("/static", StaticFiles(directory="static"), name="static") 
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

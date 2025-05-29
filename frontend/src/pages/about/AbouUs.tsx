@@ -7,7 +7,7 @@ import {
   TextField,
   Container,
 } from "@mui/material";
-import NavBar from "../components/header";
+import NavBar from "../../components/header";
 // Team data
 const teamMembers = [
   {

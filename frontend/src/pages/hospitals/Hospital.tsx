@@ -7,11 +7,12 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import NavBar from "../components/header";
+import NavBar from "../../components/header";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { PatientReviews } from "./Review";
-import Footer from "../components/footer";
+import { PatientReviews } from "../reviews/Review";
+import Footer from "../../components/footer";
+import { useNavigate } from "react-router-dom";
 
 interface Hospital {
   id: string;
@@ -25,14 +26,26 @@ interface Hospital {
 const Hospital = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.post(
-          `http://localhost:8000/api/hospital_id/${id}`
-        );
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          alert("You need to log in first!");
+          // navigate("/login");
+          return;
+        }
 
+        const res = await axios.get(
+          `http://localhost:8000/api/hospital_id/${id}`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
         setHospitals([res.data.hospital]); // Wrap single object in an array
       } catch (error) {
         console.error("Error fetching hospitals:", error);
@@ -103,3 +116,6 @@ const Hospital = () => {
 };
 
 export default Hospital;
+function nevigate() {
+  throw new Error("Function not implemented.");
+}

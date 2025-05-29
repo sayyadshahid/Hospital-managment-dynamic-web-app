@@ -31,7 +31,7 @@ async def create_upload_file(
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@hospitalregister_router.post("/hospital_id/{id}")
+@hospitalregister_router.get("/hospital_id/{id}")
 async def get_hospital(id:str):
     return await HospitalRegister.get_hospital_by_id(id)
 

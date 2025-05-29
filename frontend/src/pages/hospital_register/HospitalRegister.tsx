@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import { Box, Typography, Button, TextField, Rating } from "@mui/material";
-import NavBar from "../components/header";
+import NavBar from "../../components/header";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -27,6 +27,15 @@ const HospitalRegister = () => {
       about: Yup.string().required("about field is required"),
     }),
     onSubmit: async (values) => {
+
+      const token = localStorage.getItem('access_token');
+    if (!token) {
+        toast.error("Please log in first.");
+        navigate('/login');
+        return;
+    }
+
+
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
@@ -38,12 +47,12 @@ const HospitalRegister = () => {
       try {
         const res = await axios.post(
           "http://localhost:8000/api/register-hospital/",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          formData,{
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": token, // Add token here
+                },
+            }
         );
         toast.success(res.data?.msg || "Registered Successfully!");
          navigate(`/hospitalList`)

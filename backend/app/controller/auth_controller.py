@@ -106,19 +106,32 @@ class Auth():
 
     async def get_user_by_id(id: str):
         try:
-            db= get_database()
-            user_collection= db[DbCollections.USER_COLLECTION]
-            if not ObjectId.is_valid(id):
-                raise HTTPException(status_code=400, detail='Invalid user ID format')
+            db = get_database()
 
-            user = await user_collection.find_one({'_id': ObjectId(id)}, {"password": 0})
-            if not user:
-                raise HTTPException(status_code=400, detail="User not found")
-            
-            user["id"] = str(user.pop("_id"))
-            return {"user": user}
+            if not ObjectId.is_valid(id):
+                raise HTTPException(status_code=400, detail="Invalid user ID format")
+
+            object_id = ObjectId(id)
+
+            doctor = await db[DbCollections.DOCTOR_COLLECTION].find_one(
+                {"_id": object_id}, {"password": 0}
+            )
+            if doctor:
+                doctor["id"] = str(doctor.pop("_id"))
+                doctor["role"] = "doctor"
+                return {"user": doctor}
+
+            user = await db[DbCollections.USER_COLLECTION].find_one(
+                {"_id": object_id}, {"password": 0}
+            )
+            if user:
+                user["id"] = str(user.pop("_id"))
+                user["role"] = "user"
+                return {"user": user}
+
+            raise HTTPException(status_code=404, detail="User not found")
 
         except HTTPException as http_err:
             raise http_err
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error retrieving user: err :{str(e)} ")
+            raise HTTPException(status_code=500, detail=f"Error retrieving user: {str(e)}")
