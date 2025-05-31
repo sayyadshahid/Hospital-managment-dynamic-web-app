@@ -17,3 +17,7 @@ async def login(data: LoginRequest):
 @auth_router.get('/users/{id}')
 async def get_user_by_id(id: str):
     return await Auth.get_user_by_id(id)
+
+@auth_router.get('/get-all-users')
+async def get_all_user():
+    return await Auth.get_all_users()

@@ -73,7 +73,7 @@ class HospitalRegister:
                 Hospital_list.append(Hospital)
                 
             if not Hospital_list:
-                raise HTTPException(status_code=404, detail="No Courses found")
+                raise HTTPException(status_code=404, detail="No Hospitals found")
 
             return {'count': len(Hospital_list), 'Hospitals': Hospital_list}
             

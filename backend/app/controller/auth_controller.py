@@ -135,3 +135,30 @@ class Auth():
             raise http_err
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error retrieving user: {str(e)}")
+        
+        
+    async def get_all_users():
+        try:
+            db = get_database()
+ 
+            doctors_cursor = db[DbCollections.DOCTOR_COLLECTION].find({}, {"password": 0})
+            doctors = []
+            async for doctor in doctors_cursor:
+                doctor["id"] = str(doctor.pop("_id"))
+                doctor["role"] = "doctor"
+                doctors.append(doctor)
+
+            # Fetch all users
+            users_cursor = db[DbCollections.USER_COLLECTION].find({}, {"password": 0})
+            users = []
+            async for user in users_cursor:
+                user["id"] = str(user.pop("_id"))
+                user["role"] = "user"
+                users.append(user)
+
+            all_users = doctors + users
+
+            return {"count": len(all_users) ,"users": all_users}
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error retrieving users: {str(e)}")
