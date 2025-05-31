@@ -1,11 +1,12 @@
 from enum import Enum
+from typing import Optional
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, EmailStr, model_validator
 from datetime import datetime, timezone  
 
 class UserType(str, Enum):
+    Doctor= "doctor"
     User = "user"
-    Doctor= 'doctor'
 
 class SignupRequest(BaseModel):
     fullname: str= Field(..., description="Users fullname")
@@ -29,8 +30,7 @@ class SignupRequest(BaseModel):
             raise HTTPException(status_code=400, detail="Passwords do not match")
         return values
     
-class LoginRequest(BaseModel):
+class LoginRequestUser(BaseModel):
     email: str
     password: str
-    role: UserType = Field(..., description="User role: user or doctor")
     

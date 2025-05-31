@@ -76,15 +76,15 @@ const HospitalList = () => {
 
   const handleDeleteHospital = async (id: string) => {
     try {
-      const token = localStorage.getItem("access_token");  
+      const token = localStorage.getItem("access_token");
       if (!token) {
         alert("You need to log in first!");
-        return;  
+        return;
       }
 
       await axios.delete(`http://localhost:8000/api/delete_hospital/${id}`, {
         headers: {
-          Authorization: token,  
+          Authorization: token,
         },
       });
       setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
@@ -248,7 +248,9 @@ const HospitalList = () => {
                   image={`http://localhost:8000/${hospital.file_path}`}
                   alt={hospital.title}
                   onClick={() => {
-                    navigate(`/hospital/${hospital.id}`);
+                    navigate(`/hospital/${hospital.id}`, {
+                      state: { id: hospital.id },  
+                    });
                   }}
                 />
                 <CardContent>

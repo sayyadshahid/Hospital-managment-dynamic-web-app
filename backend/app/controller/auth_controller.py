@@ -1,4 +1,4 @@
-from app.models.auth_model import SignupRequest, LoginRequest
+from app.models.auth_model import SignupRequest, LoginRequestUser
 from bson import ObjectId
 from fastapi import HTTPException,BackgroundTasks
 from app.database import get_database
@@ -68,42 +68,54 @@ class Auth():
                 detail=f"Error during signup : error: {str(e)}"
             )
         
-    async def login(data: LoginRequest):
+    async def loginUser(data: LoginRequestUser):
         try:
             db = get_database()
-            if data.role == "doctor":
-                collection = db[DbCollections.DOCTOR_COLLECTION]
-            else:
-                collection = db[DbCollections.USER_COLLECTION]
-                
-            user = await collection.find_one({"email": data.email.lower(), "is_active": True})
-            if not user:
-                raise HTTPException(status_code=404, detail="User not found")
 
-            if not verify_password(data.password, user["password"]):
-                raise HTTPException(status_code=401, detail="Invalid password")
+            # Check in USER collection
+            user_collection = db[DbCollections.USER_COLLECTION]
+            user = await user_collection.find_one({"email": data.email.lower(), "is_active": True})
+            if user and verify_password(data.password, user["password"]):
+                payload = {
+                    "id": str(user["_id"]),
+                    "email": user["email"],
+                    "fullname": user["fullname"]
+                }
+                token = create_access_token(payload)
+                return {
+                    "access_token": token,
+                    "token_type": "bearer",
+                    "id": str(user["_id"]),
+                    "role": 'user',
+                    "msg": "Login successful"
+                }
 
-            payload = {
-                "id": str(user["_id"]),
-                "email": user["email"],
-                "fullname": user["fullname"]
-            }
+            doctor_collection = db[DbCollections.DOCTOR_COLLECTION]
+            doc_user = await doctor_collection.find_one({"email": data.email.lower(), "is_active": True})
+            if doc_user and verify_password(data.password, doc_user["password"]):
+                payload = {
+                    "id": str(doc_user["_id"]),
+                    "email": doc_user["email"],
+                    "fullname": doc_user["fullname"]
+                }
+                token = create_access_token(payload)
+                return {
+                    "access_token": token,
+                    "token_type": "bearer",
+                    "id": str(doc_user["_id"]),
+                    "role": 'doctor',
+                    "msg": "Login successful"
+                }
 
-            token = create_access_token(payload)
+            raise HTTPException(status_code=401, detail="Invalid email or password")
 
-            return {
-                "access_token": token,
-                "token_type": "bearer",
-                "id": str(user["_id"]),
-                "role": data.role,
-                "msg": "Login successful"
-            }
         except HTTPException as e:
             raise e
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
-        
-
+    
+     
+     
     async def get_user_by_id(id: str):
         try:
             db = get_database()
@@ -135,6 +147,9 @@ class Auth():
             raise http_err
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error retrieving user: {str(e)}")
+        
+        
+        
         
         
     async def get_all_users():

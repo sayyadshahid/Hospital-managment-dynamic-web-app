@@ -1,6 +1,6 @@
 from app.controller.auth_controller import Auth
 from fastapi import APIRouter, BackgroundTasks
-from app.models.auth_model import LoginRequest, SignupRequest
+from app.models.auth_model import LoginRequestUser, SignupRequest
 
 auth_router = APIRouter()
 
@@ -11,8 +11,9 @@ async def signup(data: SignupRequest, background_tasks: BackgroundTasks):
 
 
 @auth_router.post('/login')
-async def login(data: LoginRequest):
-    return await Auth.login(data=data)
+async def login(data: LoginRequestUser):
+    return await Auth.loginUser(data=data)
+ 
 
 @auth_router.get('/users/{id}')
 async def get_user_by_id(id: str):

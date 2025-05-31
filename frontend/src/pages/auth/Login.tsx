@@ -5,8 +5,6 @@ import {
   Box,
   Button,
   TextField,
-  Checkbox,
-  FormControlLabel,
   Typography,
   Paper,
 } from "@mui/material";
@@ -21,43 +19,28 @@ const LoginForm = () => {
     initialValues: {
       email: "",
       password: "",
-      role: false,
     },
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email").required("Email is required"),
       password: Yup.string()
         .min(6, "Minimum 6 characters")
         .required("Password is required"),
-      role: Yup.boolean(),
     }),
     onSubmit: async (values) => {
-      const payload = {
-        email: values.email,
-        password: values.password,
-        role: values.role ? "doctor" : "user",
-      };
-
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/login",
-          payload
-        );
-        const userId = res.data.id;
-        const user_role = res.data.role;
-        const access_token = res.data.access_token;
+        const res = await axios.post("http://localhost:8000/api/login", values);
 
-        localStorage.setItem("user_id", userId);
+        const { id, role, access_token, msg } = res.data;
+
+        localStorage.setItem("user_id", id);
         localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user_role", user_role);
+        localStorage.setItem("user_role", role);
 
-        const userRole = res.data.role || payload.role;
-        console.log(userRole);
-
-        navigate("/", { state: { id: userId } });
-        toast.success(res.data.msg || "Login Successful!");
+        navigate("/", { state: { id } });
+        toast.success(msg || "Login Successful!");
       } catch (error: any) {
         const errMsg =
-          error?.response?.data?.msg || "Login failed. Please try again.";
+          error?.response?.data?.detail || "Login failed. Please try again.";
         toast.error(errMsg);
       } finally {
         console.log("Form submission attempt completed.");
@@ -116,20 +99,6 @@ const LoginForm = () => {
               onChange={formik.handleChange}
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
-            />
-          </Box>
-
-          <Box mb={2}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id="role"
-                  name="role"
-                  checked={formik.values.role}
-                  onChange={formik.handleChange}
-                />
-              }
-              label="I'm a Doctor"
             />
           </Box>
 
