@@ -49,8 +49,7 @@ class HospitalRegister:
             
             if not hospital:
                 raise HTTPException(status_code=400, detail="User not found")
-            
-            
+                        
             hospital['id'] = str(hospital.pop('_id'))
             return {'hospital': hospital}
         

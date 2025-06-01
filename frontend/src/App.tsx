@@ -9,7 +9,8 @@ import HospitalRegister from "./pages/hospital_register/HospitalRegister";
 import ChatUI from "./pages/ai/Ai";
 import AboutUs from "./pages/about/AbouUs";
 import Hospital from "./pages/hospitals/Hospital";
-
+import Doctors from "./pages/doctors/Doctors";
+import DoctorRegister from "./pages/doctor_register/AddDoctors";
 function App() {
   return (
     <Router>
@@ -22,6 +23,9 @@ function App() {
         <Route path="/chat" element={<ChatUI />} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/hospital/:id" element={<Hospital />} />
+        <Route path="/doctors" element={<Doctors />} />
+        <Route path="/doctor-register" element={<DoctorRegister />} />
+
       </Routes>
 
       {/* Toaster for Notifications */}

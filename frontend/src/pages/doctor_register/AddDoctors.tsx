@@ -1,29 +1,32 @@
 import React, { useState, ChangeEvent } from "react";
 import { Box, Typography, Button, TextField, Rating } from "@mui/material";
 import NavBar from "../../components/header";
+import Footer from "../../components/footer";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const HospitalRegister = () => {
+const DoctorRegister = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const hospitalId = location.state?.hospital_id;
+  console.log(hospitalId, '==========================')
 
   const formik = useFormik({
     initialValues: {
-      title: "",
-      description: "",
-      address: "",
+      name: "",
+      degree: "",
+      experties: "",
       about: "",
-      rating: 0,
     },
     validationSchema: Yup.object({
-      title: Yup.string().required("Title is required"),
-      description: Yup.string().required("Description is required"),
-      address: Yup.string().required("Address is required"),
+      name: Yup.string().required("name is required"),
+      degree: Yup.string().required("degree is required"),
+      experties: Yup.string().required("experties is required"),
       about: Yup.string().required("about field is required"),
     }),
     onSubmit: async (values) => {
@@ -35,16 +38,16 @@ const HospitalRegister = () => {
       }
 
       const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("description", values.description);
-      formData.append("address", values.address);
+      formData.append("name", values.name);
+      formData.append("degree", values.degree);
+      formData.append("experties", values.experties);
       formData.append("about", values.about);
       formData.append("file", file as File);
       formData.append("is_active", "true");
 
       try {
         const res = await axios.post(
-          "http://localhost:8000/api/register-hospital/",
+          `http://localhost:8000/api/register-doctor/${hospitalId}`,
           formData,
           {
             headers: {
@@ -54,7 +57,7 @@ const HospitalRegister = () => {
           }
         );
         toast.success(res.data?.msg || "Registered Successfully!");
-        navigate(`/hospitalList`);
+        navigate(`/doctors`);
       } catch (error: any) {
         const errMsg =
           error?.response?.data?.detail ||
@@ -108,13 +111,13 @@ const HospitalRegister = () => {
           </Typography>
 
           <TextField
-            label="Title"
-            name="title"
+            label="Name"
+            name="name"
             onChange={formik.handleChange}
-            value={formik.values.title}
+            value={formik.values.name}
             fullWidth
-            error={formik.touched.title && Boolean(formik.errors.title)}
-            helperText={formik.touched.title && formik.errors.title}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
           />
 
           <input
@@ -137,27 +140,23 @@ const HospitalRegister = () => {
           )}
 
           <TextField
-            label="Description"
-            name="description"
+            label="degree"
+            name="degree"
             onChange={formik.handleChange}
-            value={formik.values.description}
+            value={formik.values.degree}
             multiline
-            rows={2}
+            rows={1}
             fullWidth
-            error={
-              formik.touched.description && Boolean(formik.errors.description)
-            }
-            helperText={formik.touched.description && formik.errors.description}
           />
 
           <TextField
-            label="Address"
-            name="address"
+            label="Experties"
+            name="experties"
             onChange={formik.handleChange}
-            value={formik.values.address}
+            value={formik.values.experties}
             fullWidth
-            error={formik.touched.address && Boolean(formik.errors.address)}
-            helperText={formik.touched.address && formik.errors.address}
+            error={formik.touched.experties && Boolean(formik.errors.experties)}
+            helperText={formik.touched.experties && formik.errors.experties}
           />
 
           <TextField
@@ -172,25 +171,18 @@ const HospitalRegister = () => {
             helperText={formik.touched.about && formik.errors.about}
           />
 
-          <Rating
-            name="rating"
-            value={formik.values.rating}
-            onChange={(event, newValue) => {
-              formik.setFieldValue("rating", newValue || 0);
-            }}
-          />
-
           <Button
             type="submit"
             variant="contained"
             sx={{ bgcolor: "red", color: "white", fontWeight: 600 }}
           >
-            Add Hospital
+            Submit
           </Button>
         </Box>
       </Box>
+      <Footer />
     </Box>
   );
 };
 
-export default HospitalRegister;
+export default DoctorRegister;

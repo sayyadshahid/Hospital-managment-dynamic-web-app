@@ -1,16 +1,11 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Style } from "@mui/icons-material";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -117,6 +112,15 @@ const LoginForm = () => {
           >
             Login
           </Button>
+          <Typography sx={{ textAlign: "center", mt: 2, fontSize: 15 }}>
+            Don't have any account?{" "}
+            <span
+              onClick={() => navigate("/register")}
+              style={{ cursor: "pointer", fontWeight: 700 }}
+            >
+              Register
+            </span>
+          </Typography>
         </form>
       </Paper>
     </Box>

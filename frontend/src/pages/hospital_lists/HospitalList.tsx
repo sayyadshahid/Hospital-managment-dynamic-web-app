@@ -249,7 +249,7 @@ const HospitalList = () => {
                   alt={hospital.title}
                   onClick={() => {
                     navigate(`/hospital/${hospital.id}`, {
-                      state: { id: hospital.id },  
+                      state: { id: hospital.id },
                     });
                   }}
                 />

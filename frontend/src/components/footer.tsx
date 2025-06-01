@@ -5,7 +5,7 @@ const Footer = () => {
     <Box sx={{ textAlign: "center", mt: 4, color: "text.secondary" }}>
       <Divider sx={{ mb: 2 }} />
       <Typography variant="body2">
-        ©2024 HealthHub. All rights reserved.
+        ©2025 Health. All rights reserved.
       </Typography>
       <Box sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 3 }}>
         <Typography variant="body2" sx={{ cursor: "pointer" }}>

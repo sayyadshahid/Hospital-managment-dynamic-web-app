@@ -39,7 +39,7 @@ const RegisterForm = () => {
       role: Yup.boolean(),
     }),
     onSubmit: async (values) => {
-      const payload = { 
+      const payload = {
         fullname: values.fullname,
         email: values.email,
         phone_no: values.phone_no,
@@ -49,13 +49,19 @@ const RegisterForm = () => {
       };
 
       try {
-        const res = await axios.post("http://localhost:8000/api/signup", payload);
+        const res = await axios.post(
+          "http://localhost:8000/api/signup",
+          payload
+        );
         console.log("User registered:", res.data);
-        toast.success(res.data.msg || "Registration successful! Please Login Again");
+        toast.success(
+          res.data.msg || "Registration successful! Please Login Again"
+        );
         navigate("/login");
       } catch (error: any) {
         const errMsg =
-          error?.response?.data?.msg || "Registration failed. Please try again.";
+          error?.response?.data?.msg ||
+          "Registration failed. Please try again.";
         toast.error(errMsg);
       } finally {
         console.log("Form submission attempt completed.");
@@ -195,6 +201,15 @@ const RegisterForm = () => {
           >
             Create Account
           </Button>
+          <Typography sx={{ textAlign: "center", mt: 2, fontSize: 15 }}>
+            have an account?{" "}
+            <span
+              onClick={() => navigate("/login")}
+              style={{ cursor: "pointer", fontWeight: 700 }}
+            >
+              Login
+            </span>
+          </Typography>
         </form>
       </Paper>
     </Box>
