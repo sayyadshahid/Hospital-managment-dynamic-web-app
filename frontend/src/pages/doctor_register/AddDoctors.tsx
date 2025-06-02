@@ -14,7 +14,7 @@ const DoctorRegister = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const hospitalId = location.state?.hospital_id;
-  console.log(hospitalId, '==========================')
+  console.log(hospitalId, "==========================");
 
   const formik = useFormik({
     initialValues: {
@@ -57,7 +57,10 @@ const DoctorRegister = () => {
           }
         );
         toast.success(res.data?.msg || "Registered Successfully!");
-        navigate(`/doctors`);
+        formik.resetForm();
+        setSelectedImage(null);
+        setFile(null);
+        // navigate(`/doctors`);
       } catch (error: any) {
         const errMsg =
           error?.response?.data?.detail ||
