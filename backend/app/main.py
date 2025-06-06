@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from app.routes.review_route import review_router
 from app.middleware.auth_middleware import JWTAuthenticationMiddleware  
 from app.routes.doctorRegister_route import doctorregister_router
+from app.routes.schedule_route import schedule_router
 
 
 
@@ -18,6 +19,7 @@ app.include_router(auth_router,prefix='/api')
 app.include_router(hospitalregister_router, prefix='/api')
 app.include_router(review_router, prefix='/api')
 app.include_router(doctorregister_router, prefix='/api')
+app.include_router(schedule_router, prefix='/api')
 
 
 
