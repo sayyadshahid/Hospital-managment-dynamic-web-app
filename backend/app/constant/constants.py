@@ -5,3 +5,4 @@ class DbCollections:
     DOCTOR_COLLECTION='doctor'
     DOCTOR_REGISTER_COLLECTION= 'doctor_register'
     SCHEDULE_COLLECTION= 'schedules'
+    APPOINTMENT_COLLECTION= 'appointments'

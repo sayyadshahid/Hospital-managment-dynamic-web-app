@@ -15,25 +15,9 @@ import "@fontsource/montserrat";
 const LandingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = location.state || {};
-  const [name, setName] = useState<string>("");
-
   const theme = useTheme();
   const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
   const isMdDown = useMediaQuery(theme.breakpoints.down("md"));
-
-  useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const res = await axios.get(`http://localhost:8000/api/users/${id}`);
-        setName(res.data.user["fullname"]);
-      } catch (error) {
-        console.error("Error fetching name:", error);
-      }
-    };
-
-    if (id) fetchName();
-  }, [id]);
 
   return (
     <Box>
@@ -80,14 +64,6 @@ const LandingPage = () => {
 
               <Typography variant="body1" sx={{ mb: 2 }}>
                 Book your good hospital with better treatment.
-                <br />
-                <Typography
-                  component="span"
-                  fontWeight={600}
-                  sx={{ lineHeight: 2 }}
-                >
-                  {name}
-                </Typography>
               </Typography>
 
               <Button

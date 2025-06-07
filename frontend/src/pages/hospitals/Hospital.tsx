@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { PatientReviews } from "../reviews/Review";
 import Footer from "../../components/footer";
 import { useNavigate } from "react-router-dom";
+import API from "../../components/configs/API";
 
 interface Hospital {
   id: string;
@@ -34,20 +35,7 @@ const Hospital = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          alert("You need to log in first!");
-          return;
-        }
-
-        const res = await axios.get(
-          `http://localhost:8000/api/hospital_id/${id}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
+        const res = await API.get(`hospital_id/${id}`);
         setHospitals([res.data.hospital]);
       } catch (error) {
         console.error("Error fetching hospitals:", error);
@@ -151,23 +139,27 @@ const Hospital = () => {
                 variant="contained"
                 sx={{ bgcolor: "red", fontWeight: 700 }}
                 size="large"
-                onClick={() => navigate("/doctors", { state: { hospital_id: hospital.id } })}
+                onClick={() =>
+                  navigate("/doctors", { state: { hospital_id: hospital.id } })
+                }
               >
                 Book an Appointment
               </Button>
 
-              {isDoctor &&
-              <Button
-              variant="contained"
-                sx={{ bgcolor: "red", fontWeight: 700 }}
-                size="large"
-                onClick={() =>
-                  navigate("/doctor-register", { state: { hospital_id: hospital.id } })
-                }
+              {isDoctor && (
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: "red", fontWeight: 700 }}
+                  size="large"
+                  onClick={() =>
+                    navigate("/doctor-register", {
+                      state: { hospital_id: hospital.id },
+                    })
+                  }
                 >
-                Add Doctor
-              </Button>
-              }
+                  Add Doctor
+                </Button>
+              )}
             </Box>
 
             {/* Reviews */}

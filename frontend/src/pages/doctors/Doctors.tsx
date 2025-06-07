@@ -5,13 +5,16 @@ import {
   Paper,
   Typography,
   CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavBar from "../../components/header";
 import Footer from "../../components/footer";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import API from "../../components/configs/API";
 
 interface Doctor {
   id: string;
@@ -36,31 +39,21 @@ const Doctors = () => {
   const [scheduleLoading, setScheduleLoading] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [schedule, setSchedule] = useState<Schedule[]>([]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuDoctorId, setMenuDoctorId] = useState<string | null>(null);
+
   const location = useLocation();
-  const hospitalId = location.state?.hospital_id;
   const navigate = useNavigate();
+  const hospitalId = location.state?.hospital_id;
 
   useEffect(() => {
     const fetchAllDoctors = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          alert("You need to log in first!");
-          return;
-        }
-
-        const res = await axios.get(
-          `http://localhost:8000/api/get-all-doctors-by/${hospitalId}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
+        const res = await API.get(`get-all-doctors-by/${hospitalId}`);
         setDoctors(res.data.Doctors);
       } catch (error) {
         console.error(error);
-        alert("Failed to fetch doctors.");
+         console.log(error)
       } finally {
         setLoading(false);
       }
@@ -71,7 +64,7 @@ const Doctors = () => {
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-    setSelectedDate(null); // reset selected date when expanding another doctor
+    setSelectedDate(null);
   };
 
   const handleBooking = async (doctorId: string) => {
@@ -80,20 +73,7 @@ const Doctors = () => {
     setScheduleLoading(true);
 
     try {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        alert("You need to log in first!");
-        return;
-      }
-
-      const res = await axios.get(
-        `http://localhost:8000/api/get_all_schedules/${doctorId}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      const res = await API.get(`get_all_schedules/${doctorId}`);
       setSchedule(res.data.schedules);
     } catch (error) {
       console.error("Error fetching schedule:", error);
@@ -111,13 +91,42 @@ const Doctors = () => {
   };
 
   const handleTimeClick = (doctorId: string, date: string, time: string) => {
-    navigate("/confirm-booking", {
+    navigate("/confirm-appointment", {
       state: {
         doctorId,
         schedule_date: date,
         schedule_time: time,
       },
     });
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    doctorId: string
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuDoctorId(doctorId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuDoctorId(null);
+  };
+
+  const handleAddSchedule = () => {
+    if (menuDoctorId) {
+      navigate("/schedule-form", { state: { doctorId: menuDoctorId } });
+    }
+    handleMenuClose();
   };
 
   return (
@@ -150,27 +159,37 @@ const Doctors = () => {
                       bgcolor: "#f1eeee",
                       p: 2,
                       borderRadius: 2,
+                      position: "relative",
                     }}
                   >
+                    <IconButton
+                      aria-label="more"
+                      onClick={(event) => handleMenuOpen(event, doc.id)}
+                      sx={{ position: "absolute", top: 8, right: 8 }}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+
                     <Box
                       sx={{
                         display: "flex",
                         flexDirection: { xs: "column", sm: "row" },
                         alignItems: { xs: "flex-start", sm: "center" },
-                        gap: 3,
+                        gap: { xs: 2, sm: 3 },
                         mb: 2,
                       }}
                     >
                       <Box
                         sx={{
-                          width: 150,
-                          height: 150,
+                          width: { xs: "100%", sm: 150 },
+                          height: { xs: 200, sm: 150 },
                           overflow: "hidden",
                           borderRadius: 2,
                           flexShrink: 0,
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
+                          mx: "auto",
                         }}
                       >
                         <img
@@ -185,8 +204,10 @@ const Doctors = () => {
                         />
                       </Box>
 
-                      <Box>
-                        <Typography sx={{ fontWeight: 600, fontSize: 20 }}>
+                      <Box sx={{ width: "100%" }}>
+                        <Typography
+                          sx={{ fontWeight: 600, fontSize: { xs: 18, sm: 20 } }}
+                        >
                           {doc.name}
                         </Typography>
                         <Typography variant="subtitle1" fontWeight={500}>
@@ -203,6 +224,7 @@ const Doctors = () => {
                             WebkitBoxOrient: "vertical",
                             WebkitLineClamp: isExpanded ? "none" : 3,
                             overflow: "hidden",
+                            mt: 1,
                           }}
                         >
                           {doc.about}
@@ -221,10 +243,13 @@ const Doctors = () => {
 
                     <Button
                       onClick={() => handleBooking(doc.id)}
+                      fullWidth={true}
                       sx={{
+                        mt: 1,
                         backgroundColor: "#bebaba",
                         color: "white",
                         fontWeight: 700,
+                        fontSize: { xs: 14, sm: 16 },
                         "&:hover": {
                           backgroundColor: "#ff0000",
                         },
@@ -253,6 +278,10 @@ const Doctors = () => {
                                 flexWrap: "wrap",
                                 gap: 2,
                                 mt: 2,
+                                justifyContent: {
+                                  xs: "center",
+                                  sm: "flex-start",
+                                },
                               }}
                             >
                               {availableDates.map((date) => (
@@ -278,7 +307,7 @@ const Doctors = () => {
                                   }}
                                 >
                                   <Typography variant="body2">
-                                    {date}
+                                    {formatDate(date)}
                                   </Typography>
                                 </Box>
                               ))}
@@ -294,7 +323,11 @@ const Doctors = () => {
                                     <Button
                                       key={s.id}
                                       size="small"
-                                      sx={{ m: 0.5 }}
+                                      sx={{
+                                        m: 0.5,
+                                        fontSize: { xs: 12, sm: 14 },
+                                        minWidth: "80px",
+                                      }}
                                       variant="outlined"
                                       onClick={() =>
                                         handleTimeClick(
@@ -319,6 +352,15 @@ const Doctors = () => {
             )}
           </Paper>
         )}
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={handleAddSchedule}>Add Schedule</MenuItem>
+        </Menu>
+
         <Footer />
       </Container>
     </Box>

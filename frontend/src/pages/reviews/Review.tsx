@@ -19,6 +19,7 @@ import axios from "axios";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useLocation } from "react-router-dom";
+import API from "../../components/configs/API";
 
 interface User {
   fullname: string;
@@ -41,23 +42,15 @@ export const PatientReviews = () => {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token || !hospitalId) return;
-
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/get-all-reviews-by/${hospitalId}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          }
-        );
+        const response = await API.get(`get-all-reviews-by/${hospitalId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         setReviews(response.data.reviews);
       } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.msg || "Failed to fetch reviews.";
+        const errMsg = error?.response?.data?.msg || "Failed to fetch reviews.";
         console.error(errMsg);
       }
     };
@@ -72,44 +65,24 @@ export const PatientReviews = () => {
     },
     validationSchema: Yup.object({
       review: Yup.string().required("Review is required"),
-      rating: Yup.number()
-        .required("Rating is required")
-        .min(1)
-        .max(5),
+      rating: Yup.number().required("Rating is required").min(1).max(5),
     }),
     onSubmit: async (values, { resetForm }) => {
-      const token = localStorage.getItem("access_token");
-      if (!token || !hospitalId) {
-        toast.error("Please log in first.");
-        return;
-      }
-
       try {
-        const response = await axios.post(
-          `http://localhost:8000/api/review/${hospitalId}`,
-          values,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          }
-        );
+        const response = await API.post(`review/${hospitalId}`, values, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         toast.success(response.data.msg || "Review submitted successfully!");
         resetForm();
 
         // Fetch updated reviews
-        const updated = await axios.get(
-          `http://localhost:8000/api/get-all-reviews-by/${hospitalId}`,
-          {
-            headers: { Authorization: token },
-          }
-        );
+        const updated = await API.get(`get-all-reviews-by/${hospitalId}`);
         setReviews(updated.data.reviews);
       } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.msg || "Failed to submit review.";
+        const errMsg = error?.response?.data?.msg || "Failed to submit review.";
         toast.error(errMsg);
       }
     },

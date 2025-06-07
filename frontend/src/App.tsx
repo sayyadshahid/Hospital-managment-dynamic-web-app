@@ -11,6 +11,9 @@ import AboutUs from "./pages/about/AbouUs";
 import Hospital from "./pages/hospitals/Hospital";
 import Doctors from "./pages/doctors/Doctors";
 import DoctorRegister from "./pages/doctor_register/AddDoctors";
+import ConfirmAppointment from "./pages/confirm_appointment/ConfirmAppointment";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import ScheduleForm from "./pages/schedule/Schedule";
 function App() {
   return (
     <Router>
@@ -19,13 +22,64 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/hospitalList" element={<HospitalList />} />
-        <Route path="/hospitalregister" element={<HospitalRegister />} />
-        <Route path="/chat" element={<ChatUI />} />
+        <Route
+          path="/hospitalregister"
+          element={
+            <ProtectedRoute>
+              <HospitalRegister />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <ChatUI />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/aboutUs" element={<AboutUs />} />
-        <Route path="/hospital/:id" element={<Hospital />} />
-        <Route path="/doctors" element={<Doctors />} />
-        <Route path="/doctor-register" element={<DoctorRegister />} />
+        <Route
+          path="/hospital/:id"
+          element={
+            <ProtectedRoute>
+              <Hospital />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctors"
+          element={
+            <ProtectedRoute>
+              <Doctors />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor-register"
+          element={
+            <ProtectedRoute>
+              <DoctorRegister />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/confirm-appointment"
+          element={
+            <ProtectedRoute>
+              <ConfirmAppointment />
+            </ProtectedRoute>
+          }
+        />
 
+         <Route
+          path="/schedule-form"
+          element={
+            <ProtectedRoute>
+              <ScheduleForm />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       {/* Toaster for Notifications */}
@@ -33,6 +87,9 @@ function App() {
         position="bottom-center"
         toastOptions={{
           duration: 3000,
+          style: {
+            fontFamily: "Poppins, sans-serif",
+          },
         }}
       />
     </Router>

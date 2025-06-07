@@ -9,7 +9,7 @@ from app.routes.review_route import review_router
 from app.middleware.auth_middleware import JWTAuthenticationMiddleware  
 from app.routes.doctorRegister_route import doctorregister_router
 from app.routes.schedule_route import schedule_router
-
+from app.routes.appointment_route import appointment_router
 
 
 app = FastAPI()
@@ -20,6 +20,7 @@ app.include_router(hospitalregister_router, prefix='/api')
 app.include_router(review_router, prefix='/api')
 app.include_router(doctorregister_router, prefix='/api')
 app.include_router(schedule_router, prefix='/api')
+app.include_router(appointment_router, prefix='/api')
 
 
 

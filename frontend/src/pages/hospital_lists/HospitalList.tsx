@@ -17,6 +17,7 @@ import NavBar from "../../components/header";
 import axios from "axios";
 import { keyframes } from "@emotion/react";
 import Footer from "../../components/footer";
+import API from "../../components/configs/API";
 
 interface Hospital {
   id: string;
@@ -47,14 +48,11 @@ const HospitalList = () => {
   }>({});
   const role = localStorage.getItem("user_role");
   const isDoctor = role === "doctor";
-  // const storedData = localStorage.getItem("user_role");
-  // const userData = storedData ? JSON.parse(storedData) : null;
-  // console.log('==========================doctor====================', userData)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/hospitals");
+        const res = await API.get("hospitals");
         if (Array.isArray(res.data.Hospitals)) {
           setHospitals(res.data.Hospitals);
         } else {
@@ -76,17 +74,7 @@ const HospitalList = () => {
 
   const handleDeleteHospital = async (id: string) => {
     try {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        alert("You need to log in first!");
-        return;
-      }
-
-      await axios.delete(`http://localhost:8000/api/delete_hospital/${id}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      await API.delete(`http://localhost:8000/api/delete_hospital/${id}`);
       setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
     } catch (error) {
       console.error("Error deleting hospital:", error);
