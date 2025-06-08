@@ -16,6 +16,7 @@ const ConfirmAppointment = () => {
 
   const formik = useFormik({
     initialValues: {
+      id: "",
       name: "",
       phone: "",
       email: "",
@@ -44,17 +45,17 @@ const ConfirmAppointment = () => {
       formData.append("gender", values.gender);
       formData.append("address", values.address);
       formData.append("reasonForConsultation", values.reasonForConsultation);
-      // Note: Use docId from your backend route, not "doctorId" in body if your backend expects it in URL param
       formData.append("schedule_date", schedule_date);
       formData.append("schedule_time", schedule_time);
 
       try {
         const res = await API.post(`create_appointment/${doctorId}`, formData);
+        const appointmentId = res.data.appointment_id || null;
+        // console.log(appointmentId, '===========================')
         toast.success(res.data?.msg || "Appointment Confirmed!");
         formik.resetForm();
-        navigate("/some-success-page"); // optional redirect after success
+          navigate("/appointment-successs", { state: { appointmentId } });
       } catch (error: any) {
-        // Helper function to extract error message nicely
         const getErrorMessage = (error: any) => {
           const detail = error?.response?.data?.detail;
           if (!detail) return "Appointment booking failed. Please try again.";

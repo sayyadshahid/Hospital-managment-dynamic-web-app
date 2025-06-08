@@ -14,6 +14,9 @@ import DoctorRegister from "./pages/doctor_register/AddDoctors";
 import ConfirmAppointment from "./pages/confirm_appointment/ConfirmAppointment";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ScheduleForm from "./pages/schedule/Schedule";
+import AppointmentSuccess from "./pages/appointment_success/appointment_success";
+import ReportDetails from "./pages/report_details/ReportDetail";
+
 function App() {
   return (
     <Router>
@@ -72,11 +75,29 @@ function App() {
           }
         />
 
-         <Route
+        <Route
           path="/schedule-form"
           element={
             <ProtectedRoute>
               <ScheduleForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/appointment-successs"
+          element={
+            <ProtectedRoute>
+              <AppointmentSuccess />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/report-details"
+          element={
+            <ProtectedRoute>
+              <ReportDetails />
             </ProtectedRoute>
           }
         />

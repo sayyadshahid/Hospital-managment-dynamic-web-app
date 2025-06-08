@@ -13,10 +13,10 @@ API.interceptors.request.use(
   function (config) {
     const storedUserData = localStorage.getItem('access_token');
     if (storedUserData){
-      console.log('insideeeeeeeeee API CONFIG')
-      console.log('storedUserDatastoredUserData', storedUserData)
+      // console.log('insideeeeeeeeee API CONFIG')
+      // console.log('storedUserDatastoredUserData', storedUserData)
       const token = (storedUserData);
-      console.log('tokennnnnnnnn',token);
+      // console.log('tokennnnnnnnn',token);
       if (token) {
         if (config.headers) {
           config.headers["Authorization"] = `${storedUserData}`;

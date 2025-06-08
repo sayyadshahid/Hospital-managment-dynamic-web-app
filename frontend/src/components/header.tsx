@@ -22,14 +22,22 @@ const NavBar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const token = localStorage.getItem("access_token");
 
   const navItems: { label: string; path: string }[] = [
     { label: "Home", path: "/" },
     { label: "About", path: "/aboutUs" },
     { label: "Login", path: "/login" },
-    { label: "Signin", path: "/register" },
   ];
 
+
+if (!token) {
+  navItems.push({ label: "Signin", path: "/register" });
+} else {
+  navItems.push({ label: "Forms", path: "/report-details" }); // optional based on auth
+}
+
+  // console.log(token, '==================token=================')
   const handleNavigation = (path: string) => {
     navigate(path);
     setDrawerOpen(false); // Close drawer on selection
@@ -53,15 +61,25 @@ const NavBar = () => {
 
         {isMobile ? (
           <>
-            <IconButton edge="end" color="inherit" onClick={() => setDrawerOpen(true)}>
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={() => setDrawerOpen(true)}
+            >
               <MenuIcon />
             </IconButton>
-            <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+            <Drawer
+              anchor="right"
+              open={drawerOpen}
+              onClose={() => setDrawerOpen(false)}
+            >
               <Box sx={{ width: 250 }} role="presentation">
                 <List>
                   {navItems.map((item) => (
                     <ListItem key={item.label} disablePadding>
-                      <ListItemButton onClick={() => handleNavigation(item.path)}>
+                      <ListItemButton
+                        onClick={() => handleNavigation(item.path)}
+                      >
                         <ListItemText primary={item.label} />
                       </ListItemButton>
                     </ListItem>
@@ -76,7 +94,7 @@ const NavBar = () => {
                         textTransform: "none",
                         width: "100%",
                       }}
-                       onClick={() => navigate("/chat")}
+                      onClick={() => navigate("/chat")}
                     >
                       AI
                     </Button>
@@ -88,7 +106,11 @@ const NavBar = () => {
         ) : (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {navItems.map((item) => (
-              <Button key={item.label} color="inherit" onClick={() => navigate(item.path)}>
+              <Button
+                key={item.label}
+                color="inherit"
+                onClick={() => navigate(item.path)}
+              >
                 {item.label}
               </Button>
             ))}
@@ -100,7 +122,7 @@ const NavBar = () => {
                 fontWeight: "bold",
                 textTransform: "none",
               }}
-               onClick={() => navigate("/chat")}
+              onClick={() => navigate("/chat")}
             >
               AI
             </Button>
