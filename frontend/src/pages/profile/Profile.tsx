@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,16 +12,42 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import NavBar from "../../components/header";
 import { useAvatar } from "../../hooks/AvtarContex";
+import API from "../../components/configs/API";
+import { useNavigate } from "react-router-dom";
 
+interface UserDetails {
+  fullname: string;
+  email: string;
+  phone_no: string;
+  role: string;
+}
 export default function ProfileDetail() {
   const { avatar, setAvatar } = useAvatar(); // use context
   const [user, setUser] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 123 456 7890",
-    avatar: "",  
+    avatar: "",
   });
+ const [userDetail, setuserDetail] = useState<UserDetails>({
+  fullname: "",
+  email: "",
+  phone_no: "",
+  role: "",
+});
+ const navigate = useNavigate();
 
+  const userId = localStorage.getItem("user_id");
+  useEffect(() => {
+    const fetchUserdata = async () => {
+      try {
+        const res = await API.get(`/users/${userId}`);
+        console.log(res, "====================");
+        setuserDetail(res.data.user);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchUserdata();
+  }, []);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -38,10 +64,10 @@ export default function ProfileDetail() {
     }
   };
 
-
   const handleLogout = () => {
-    console.log("User logged out");
-    
+    localStorage.removeItem('access_token')
+     navigate("/");
+    window.location.reload(); 
   };
 
   return (
@@ -62,7 +88,7 @@ export default function ProfileDetail() {
       >
         <Stack direction="column" spacing={2} alignItems="center">
           <Avatar
-            src={user.avatar || "/default-avatar.png"}  
+            src={user.avatar || "/default-avatar.png"}
             sx={{ width: 100, height: 100 }}
           />
 
@@ -79,12 +105,12 @@ export default function ProfileDetail() {
             </IconButton>
           </label>
 
-          <Typography variant="h6">{user.name}</Typography>
+          <Typography variant="h6">{userDetail.fullname}</Typography>
           <Typography variant="body1" color="text.secondary">
-            {user.email}
+            {userDetail.email}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            {user.phone}
+            {userDetail.phone_no}
           </Typography>
 
           <Button

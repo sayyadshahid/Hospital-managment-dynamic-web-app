@@ -30,6 +30,7 @@ const UserNavBar = () => {
   const { avatar } = useAvatar();
 
   const navItems = [
+      { label: "About", path: "/aboutUs" },
     { label: "Dashboard", path: "/" },
     { label: "Appointments", path: "/report-details" },
     // { label: "Reports", path: "/report-details" },
@@ -50,11 +51,16 @@ const UserNavBar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ bgcolor: "#ffffff", color: "black" }}>
+    <Box position="static" sx={{ bgcolor: "#ffffff", color: "black" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: "bold", cursor: "pointer" }}
+          component="div"
+          sx={{
+            fontWeight: "bold",
+            fontSize: "30px",
+            cursor: "pointer",
+          }}
           onClick={() => navigate("/")}
         >
           Jacsto
@@ -147,7 +153,7 @@ const UserNavBar = () => {
           </Box>
         )}
       </Toolbar>
-    </AppBar>
+    </Box>
   );
 };
 
