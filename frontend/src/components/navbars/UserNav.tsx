@@ -1,0 +1,154 @@
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  Menu,
+  MenuItem,
+  Avatar,
+  useMediaQuery,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useNavigate } from "react-router-dom";
+import { useAvatar } from "../../hooks/AvtarContex";
+
+const UserNavBar = () => {
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { avatar } = useAvatar();
+
+  const navItems = [
+    { label: "Dashboard", path: "/" },
+    { label: "Appointments", path: "/report-details" },
+    // { label: "Reports", path: "/report-details" },
+  ];
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/");
+    window.location.reload(); // reflect logout
+  };
+
+  return (
+    <AppBar position="static" sx={{ bgcolor: "#ffffff", color: "black" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", cursor: "pointer" }}
+          onClick={() => navigate("/")}
+        >
+          Jacsto
+        </Typography>
+
+        {isMobile ? (
+          <>
+            <IconButton color="inherit" onClick={() => setDrawerOpen(true)}>
+              <MenuIcon />
+            </IconButton>
+            <Drawer
+              anchor="right"
+              open={drawerOpen}
+              onClose={() => setDrawerOpen(false)}
+            >
+              <Box sx={{ width: 250 }} role="presentation">
+                <List>
+                  {navItems.map((item) => (
+                    <ListItem key={item.label} disablePadding>
+                      <ListItemButton onClick={() => navigate(item.path)}>
+                        <ListItemText primary={item.label} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                  <ListItem>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        bgcolor: "red",
+                        borderRadius: "20px",
+                        fontWeight: "bold",
+                        textTransform: "none",
+                        width: "100%",
+                      }}
+                      onClick={() => navigate("/chat")}
+                    >
+                      AI
+                    </Button>
+                  </ListItem>
+                  <ListItem>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      fullWidth
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </ListItem>
+                </List>
+              </Box>
+            </Drawer>
+          </>
+        ) : (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            {navItems.map((item) => (
+              <Button
+                key={item.label}
+                color="inherit"
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </Button>
+            ))}
+
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: "red",
+                borderRadius: "20px",
+                fontWeight: "bold",
+                textTransform: "none",
+              }}
+              onClick={() => navigate("/chat")}
+            >
+              AI
+            </Button>
+
+            <IconButton onClick={handleMenuClick}>
+              <Avatar src={avatar} />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default UserNavBar;

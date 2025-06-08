@@ -16,9 +16,14 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import ScheduleForm from "./pages/schedule/Schedule";
 import AppointmentSuccess from "./pages/appointment_success/appointment_success";
 import ReportDetails from "./pages/report_details/ReportDetail";
+import ProfileDetail from "./pages/profile/Profile";
+import { AvatarProvider } from "./hooks/AvtarContex";
 
 function App() {
   return (
+
+    <AvatarProvider>
+
     <Router>
       <Routes>
         <Route path="/register" element={<RegisterForm />} />
@@ -82,7 +87,7 @@ function App() {
               <ScheduleForm />
             </ProtectedRoute>
           }
-        />
+          />
 
         <Route
           path="/appointment-successs"
@@ -91,13 +96,22 @@ function App() {
               <AppointmentSuccess />
             </ProtectedRoute>
           }
-        />
+          />
 
         <Route
           path="/report-details"
           element={
             <ProtectedRoute>
               <ReportDetails />
+            </ProtectedRoute>
+          }
+          />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfileDetail />
             </ProtectedRoute>
           }
         />
@@ -114,6 +128,7 @@ function App() {
         }}
       />
     </Router>
+              </AvatarProvider>
   );
 }
 
