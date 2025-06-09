@@ -18,117 +18,125 @@ import AppointmentSuccess from "./pages/appointment_success/appointment_success"
 import ReportDetails from "./pages/report_details/ReportDetail";
 import ProfileDetail from "./pages/profile/Profile";
 import { AvatarProvider } from "./hooks/AvtarContex";
+import AdminPanelLayout from "./pages/Admin/AdminLayout";
 
 function App() {
   return (
-
     <AvatarProvider>
-
-    <Router>
-      <Routes>
-        <Route path="/register" element={<RegisterForm />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/hospitalList" element={<HospitalList />} />
-        <Route
-          path="/hospitalregister"
-          element={
-            <ProtectedRoute>
-              <HospitalRegister />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/chat"
-          element={
-            <ProtectedRoute>
-              <ChatUI />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/aboutUs" element={<AboutUs />} />
-        <Route
-          path="/hospital/:id"
-          element={
-            <ProtectedRoute>
-              <Hospital />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/doctors"
-          element={
-            <ProtectedRoute>
-              <Doctors />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/doctor-register"
-          element={
-            <ProtectedRoute>
-              <DoctorRegister />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/confirm-appointment"
-          element={
-            <ProtectedRoute>
-              <ConfirmAppointment />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/schedule-form"
-          element={
-            <ProtectedRoute>
-              <ScheduleForm />
-            </ProtectedRoute>
-          }
+      <Router>
+        <Routes>
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/hospitalList" element={<HospitalList />} />
+          <Route
+            path="/hospitalregister"
+            element={
+              <ProtectedRoute>
+                <HospitalRegister />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <ChatUI />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/aboutUs" element={<AboutUs />} />
+          <Route
+            path="/hospital/:id"
+            element={
+              <ProtectedRoute>
+                <Hospital />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/doctors"
+            element={
+              <ProtectedRoute>
+                <Doctors />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/doctor-register"
+            element={
+              <ProtectedRoute>
+                <DoctorRegister />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/confirm-appointment"
+            element={
+              <ProtectedRoute>
+                <ConfirmAppointment />
+              </ProtectedRoute>
+            }
           />
 
-        <Route
-          path="/appointment-successs"
-          element={
-            <ProtectedRoute>
-              <AppointmentSuccess />
-            </ProtectedRoute>
-          }
+          <Route
+            path="/schedule-form"
+            element={
+              <ProtectedRoute>
+                <ScheduleForm />
+              </ProtectedRoute>
+            }
           />
 
-        <Route
-          path="/report-details"
-          element={
-            <ProtectedRoute>
-              <ReportDetails />
-            </ProtectedRoute>
-          }
+          <Route
+            path="/appointment-successs"
+            element={
+              <ProtectedRoute>
+                <AppointmentSuccess />
+              </ProtectedRoute>
+            }
           />
 
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfileDetail />
-            </ProtectedRoute>
-          }
+          <Route
+            path="/report-details"
+            element={
+              <ProtectedRoute>
+                <ReportDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfileDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPanelLayout />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+
+        {/* Toaster for Notifications */}
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              fontFamily: "Poppins, sans-serif",
+            },
+          }}
         />
-      </Routes>
-
-      {/* Toaster for Notifications */}
-      <Toaster
-        position="bottom-center"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            fontFamily: "Poppins, sans-serif",
-          },
-        }}
-      />
-    </Router>
-              </AvatarProvider>
+      </Router>
+    </AvatarProvider>
   );
 }
 
