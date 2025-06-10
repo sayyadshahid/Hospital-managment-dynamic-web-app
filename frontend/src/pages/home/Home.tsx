@@ -160,7 +160,7 @@ const LandingPage = () => {
       </Box>
 
       {/* Why Choose Us Section */}
-      <Box data-aos="zoom-in">
+      <Box data-aos="fade-up">
         <WhyChooseUs />
       </Box>
 

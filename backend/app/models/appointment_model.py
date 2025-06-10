@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime, date, time 
  
@@ -16,3 +16,18 @@ class AppointmentModel(BaseModel):
     is_success: bool = Field(default=False)
     schedule_date: date = Field(..., description='Schedule date')
     schedule_time: str = Field(..., description='Schedule time')
+ 
+ 
+class UpdateAppointmentModel(BaseModel):
+    name: Optional[str] = Field(None, description='Name')
+    phone: Optional[str] = Field(None, min_length=10, max_length=15)
+    email: Optional[EmailStr] = Field(None)
+    dob: Optional[date] = Field(None)
+    gender: Optional[Literal["Male", "Female"]] = Field(None)
+    address: Optional[str] = Field(None, min_length=5)
+    reasonForConsultation: Optional[str] = Field(None, min_length=5)
+    is_active: Optional[bool] = Field(None)
+    is_success: Optional[bool] = Field(None)
+    schedule_date: Optional[date] = Field(None)
+    schedule_time: Optional[str] = Field(None)
+    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)

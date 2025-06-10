@@ -1,9 +1,10 @@
+from datetime import datetime
 import re
 from bson import ObjectId
 from fastapi import HTTPException, Request
 from app.database import get_database
 from app.constant.constants import DbCollections
-from app.models.appointment_model import  AppointmentModel
+from app.models.appointment_model import  AppointmentModel, UpdateAppointmentModel
 
 class Appointment():
 
@@ -80,7 +81,7 @@ class Appointment():
             db = get_database()
             appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
             
-            print(f"Looking for user_id: {userId}")
+           
             appointments = await appointment_collection.find({'user_id': userId}).to_list(length=None)
             
             if not appointments:
@@ -94,6 +95,64 @@ class Appointment():
                 'count': len(appointments),
                 'appointments': appointments
             }
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+    
+    async def getAllAppointments():
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+            appointments =   appointment_collection.find()
+            appointment_list = []
+            
+            async for appointment in appointments:
+                appointment_id = str(appointment.pop('_id'))
+                appointment['appointment_id'] = appointment_id
+                appointment_list.append(appointment)
+                
+            return {
+                'count': len(appointment_list),
+                'appointments': appointment_list
+            }
+            
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+        
+    async def UpdateAppointment(appointment_id: str, data: UpdateAppointmentModel):
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+
+            existing = await appointment_collection.find_one({"_id": ObjectId(appointment_id)})
+
+            if not existing:
+                raise HTTPException(status_code=404, detail="Appointment not found")
+
+            
+            update_data = existing.copy()
+            for k, v in data.dict().items():
+                if v is not None:
+                    update_data[k] = v
+
+            update_data["updated_at"] = datetime.utcnow()
+
+            
+            update_data["_id"] = ObjectId(appointment_id)
+
+            
+            result = await appointment_collection.replace_one(
+                {"_id": ObjectId(appointment_id)},
+                update_data
+            )
+
+            return {"message": "Appointment fully overwritten"}
 
         except HTTPException as exc:
             raise exc

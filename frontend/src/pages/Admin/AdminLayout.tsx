@@ -5,6 +5,7 @@ import UserTable from "./user";
 import DoctorTable from "./doctor";
 import HospitalTable from "./hospitals";
 import ReviewTable from "./reviews";
+import AppointmentTable from "./appointment";
 
 const AdminPanelLayout = () => {
   const [selectedSection, setSelectedSection] = useState("users");
@@ -16,7 +17,7 @@ const AdminPanelLayout = () => {
         {/* Sidebar */}
         <Box width="20%" bgcolor="#f0f0f0" p={2}>
           <Stack spacing={2}>
-            {["users", "doctors", "hospitals", 'reviews'].map((section) => (
+            {["users", "doctors", "hospitals", 'reviews', 'appointments'].map((section) => (
               <Typography
                 key={section}
                 onClick={() => setSelectedSection(section)}
@@ -45,6 +46,7 @@ const AdminPanelLayout = () => {
           {selectedSection === "users" && <UserTable />}
           {selectedSection === "doctors" && <DoctorTable />}
           {selectedSection === "reviews" && <ReviewTable />}
+          {selectedSection === "appointments" && <AppointmentTable />}
 
         </Box>
       </Box>

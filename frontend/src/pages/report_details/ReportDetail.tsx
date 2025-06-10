@@ -71,7 +71,7 @@ export default function ReportDetails() {
     <Box
       sx={{
         width: { xs: "80vw", sm: "100%" },
-        backgroundColor: "#e4e4e4",
+        backgroundColor: "transparent",
         p: 2,
         height: "100%",
       }}

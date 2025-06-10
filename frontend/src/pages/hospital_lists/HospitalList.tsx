@@ -72,16 +72,6 @@ const HospitalList = () => {
     fetchData();
   }, []);
 
-  const handleDeleteHospital = async (id: string) => {
-    try {
-      await API.delete(`http://localhost:8000/api/delete_hospital/${id}`);
-      setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
-    } catch (error) {
-      console.error("Error deleting hospital:", error);
-      alert("Failed to delete the hospital.");
-    }
-  };
-
   return (
     <Box>
       <NavBar />
@@ -189,47 +179,6 @@ const HospitalList = () => {
                   cursor: "pointer",
                 }}
               >
-                {/* Three Dots Menu */}
-                <Box sx={{ position: "absolute", top: 8, right: 8, zIndex: 1 }}>
-                  <IconButton
-                    aria-label="more"
-                    aria-controls={`menu-${hospital.id}`}
-                    aria-haspopup="true"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setAnchorEl((prev) => ({
-                        ...prev,
-                        [hospital.id]: event.currentTarget,
-                      }));
-                    }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                  <Menu
-                    id={`menu-${hospital.id}`}
-                    anchorEl={anchorEl[hospital.id]}
-                    open={Boolean(anchorEl[hospital.id])}
-                    onClose={() =>
-                      setAnchorEl((prev) => ({
-                        ...prev,
-                        [hospital.id]: null,
-                      }))
-                    }
-                  >
-                    <MenuItem
-                      onClick={async () => {
-                        await handleDeleteHospital(hospital.id);
-                        setAnchorEl((prev) => ({
-                          ...prev,
-                          [hospital.id]: null,
-                        }));
-                      }}
-                    >
-                      Delete
-                    </MenuItem>
-                  </Menu>
-                </Box>
-
                 <CardMedia
                   component="img"
                   height="180"
