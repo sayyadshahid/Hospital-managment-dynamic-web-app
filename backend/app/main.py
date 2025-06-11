@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
 from fastapi import FastAPI, HTTPException,Request
 from fastapi.responses import JSONResponse
 from app.database import connect_to_mongo,close_mongo_connection
@@ -10,7 +13,12 @@ from app.middleware.auth_middleware import JWTAuthenticationMiddleware
 from app.routes.doctorRegister_route import doctorregister_router
 from app.routes.schedule_route import schedule_router
 from app.routes.appointment_route import appointment_router
+from app.routes.gemini_route import router as gemini_router
 
+# Load .env
+
+# Test if the key loads
+print("Gemini API Key:", os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI()
 
@@ -24,7 +32,7 @@ app.include_router(appointment_router, prefix='/api')
 
 
 
-
+app.include_router(gemini_router, prefix="/api", tags=["Gemini API"])
 
 
 
