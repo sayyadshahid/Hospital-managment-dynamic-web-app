@@ -75,6 +75,7 @@ const RegisterForm = () => {
         alignItems: "center",
         justifyContent: "center",
         background: "linear-gradient(135deg, #ffffff 0%, #c9c5c5 )",
+        borderRadius: 5,
         padding: 2,
       }}
     >
