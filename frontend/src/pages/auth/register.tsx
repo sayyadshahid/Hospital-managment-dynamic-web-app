@@ -230,7 +230,7 @@ const RegisterForm = () => {
             <Box
               component="span"
               onClick={() => navigate("/login")}
-              sx={{ cursor: "pointer", fontWeight: 600, color: "#fa6039" }}
+              sx={{ cursor: "pointer", fontWeight: 600, color: "#000000" }}
             >
               Login
             </Box>
