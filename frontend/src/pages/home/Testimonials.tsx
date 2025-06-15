@@ -5,17 +5,17 @@ const testimonials = [
   {
     name: "Emily Johnson",
     feedback: "This platform made booking my hospital appointment so simple and hassle-free!",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    image: "./avtar2.jpg",
   },
   {
     name: "Michael Smith",
     feedback: "Excellent service and great support from the team. Highly recommend to everyone.",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    image: "./avtar1.jpg",
   },
   {
     name: "Jessica Williams",
     feedback: "I found the best hospital nearby with just a few clicks. Very user-friendly website.",
-    image: "https://randomuser.me/api/portraits/women/65.jpg",
+    image: "./avtar3.jpg",
   },
 ];
 
