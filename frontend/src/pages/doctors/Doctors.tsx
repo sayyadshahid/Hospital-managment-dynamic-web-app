@@ -53,7 +53,7 @@ const Doctors = () => {
         setDoctors(res.data.Doctors);
       } catch (error) {
         console.error(error);
-         console.log(error)
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -87,7 +87,12 @@ const Doctors = () => {
   };
 
   const getUniqueDates = (schedule: Schedule[]) => {
-    return Array.from(new Set(schedule.map((s) => s.schedule_date)));
+    const today = new Date().toISOString().split("T")[0];  
+    const futureDates = schedule
+      .filter((s) => s.schedule_date >= today)
+      .map((s) => s.schedule_date);
+
+    return Array.from(new Set(futureDates));
   };
 
   const handleTimeClick = (doctorId: string, date: string, time: string) => {

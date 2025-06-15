@@ -34,7 +34,8 @@ export default function ProfileDetail() {
 });
  const navigate = useNavigate();
 
-  const userId = localStorage.getItem("user_id");
+  const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
+;
   useEffect(() => {
     const fetchUserdata = async () => {
       try {

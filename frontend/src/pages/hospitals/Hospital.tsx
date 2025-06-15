@@ -29,7 +29,8 @@ const Hospital = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const role = localStorage.getItem("user_role");
+  const role = JSON.parse(localStorage.getItem("user") || "{}").role;
+;
   const isDoctor = role === "doctor";
 
   useEffect(() => {
@@ -162,7 +163,7 @@ const Hospital = () => {
               )}
             </Box>
 
-            {/* Reviews */}
+        
             <PatientReviews />
           </Paper>
         ))}

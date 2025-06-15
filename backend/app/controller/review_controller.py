@@ -2,7 +2,6 @@ from fastapi import HTTPException, Request
 from app.database import get_database
 from app.constant.constants import DbCollections
 from app.models.review_model import ReviewModel
-# from app.models.auth_model import LoginRequestUser
 from bson import ObjectId
 
 class Review:
@@ -98,7 +97,7 @@ class Review:
             db = get_database()
             review_collection = db[DbCollections.REVIEW_COLLECTION]
 
-            # Get all reviews
+             
             reviews_cursor = review_collection.find({'hospital_id': hospital_id})
             review_list = []
 
@@ -107,7 +106,7 @@ class Review:
                 review['id'] = review_id
                 review_list.append(review)
 
-            # Get all doctors
+            
             doctors_cursor = db[DbCollections.DOCTOR_COLLECTION].find({}, {"password": 0})
             doctors = []
             async for doctor in doctors_cursor:
@@ -115,18 +114,17 @@ class Review:
                 doctor["role"] = "doctor"
                 doctors.append(doctor)
 
-            # Get all users
+            
             users_cursor = db[DbCollections.USER_COLLECTION].find({}, {"password": 0})
             users = []
             async for user in users_cursor:
                 user["id"] = str(user.pop("_id"))
                 user["role"] = "user"
                 users.append(user)
-
-            # Combine users and doctors into a lookup dictionary
+ 
             user_map = {person["id"]: person for person in (doctors + users)}
 
-            # Attach author info to each review
+            
             reviews = []
             for review in review_list:
                 user_id = review.get("user_id")
@@ -137,9 +135,7 @@ class Review:
                         "email": user.get("email"),
                         "role": user.get("role"),
                         "phone_no": user.get("phone_no"),
-                        # "is_active": user.get("is_active"),
-                        # "created_at": user.get("created_at"),
-                        # "updated_at": user.get("updated_at"),
+                         
                     }
                 reviews.append(review)
 
@@ -152,3 +148,18 @@ class Review:
             raise exc
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error: {str(e)}")    
+        
+        
+    async def deleteReviewById(id: str):
+        try:
+            db = get_database()
+            review_collection = db[DbCollections.REVIEW_COLLECTION]
+            review = await review_collection.delete_one({'_id': ObjectId(id)})
+            if review.deleted_count == 0:
+                 raise HTTPException(status_code=404, detail="Review not found")
+
+            return {'massege': 'Review Successfully Deleted..'}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")    
+        
+            

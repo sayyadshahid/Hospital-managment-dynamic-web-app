@@ -31,7 +31,8 @@ interface AppointmentDetail {
   is_success: boolean;
 }
 
-const userId = localStorage.getItem("user_id");
+const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
+;
 
 export default function ReportDetails() {
   const [appointments, setAppointments] = useState<AppointmentDetail[]>([]);

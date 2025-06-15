@@ -22,19 +22,17 @@ const GuestNavBar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const token = localStorage.getItem("access_token");
 
   const navItems: { label: string; path: string }[] = [
     { label: "Home", path: "/" },
     { label: "About", path: "/aboutUs" },
     { label: "Login", path: "/login" },
-    { label: "Signin", path: "/register" }
+    { label: "Signin", path: "/register" },
   ];
 
- 
   const handleNavigation = (path: string) => {
     navigate(path);
-    setDrawerOpen(false);  
+    setDrawerOpen(false);
   };
 
   return (

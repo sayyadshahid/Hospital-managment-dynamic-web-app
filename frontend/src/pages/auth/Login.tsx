@@ -25,16 +25,23 @@ const LoginForm = () => {
       try {
         const res = await axios.post("http://localhost:8000/api/login", values);
 
-        const { id, role, access_token, msg } = res.data;
+        const { id, role, access_token, msg, fullname, email } = res.data;
 
-        localStorage.setItem("user_id", id);
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user_role", role);
+        const user = {
+          id,
+          role,
+          access_token,
+          msg,
+          fullname,
+          email,
+        };
 
-        navigate("/", { state: { id } });
+        localStorage.setItem("user", JSON.stringify(user));
+        console.log(res.data);
+        role == "admin" ? navigate("/admin") : navigate("/", { state: { id } });
         toast.success(msg || "Login Successful!");
       } catch (error: any) {
-        const errMsg =
+        const errMsg =  
           error?.response?.data?.detail || "Login failed. Please try again.";
         toast.error(errMsg);
       } finally {

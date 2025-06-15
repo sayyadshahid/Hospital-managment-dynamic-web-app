@@ -10,19 +10,17 @@ class Appointment():
 
     async def addAppointmentByDocId(data: AppointmentModel, request: Request, docId: str):
         try:
-            phone_regex = r"^\+91\d{10}$"
+             
             user_id = request.state.user_id
             if not user_id:
                 raise HTTPException(status_code=400, detail="User not authenticated")
 
-            # Prepend "+91" if not already present
-            if not data.phone.startswith("+91"):
-                data.phone = f"+91 {data.phone}"
-
-            # Validate phone number
+            phone_regex = r"^\+91 \d{10}$"
+            data.phone = f"+91 {data.phone}" 
             if not re.match(phone_regex, data.phone):
-                raise HTTPException(status_code=400, detail="Invalid phone number format. Must be +91 followed by 10 digits.")
+                raise HTTPException(status_code=400, detail="Invalid phone number format.")
 
+            
             # Prepare data
             data_dict = data.dict()
             data_dict["schedule_date"] = data.schedule_date.isoformat()

@@ -1,11 +1,15 @@
-// src/components/AppointmentTable.tsx
-
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Checkbox } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  CircularProgress,
+  Typography,
+  Paper,
+} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import API from "../../components/configs/API";
 
-interface User {
+interface Appointment {
   appointment_id: string;
   name: string;
   email: string;
@@ -15,105 +19,107 @@ interface User {
 }
 
 const AppointmentTable = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch appointments from backend
-  const fetchUsers = async () => {
+  const fetchAppointments = async () => {
     try {
       const res = await API.get("get-all-appointments");
-      setUsers(res.data.appointments);
+      setAppointments(res.data.appointments);
     } catch (error) {
-      console.error("Failed to fetch users:", error);
+      console.error("Failed to fetch appointments:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchAppointments();
   }, []);
 
-  const handleSuccessToggle = async (user: User) => {
+  const handleSuccessToggle = async (appointment: Appointment) => {
     try {
-      const updatedUser = { ...user, is_success: !user.is_success };
+      const updated = { ...appointment, is_success: !appointment.is_success };
 
-      await API.put(`update-appointment/${user.appointment_id}`, {
-        is_success: updatedUser.is_success,
+      await API.put(`update-appointment/${appointment.appointment_id}`, {
+        is_success: updated.is_success,
       });
 
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.appointment_id === user.appointment_id ? updatedUser : u
+      setAppointments((prev) =>
+        prev.map((a) =>
+          a.appointment_id === appointment.appointment_id ? updated : a
         )
       );
     } catch (error) {
-      console.error("Failed to update is_success:", error);
+      console.error("Failed to update appointment:", error);
     }
   };
 
-  const appointmentIdColumn: GridColDef = {
-    field: "appointment_id",
-    headerName: "ID",
-    width: 200,
-  };
-
-  const nameColumn: GridColDef = {
-    field: "name",
-    headerName: "Name",
-    width: 180,
-  };
-
-  const emailColumn: GridColDef = {
-    field: "email",
-    headerName: "Email",
-    width: 200,
-  };
-
-  const doctorIdColumn: GridColDef = {
-    field: "docId",
-    headerName: "Doctor Id",
-    width: 200,
-  };
-
-  const isSuccessColumn: GridColDef = {
-    field: "is_success",
-    headerName: "Success",
-    width: 120,
-    renderCell: (params) => (
-      <Checkbox
-        checked={params.value}
-        onChange={() => handleSuccessToggle(params.row)}
-      />
-    ),
-  };
-
   const columns: GridColDef[] = [
-    appointmentIdColumn,
-    nameColumn,
-    emailColumn,
-    doctorIdColumn,
-    isSuccessColumn,
+    { field: "appointment_id", headerName: "Appointment ID", width: 200 },
+    { field: "name", headerName: "Patient Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
+    { field: "docId", headerName: "Doctor ID", width: 200 },
+    {
+      field: "is_success",
+      headerName: "Success",
+      width: 130,
+      renderCell: (params) => (
+        <Checkbox
+          checked={params.value}
+          onChange={() => handleSuccessToggle(params.row)}
+        />
+      ),
+    },
   ];
 
   return (
-    <Box height={600} width="100%">
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <DataGrid
-          rows={users}
-          columns={columns}
-          getRowId={(row) => row.appointment_id}
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 5, page: 0 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-        />
-      )}
-    </Box>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 3,
+        m: 2,
+        borderRadius: 3,
+        backgroundColor: "#f9f9f9",
+      }}
+    >
+      <Typography variant="h5" fontWeight={600} mb={2}>
+        Appointment Records
+      </Typography>
+
+      <Box height={{ xs: 400, sm: 500, md: 600 }} width="100%">
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
+            <CircularProgress />
+          </Box>
+        ) : appointments.length === 0 ? (
+          <Typography variant="body1" align="center" mt={5}>
+            No appointments found.
+          </Typography>
+        ) : (
+          <DataGrid
+            rows={appointments}
+            columns={columns}
+            getRowId={(row) => row.appointment_id}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 10, page: 0 },
+              },
+            }}
+            pageSizeOptions={[10, 25, 50, 100]}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: 2,
+            }}
+          />
+        )}
+      </Box>
+    </Paper>
   );
 };
 

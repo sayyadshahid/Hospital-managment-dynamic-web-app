@@ -14,14 +14,17 @@ import Footer from "../../components/footer";
 import Testimonials from "./Testimonials";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import UserRegisterLanding from "./UserRegisterLogin";
+import HospitalRegisterLanding from "./HospitalRegisterLanding";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-
+  const token = JSON.parse(localStorage.getItem("user") || "{}").access_token;
+console.log(token, '=======================')
   useEffect(() => {
-    AOS.init({ duration: 1500, once: true }); 
+    AOS.init({ duration: 1500, once: true });
   }, []);
 
   return (
@@ -159,15 +162,23 @@ const LandingPage = () => {
         />
       </Box>
 
-      {/* Why Choose Us Section */}
       <Box data-aos="fade-up">
         <WhyChooseUs />
       </Box>
 
-      {/* Testimonials Section */}
       <Box data-aos="fade-up" data-aos-delay="200">
         <Testimonials />
       </Box>
+      {!token && (
+        <>
+          <Box data-aos="fade-up" data-aos-delay="200">
+            <UserRegisterLanding />
+          </Box>
+          <Box data-aos="fade-up" data-aos-delay="200">
+            <HospitalRegisterLanding />
+          </Box>
+        </>
+      )}
 
       {/* Footer Section */}
       <Footer />

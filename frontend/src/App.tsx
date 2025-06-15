@@ -19,7 +19,7 @@ import ReportDetails from "./pages/report_details/ReportDetail";
 import ProfileDetail from "./pages/profile/Profile";
 import { AvatarProvider } from "./hooks/AvtarContex";
 import AdminPanelLayout from "./pages/Admin/AdminLayout";
-
+import AdminProtectedRoute from "./routes/AdminProtectedRoute";
 function App() {
   return (
     <AvatarProvider>
@@ -32,9 +32,9 @@ function App() {
           <Route
             path="/hospitalregister"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <HospitalRegister />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
           <Route
@@ -118,9 +118,9 @@ function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <AdminPanelLayout />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             }
           />
         </Routes>

@@ -1,8 +1,11 @@
-// src/components/UserTable.tsx
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  Paper,
+} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import axios from "axios";
 import API from "../../components/configs/API";
 
 interface User {
@@ -19,7 +22,7 @@ const UserTable = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await API.get("get-all-users"); // Change to your FastAPI endpoint
+      const res = await API.get("get-all-users"); // FastAPI endpoint
       setUsers(res.data.users);
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -33,31 +36,60 @@ const UserTable = () => {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 200 },
-    { field: "fullname", headerName: "Name", width: 180 },
-    { field: "email", headerName: "Email", width: 200 },
+    { field: "id", headerName: "User ID", width: 200 },
+    { field: "fullname", headerName: "Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
     { field: "phone_no", headerName: "Phone", width: 150 },
-    { field: "role", headerName: "Role", width: 100 },
-
+    { field: "role", headerName: "Role", width: 120 },
   ];
 
   return (
-    <Box height={600} width="100%">
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <DataGrid
-          rows={users}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 5, page: 0 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-        />
-      )}
-    </Box>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 3,
+        m: 2,
+        borderRadius: 3,
+        backgroundColor: "#f9f9f9",
+      }}
+    >
+      <Typography variant="h5" fontWeight={600} mb={2}>
+        Users List
+      </Typography>
+
+      <Box height={{ xs: 400, sm: 500, md: 600 }} width="100%">
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
+            <CircularProgress />
+          </Box>
+        ) : users.length === 0 ? (
+          <Typography variant="body1" align="center" mt={5}>
+            No users found.
+          </Typography>
+        ) : (
+          <DataGrid
+            rows={users}
+            columns={columns}
+            getRowId={(row) => row.id}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 100, page: 0 },
+              },
+            }}
+            pageSizeOptions={[10, 25, 50, 100]}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: 2,
+            }}
+          />
+        )}
+      </Box>
+    </Paper>
   );
 };
 

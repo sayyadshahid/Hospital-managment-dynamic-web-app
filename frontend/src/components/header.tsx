@@ -3,7 +3,7 @@ import GuestNavBar from "./navbars/GuestNav";
 import UserNavBar from "./navbars/UserNav";
 
 const NavBar = () => {
-  const token = localStorage.getItem("access_token");
+  const token = JSON.parse(localStorage.getItem("user") || "{}").access_token;
 
   return token ? <UserNavBar /> : <GuestNavBar />;
 };

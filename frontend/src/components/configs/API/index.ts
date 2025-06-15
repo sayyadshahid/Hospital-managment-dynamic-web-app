@@ -11,7 +11,8 @@ const API = axios.create({timeout: 300000,
 
 API.interceptors.request.use(
   function (config) {
-    const storedUserData = localStorage.getItem('access_token');
+    const storedUserData =JSON.parse(localStorage.getItem("user") || "{}").access_token;
+
     if (storedUserData){
       // console.log('insideeeeeeeeee API CONFIG')
       // console.log('storedUserDatastoredUserData', storedUserData)

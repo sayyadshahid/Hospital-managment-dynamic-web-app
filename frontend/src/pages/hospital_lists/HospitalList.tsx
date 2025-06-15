@@ -8,15 +8,12 @@ import {
   Card,
   CardContent,
   CardMedia,
-  IconButton,
-  Menu,
-  MenuItem,
+  InputBase,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import SearchIcon from "@mui/icons-material/Search";
 import NavBar from "../../components/header";
-import axios from "axios";
-import { keyframes } from "@emotion/react";
 import Footer from "../../components/footer";
+import { keyframes } from "@emotion/react";
 import API from "../../components/configs/API";
 
 interface Hospital {
@@ -43,10 +40,10 @@ const HospitalList = () => {
   const navigate = useNavigate();
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [anchorEl, setAnchorEl] = useState<{
-    [key: string]: HTMLElement | null;
-  }>({});
-  const role = localStorage.getItem("user_role");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const role =JSON.parse(localStorage.getItem("user") || "{}").role;
+
   const isDoctor = role === "doctor";
 
   useEffect(() => {
@@ -85,12 +82,7 @@ const HospitalList = () => {
           }}
         >
           <Typography variant="h6">Hospital List</Typography>
-          <Box
-            sx={{
-              display: "flex",
-              gap: "10px",
-            }}
-          >
+          <Box sx={{ display: "flex", gap: "10px" }}>
             <Button
               sx={{
                 bgcolor: "red",
@@ -119,6 +111,31 @@ const HospitalList = () => {
           </Box>
         </Box>
 
+        {/* Search Bar */}
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #ccc",
+              borderRadius: 2,
+              px: 2,
+              py: 1,
+              width: "100%",
+              maxWidth: "400px",
+            }}
+          >
+            <SearchIcon sx={{ mr: 1 }} />
+            <InputBase
+              placeholder="Search hospitals by name"
+              fullWidth
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </Box>
+        </Box>
+
+        
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
           {loading ? (
             Array.from({ length: 9 }).map((_, index) => (
@@ -167,51 +184,55 @@ const HospitalList = () => {
           ) : hospitals.length === 0 ? (
             <Typography>No hospitals found.</Typography>
           ) : (
-            hospitals.map((hospital) => (
-              <Card
-                key={hospital.id}
-                sx={{
-                  maxWidth: 345,
-                  flex: "1 1 300px",
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  position: "relative",
-                  cursor: "pointer",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  height="180"
-                  image={`http://localhost:8000/${hospital.file_path}`}
-                  alt={hospital.title}
-                  onClick={() => {
-                    navigate(`/hospital/${hospital.id}`, {
-                      state: { id: hospital.id },
-                    });
+            hospitals
+              .filter((hospital) =>
+                hospital.title.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((hospital) => (
+                <Card
+                  key={hospital.id}
+                  sx={{
+                    maxWidth: 345,
+                    flex: "1 1 300px",
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    position: "relative",
+                    cursor: "pointer",
                   }}
-                />
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {hospital.title}
-                  </Typography>
-                  <Rating value={hospital.rating} precision={0.5} readOnly />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    {hospital.description}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1, fontWeight: 500 }}
-                  >
-                    📍 {hospital.address}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))
+                >
+                  <CardMedia
+                    component="img"
+                    height="180"
+                    image={`http://localhost:8000/${hospital.file_path}`}
+                    alt={hospital.title}
+                    onClick={() => {
+                      navigate(`/hospital/${hospital.id}`, {
+                        state: { id: hospital.id },
+                      });
+                    }}
+                  />
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {hospital.title}
+                    </Typography>
+                    <Rating value={hospital.rating} precision={0.5} readOnly />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      {hospital.description}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1, fontWeight: 500 }}
+                    >
+                      📍 {hospital.address}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))
           )}
         </Box>
       </Box>

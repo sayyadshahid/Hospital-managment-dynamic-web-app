@@ -24,6 +24,8 @@ export default function ChatUI() {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const name = JSON.parse(localStorage.getItem("user") || "{}").fullname;
+
 
   const getGeminiResponse = async (promptText: string): Promise<string> => {
     try {
@@ -69,7 +71,7 @@ export default function ChatUI() {
         {messages.length === 0 && !loading && (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
             <Typography variant="h6" sx={{ color: "#888" }}>
-              How can I assist you?
+              How can I assist you? {name}
             </Typography>
           </Box>
         )}

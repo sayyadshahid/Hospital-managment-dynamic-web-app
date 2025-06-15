@@ -1,5 +1,5 @@
 from typing import Literal, Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime, date, time 
  
 class AppointmentModel(BaseModel):
@@ -16,7 +16,13 @@ class AppointmentModel(BaseModel):
     is_success: bool = Field(default=False)
     schedule_date: date = Field(..., description='Schedule date')
     schedule_time: str = Field(..., description='Schedule time')
- 
+    
+    @field_validator("schedule_date")
+    @classmethod
+    def validate_schedule_date(cls, v: date) -> date:
+        if v < date.today():
+            raise ValueError("Schedule date must be today or in the future.")
+        return v
  
 class UpdateAppointmentModel(BaseModel):
     name: Optional[str] = Field(None, description='Name')
@@ -31,3 +37,4 @@ class UpdateAppointmentModel(BaseModel):
     schedule_date: Optional[date] = Field(None)
     schedule_time: Optional[str] = Field(None)
     updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+

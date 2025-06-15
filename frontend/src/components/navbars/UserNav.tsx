@@ -28,13 +28,18 @@ const UserNavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { avatar } = useAvatar();
+  const role = JSON.parse(localStorage.getItem("user") || "{}").role;
 
-  const navItems = [
-      { label: "About", path: "/aboutUs" },
+  const baseNavItems = [
+    { label: "About", path: "/aboutUs" },
     { label: "Dashboard", path: "/" },
     { label: "Appointments", path: "/report-details" },
-    // { label: "Reports", path: "/report-details" },
   ];
+
+  const navItems =
+    role === "admin"
+      ? [{ label: "Admin Panel", path: "/admin" }, ...baseNavItems]
+      : baseNavItems;
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
