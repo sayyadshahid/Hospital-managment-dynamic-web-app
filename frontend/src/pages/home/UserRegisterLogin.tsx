@@ -108,14 +108,14 @@ const RegisterLandingSection = () => {
           title="User"
           description="Create your user account to book hospital appointments easily."
           buttonText="Register as User"
-          navigateTo="/userregister"
+          navigateTo="/register"
         />
 
         <CardBox
           title="Doctor"
           description="Register as a doctor and provide quality healthcare services."
           buttonText="Register as Doctor"
-          navigateTo="/doctorregister"
+          navigateTo="/register"
         />
       </Box>
     </Box>
