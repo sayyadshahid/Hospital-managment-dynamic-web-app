@@ -22,7 +22,7 @@ const LandingPage = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const token = JSON.parse(localStorage.getItem("user") || "{}").access_token;
-console.log(token, '=======================')
+ 
   useEffect(() => {
     AOS.init({ duration: 1500, once: true });
   }, []);

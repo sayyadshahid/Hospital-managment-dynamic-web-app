@@ -37,16 +37,14 @@ const LoginForm = () => {
         };
 
         localStorage.setItem("user", JSON.stringify(user));
-        console.log(res.data);
+      
         role == "admin" ? navigate("/admin") : navigate("/", { state: { id } });
         toast.success(msg || "Login Successful!");
       } catch (error: any) {
         const errMsg =  
           error?.response?.data?.detail || "Login failed. Please try again.";
         toast.error(errMsg);
-      } finally {
-        console.log("Form submission attempt completed.");
-      }
+      }  
     },
   });
 

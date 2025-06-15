@@ -53,7 +53,7 @@ const RegisterForm = () => {
           "http://localhost:8000/api/signup",
           payload
         );
-        console.log("User registered:", res.data);
+      
         toast.success(
           res.data.msg || "Registration successful! Please Login Again"
         );
@@ -63,9 +63,7 @@ const RegisterForm = () => {
           error?.response?.data?.msg ||
           "Registration failed. Please try again.";
         toast.error(errMsg);
-      } finally {
-        console.log("Form submission attempt completed.");
-      }
+      }  
     },
   });
 

@@ -51,7 +51,7 @@ const ConfirmAppointment = () => {
       try {
         const res = await API.post(`create_appointment/${doctorId}`, formData);
         const appointmentId = res.data.appointment_id || null;
-        // console.log(appointmentId, '===========================')
+        
         toast.success(res.data?.msg || "Appointment Confirmed!");
         formik.resetForm();
           navigate("/appointment-successs", { state: { appointmentId } });

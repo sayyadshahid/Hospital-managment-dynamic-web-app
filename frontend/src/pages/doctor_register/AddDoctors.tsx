@@ -15,8 +15,7 @@ const DoctorRegister = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const hospitalId = location.state?.hospital_id;
-  console.log(hospitalId, "==========================");
-
+  
   const formik = useFormik({
     initialValues: {
       name: "",
