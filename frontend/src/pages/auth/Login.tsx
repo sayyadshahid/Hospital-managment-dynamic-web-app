@@ -1,16 +1,11 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Style } from "@mui/icons-material";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -30,28 +25,33 @@ const LoginForm = () => {
       try {
         const res = await axios.post("http://localhost:8000/api/login", values);
 
-        const { id, role, access_token, msg } = res.data;
+        const { id, role, access_token, msg, fullname, email } = res.data;
 
-        localStorage.setItem("user_id", id);
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user_role", role);
+        const user = {
+          id,
+          role,
+          access_token,
+          msg,
+          fullname,
+          email,
+        };
 
-        navigate("/", { state: { id } });
+        localStorage.setItem("user", JSON.stringify(user));
+      
+        role == "admin" ? navigate("/admin") : navigate("/", { state: { id } });
         toast.success(msg || "Login Successful!");
       } catch (error: any) {
-        const errMsg =
+        const errMsg =  
           error?.response?.data?.detail || "Login failed. Please try again.";
         toast.error(errMsg);
-      } finally {
-        console.log("Form submission attempt completed.");
-      }
+      }  
     },
   });
 
   return (
     <Box
       height="100vh"
-      width="100vw"
+      
       display="flex"
       alignItems="center"
       justifyContent="center"
@@ -117,6 +117,15 @@ const LoginForm = () => {
           >
             Login
           </Button>
+          <Typography sx={{ textAlign: "center", mt: 2, fontSize: 15 }}>
+            Don't have any account?{" "}
+            <span
+              onClick={() => navigate("/register")}
+              style={{ cursor: "pointer", fontWeight: 700 }}
+            >
+              Register
+            </span>
+          </Typography>
         </form>
       </Paper>
     </Box>

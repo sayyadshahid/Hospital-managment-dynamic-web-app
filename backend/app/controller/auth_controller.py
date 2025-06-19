@@ -86,7 +86,9 @@ class Auth():
                     "access_token": token,
                     "token_type": "bearer",
                     "id": str(user["_id"]),
-                    "role": 'user',
+                    "role": user.get("role", "user"),
+                    "fullname": user.get("fullname", 'N/A'),
+                    "email": user.get("email", 'N/A'),
                     "msg": "Login successful"
                 }
 

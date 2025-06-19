@@ -8,6 +8,7 @@ import {
   Container,
 } from "@mui/material";
 import NavBar from "../../components/header";
+import Footer from "../../components/footer";
 // Team data
 const teamMembers = [
   {
@@ -282,61 +283,7 @@ export default function AboutUs() {
           </Button>
         </Box>
       </Container>
-
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          bgcolor: "background.paper",
-          py: 10,
-          px: 5,
-          textAlign: "center",
-          mt: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            maxWidth: 960,
-            mx: "auto",
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: { sm: "space-around" },
-            gap: 3,
-            flexWrap: "wrap",
-            alignItems: "center",
-          }}
-        >
-          <Link
-            href="#"
-            underline="none"
-            sx={{
-              color: "#5c7e8a",
-              fontSize: "1rem",
-              fontWeight: 400,
-              minWidth: 160,
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
-            Privacy Policy
-          </Link>
-          <Link
-            href="#"
-            underline="none"
-            sx={{
-              color: "#5c7e8a",
-              fontSize: "1rem",
-              fontWeight: 400,
-              minWidth: 160,
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
-            Terms of Service
-          </Link>
-        </Box>
-        <Typography variant="body2" sx={{ color: "#5c7e8a", mt: 4 }}>
-          ©2024 HealthAI. All rights reserved.
-        </Typography>
-      </Box>
+      <Footer />
     </Box>
   );
 }

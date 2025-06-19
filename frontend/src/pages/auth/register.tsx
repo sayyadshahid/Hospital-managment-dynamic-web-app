@@ -24,7 +24,7 @@ const RegisterForm = () => {
       phone_no: "",
       password: "",
       confirm_password: "",
-      role: false, // Checkbox, interpreted as doctor if true
+      role: false,
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Full name is required"),
@@ -39,7 +39,7 @@ const RegisterForm = () => {
       role: Yup.boolean(),
     }),
     onSubmit: async (values) => {
-      const payload = { 
+      const payload = {
         fullname: values.fullname,
         email: values.email,
         phone_no: values.phone_no,
@@ -49,40 +49,54 @@ const RegisterForm = () => {
       };
 
       try {
-        const res = await axios.post("http://localhost:8000/api/signup", payload);
-        console.log("User registered:", res.data);
-        toast.success(res.data.msg || "Registration successful! Please Login Again");
+        const res = await axios.post(
+          "http://localhost:8000/api/signup",
+          payload
+        );
+
+        toast.success(
+          res.data.msg || "Registration successful! Please Login Again"
+        );
         navigate("/login");
       } catch (error: any) {
         const errMsg =
-          error?.response?.data?.msg || "Registration failed. Please try again.";
+          error?.response?.data?.msg ||
+          "Registration failed. Please try again.";
         toast.error(errMsg);
-      } finally {
-        console.log("Form submission attempt completed.");
       }
     },
   });
 
   return (
     <Box
-      height="100vh"
-      width="100vw"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      sx={{ paddingLeft: 2 }}
+      sx={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #ffffff 0%, #c9c5c5 )",
+        borderRadius: 5,
+        padding: 2,
+      }}
     >
       <Paper
-        elevation={3}
+        elevation={4}
         sx={{
-          padding: 4,
-          width: 300,
-          borderRadius: 2,
+          padding: 5,
+          width: "100%",
+          maxWidth: 400,
+          borderRadius: 4,
+          backgroundColor: "#ffffff",
         }}
       >
         <form onSubmit={formik.handleSubmit}>
-          <Box mb={2}>
-            <Typography variant="h6">Create Account</Typography>
+          <Box mb={3} textAlign="center">
+            <Typography variant="h5" fontWeight="bold" color={'grey'}>
+              Sign Up
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Create your account below
+            </Typography>
           </Box>
 
           <Box mb={2}>
@@ -91,7 +105,8 @@ const RegisterForm = () => {
               id="fullname"
               name="fullname"
               label="Full Name"
-              variant="standard"
+              variant="outlined"
+              size="small"
               value={formik.values.fullname}
               onChange={formik.handleChange}
               error={formik.touched.fullname && Boolean(formik.errors.fullname)}
@@ -105,7 +120,8 @@ const RegisterForm = () => {
               id="phone_no"
               name="phone_no"
               label="Phone Number"
-              variant="standard"
+              variant="outlined"
+              size="small"
               value={formik.values.phone_no}
               onChange={formik.handleChange}
               error={formik.touched.phone_no && Boolean(formik.errors.phone_no)}
@@ -119,7 +135,8 @@ const RegisterForm = () => {
               id="email"
               name="email"
               label="Email"
-              variant="standard"
+              variant="outlined"
+              size="small"
               type="email"
               value={formik.values.email}
               onChange={formik.handleChange}
@@ -134,7 +151,8 @@ const RegisterForm = () => {
               id="password"
               name="password"
               label="Password"
-              variant="standard"
+              variant="outlined"
+              size="small"
               type="password"
               value={formik.values.password}
               onChange={formik.handleChange}
@@ -143,13 +161,14 @@ const RegisterForm = () => {
             />
           </Box>
 
-          <Box mb={3}>
+          <Box mb={2}>
             <TextField
               fullWidth
               id="confirm_password"
               name="confirm_password"
               label="Confirm Password"
-              variant="standard"
+              variant="outlined"
+              size="small"
               type="password"
               value={formik.values.confirm_password}
               onChange={formik.handleChange}
@@ -186,8 +205,11 @@ const RegisterForm = () => {
             type="submit"
             sx={{
               backgroundColor: "#fa6039",
-              borderRadius: 3,
+              borderRadius: 2,
               fontWeight: "bold",
+              textTransform: "none",
+              fontSize: "1rem",
+              py: 1.2,
               ":hover": {
                 backgroundColor: "#ec6b4b",
               },
@@ -195,6 +217,24 @@ const RegisterForm = () => {
           >
             Create Account
           </Button>
+
+          <Typography
+            sx={{
+              textAlign: "center",
+              mt: 3,
+              fontSize: 14,
+              color: "textSecondary",
+            }}
+          >
+            Already have an account?{" "}
+            <Box
+              component="span"
+              onClick={() => navigate("/login")}
+              sx={{ cursor: "pointer", fontWeight: 600, color: "#000000" }}
+            >
+              Login
+            </Box>
+          </Typography>
         </form>
       </Paper>
     </Box>

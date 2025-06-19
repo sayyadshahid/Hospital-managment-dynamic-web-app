@@ -5,7 +5,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import API from "../../components/configs/API";
 
 const HospitalRegister = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -27,15 +28,6 @@ const HospitalRegister = () => {
       about: Yup.string().required("about field is required"),
     }),
     onSubmit: async (values) => {
-
-      const token = localStorage.getItem('access_token');
-    if (!token) {
-        toast.error("Please log in first.");
-        navigate('/login');
-        return;
-    }
-
-
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("description", values.description);
@@ -45,17 +37,17 @@ const HospitalRegister = () => {
       formData.append("is_active", "true");
 
       try {
-        const res = await axios.post(
+        const res = await API.post(
           "http://localhost:8000/api/register-hospital/",
-          formData,{
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    "Authorization": token, // Add token here
-                },
-            }
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
         toast.success(res.data?.msg || "Registered Successfully!");
-         navigate(`/hospitalList`)
+        navigate(`/hospitalList`);
       } catch (error: any) {
         const errMsg =
           error?.response?.data?.detail ||
@@ -185,7 +177,6 @@ const HospitalRegister = () => {
             type="submit"
             variant="contained"
             sx={{ bgcolor: "red", color: "white", fontWeight: 600 }}
-           
           >
             Add Hospital
           </Button>

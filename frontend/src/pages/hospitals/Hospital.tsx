@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { PatientReviews } from "../reviews/Review";
 import Footer from "../../components/footer";
 import { useNavigate } from "react-router-dom";
+import API from "../../components/configs/API";
 
 interface Hospital {
   id: string;
@@ -28,42 +29,36 @@ const Hospital = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const role = JSON.parse(localStorage.getItem("user") || "{}").role;
+;
+  const isDoctor = role === "doctor";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          alert("You need to log in first!");
-          // navigate("/login");
-          return;
-        }
-
-        const res = await axios.get(
-          `http://localhost:8000/api/hospital_id/${id}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-        setHospitals([res.data.hospital]); // Wrap single object in an array
+        const res = await API.get(`hospital_id/${id}`);
+        setHospitals([res.data.hospital]);
       } catch (error) {
         console.error("Error fetching hospitals:", error);
       }
     };
 
     fetchData();
-  }, [id]); // Add id to dependency array in case it changes
+  }, [id]);
 
   return (
     <Box sx={{ bgcolor: "#ffffff", minHeight: "100vh" }}>
       <NavBar />
-      <Container sx={{ py: 4 }}>
+      <Container sx={{ py: { xs: 2, sm: 4 } }}>
         {hospitals.map((hospital) => (
           <Paper
             key={hospital.id}
             elevation={3}
-            sx={{ p: 3, borderRadius: 3, mb: 4 }}
+            sx={{
+              p: { xs: 2, sm: 3 },
+              borderRadius: 3,
+              mb: { xs: 3, sm: 4 },
+            }}
           >
             {/* Hospital Image */}
             <Box
@@ -72,38 +67,103 @@ const Hospital = () => {
               alt={hospital.title}
               sx={{
                 width: "100%",
-                height: 520,
+                height: {
+                  xs: 200,
+                  sm: 300,
+                  md: 400,
+                  lg: 520,
+                },
                 objectFit: "cover",
                 borderRadius: 2,
                 mb: 3,
               }}
             />
+
             {/* Hospital Title and Description */}
-            <Typography variant="h5" fontWeight={600} gutterBottom>
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              gutterBottom
+              sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" } }}
+            >
               {hospital.title}
             </Typography>
-            <Typography color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              color="text.secondary"
+              sx={{ mb: 2, fontSize: { xs: "0.95rem", sm: "1rem" } }}
+            >
               {hospital.description}
             </Typography>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>
+
+            {/* Address Section */}
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              sx={{ mt: 2, fontSize: { xs: "1rem", sm: "1.1rem" } }}
+            >
               Address
             </Typography>
-            <Typography color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              color="text.secondary"
+              sx={{ mb: 2, fontSize: { xs: "0.95rem", sm: "1rem" } }}
+            >
               {hospital.address}
             </Typography>
-            {/* About Us */}
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>
+
+            {/* About Us Section */}
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              sx={{ mt: 2, fontSize: { xs: "1rem", sm: "1.1rem" } }}
+            >
               About Us
             </Typography>
-            <Typography color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+              color="text.secondary"
+              sx={{ mb: 3, fontSize: { xs: "0.95rem", sm: "1rem" } }}
+            >
               {hospital.about}
             </Typography>
+
             {/* Book Appointment Button */}
-            <Box textAlign="right" sx={{ mt: 4 }}>
-              <Button variant="contained" sx={{ bgcolor: "red" }} size="large">
+            <Box
+              textAlign={{ xs: "center", sm: "right" }}
+              sx={{
+                mt: 4,
+                display: "flex",
+                gap: 3,
+
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button
+                variant="contained"
+                sx={{ bgcolor: "red", fontWeight: 700 }}
+                size="large"
+                onClick={() =>
+                  navigate("/doctors", { state: { hospital_id: hospital.id } })
+                }
+              >
                 Book an Appointment
               </Button>
+
+              {isDoctor && (
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: "red", fontWeight: 700 }}
+                  size="large"
+                  onClick={() =>
+                    navigate("/doctor-register", {
+                      state: { hospital_id: hospital.id },
+                    })
+                  }
+                >
+                  Add Doctor
+                </Button>
+              )}
             </Box>
+
+        
             <PatientReviews />
           </Paper>
         ))}
@@ -116,6 +176,3 @@ const Hospital = () => {
 };
 
 export default Hospital;
-function nevigate() {
-  throw new Error("Function not implemented.");
-}
