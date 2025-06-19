@@ -50,9 +50,9 @@ const UserNavBar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    localStorage.removeItem("user");
     navigate("/");
-    window.location.reload(); // reflect logout
   };
 
   return (

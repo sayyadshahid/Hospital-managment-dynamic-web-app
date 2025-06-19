@@ -20,6 +20,9 @@ import ProfileDetail from "./pages/profile/Profile";
 import { AvatarProvider } from "./hooks/AvtarContex";
 import AdminPanelLayout from "./pages/Admin/AdminLayout";
 import AdminProtectedRoute from "./routes/AdminProtectedRoute";
+import DoctorsByHospital from "./pages/Admin/get_docs_byId";
+
+
 function App() {
   return (
     <AvatarProvider>
@@ -123,6 +126,8 @@ function App() {
               </AdminProtectedRoute>
             }
           />
+
+          
         </Routes>
 
         {/* Toaster for Notifications */}

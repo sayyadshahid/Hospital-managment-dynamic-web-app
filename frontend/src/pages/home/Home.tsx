@@ -149,6 +149,7 @@ const LandingPage = () => {
         </Box>
 
         {/* Right: Image Section */}
+      
         <Box
           data-aos="fade-left"
           component="img"
@@ -157,9 +158,10 @@ const LandingPage = () => {
           sx={{
             width: { xs: "90%", sm: 500, md: 600 },
             height: { xs: 250, sm: 300, md: 380 },
-            borderRadius: 2,
+            borderRadius: 9,
           }}
-        />
+          />
+        
       </Box>
 
       <Box data-aos="fade-up">
