@@ -28,10 +28,7 @@ const Hospital = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const role = JSON.parse(localStorage.getItem("user") || "{}").role;
-;
-  const isDoctor = role === "doctor";
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -147,20 +144,7 @@ const Hospital = () => {
                 Book an Appointment
               </Button>
 
-              {isDoctor && (
-                <Button
-                  variant="contained"
-                  sx={{ bgcolor: "red", fontWeight: 700 }}
-                  size="large"
-                  onClick={() =>
-                    navigate("/doctor-register", {
-                      state: { hospital_id: hospital.id },
-                    })
-                  }
-                >
-                  Add Doctor
-                </Button>
-              )}
+              
             </Box>
 
         

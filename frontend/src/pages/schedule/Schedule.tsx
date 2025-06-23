@@ -7,10 +7,12 @@ import API from "../../components/configs/API";
 import { useLocation } from "react-router-dom";
 import NavBar from "../../components/header";
 import Footer from "../../components/footer";
+import { json } from "stream/consumers";
 
 const ScheduleForm = () => {
-  const location = useLocation();
-  const doctorId = location.state?.doctorId;
+ 
+  const doctorId = JSON.parse(localStorage.getItem("user") || "{}").id;
+  
 
   const formik = useFormik({
     initialValues: {

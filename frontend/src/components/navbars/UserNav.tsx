@@ -36,10 +36,13 @@ const UserNavBar = () => {
     { label: "Appointments", path: "/report-details" },
   ];
 
-  const navItems =
-    role === "admin"
-      ? [{ label: "Admin Panel", path: "/admin" }, ...baseNavItems]
-      : baseNavItems;
+  let navItems = baseNavItems;
+
+if (role === "admin") {
+  navItems = [{ label: "Admin Panel", path: "/admin" }, ...baseNavItems];
+} else if (role === "doctor") {
+  navItems = [{ label: "Doctor Panel", path: "/doctor" }, ...baseNavItems];
+}
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

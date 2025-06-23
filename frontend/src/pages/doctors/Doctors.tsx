@@ -18,7 +18,7 @@ import API from "../../components/configs/API";
 
 interface Doctor {
   id: string;
-  name: string;
+  fullname: string;
   degree: string;
   about: string;
   file_name: string;
@@ -115,26 +115,7 @@ const Doctors = () => {
     });
   };
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    doctorId: string
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setMenuDoctorId(doctorId);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setMenuDoctorId(null);
-  };
-
-  const handleAddSchedule = () => {
-    if (menuDoctorId) {
-      navigate("/schedule-form", { state: { doctorId: menuDoctorId } });
-    }
-    handleMenuClose();
-  };
-
+ 
   return (
     <Box sx={{ bgcolor: "#ffffff", minHeight: "100vh" }}>
       <NavBar />
@@ -168,13 +149,7 @@ const Doctors = () => {
                       position: "relative",
                     }}
                   >
-                    <IconButton
-                      aria-label="more"
-                      onClick={(event) => handleMenuOpen(event, doc.id)}
-                      sx={{ position: "absolute", top: 8, right: 8 }}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
+                   
 
                     <Box
                       sx={{
@@ -214,7 +189,7 @@ const Doctors = () => {
                         <Typography
                           sx={{ fontWeight: 600, fontSize: { xs: 18, sm: 20 } }}
                         >
-                          {doc.name}
+                          {doc.fullname}
                         </Typography>
                         <Typography variant="subtitle1" fontWeight={500}>
                           {doc.degree}
@@ -359,14 +334,7 @@ const Doctors = () => {
           </Paper>
         )}
 
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleAddSchedule}>Add Schedule</MenuItem>
-        </Menu>
-
+     c
         <Footer />
       </Container>
     </Box>

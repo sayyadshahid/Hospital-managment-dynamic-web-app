@@ -48,9 +48,12 @@ const DoctorByHospitalId: React.FC<Props> = ({ hospitalId }) => {
 
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "Doctor ID", width: 180 },
-    { field: "name", headerName: "Name", width: 180 },
+    // { field: "id", headerName: "Doctor ID", width: 180 },
+    { field: "fullname", headerName: "Name", width: 180 },
     { field: "degree", headerName: "Degree", width: 180 },
+    { field: "phone_no", headerName: "Phone", width: 100 },
+    { field: "email", headerName: "Email", width: 180 },
+
     {
       field: "actions",
       headerName: "Actions",

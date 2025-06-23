@@ -17,6 +17,12 @@ async def get_appointment_by_id(id: str):
 async def get_appointment_by_userId(userId: str):
     return await Appointment.getAllAppointmentsByUserId(userId= userId)
 
+
+@appointment_router.get('/get-all-appointments-by-docId/{docId}')
+async def get_appointment_by_docId(docId: str):
+    return await Appointment.getAllAppointmentsByDocId(docId= docId)
+
+
 @appointment_router.get('/get-all-appointments')
 async def get_all_appointments():
     return await Appointment.getAllAppointments()

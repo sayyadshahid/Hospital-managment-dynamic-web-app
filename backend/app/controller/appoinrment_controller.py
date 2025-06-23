@@ -99,6 +99,35 @@ class Appointment():
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
+
+
+           
+            
+    async def getAllAppointmentsByDocId(docId: str):
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+            
+           
+            appointments = await appointment_collection.find({'docId': docId}).to_list(length=None)
+            
+            if not appointments:
+                raise HTTPException(status_code=404, detail="No appointment found")
+
+            for appointment in appointments:
+                appointment['_id'] = str(appointment['_id'])  
+                appointment['appointment_id'] = appointment.pop('_id')
+
+            return {
+                'count': len(appointments),
+                'appointments': appointments
+            }
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
     
     async def getAllAppointments():
         try:

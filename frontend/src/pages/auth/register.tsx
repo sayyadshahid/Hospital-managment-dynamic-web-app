@@ -7,8 +7,7 @@ import {
   TextField,
   Typography,
   Paper,
-  Checkbox,
-  FormControlLabel,
+  
 } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -24,7 +23,7 @@ const RegisterForm = () => {
       phone_no: "",
       password: "",
       confirm_password: "",
-      role: false,
+      role: ""
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Full name is required"),
@@ -36,7 +35,7 @@ const RegisterForm = () => {
       confirm_password: Yup.string()
         .oneOf([Yup.ref("password")], "Passwords must match")
         .required("Confirm your password"),
-      role: Yup.boolean(),
+       
     }),
     onSubmit: async (values) => {
       const payload = {
@@ -45,7 +44,7 @@ const RegisterForm = () => {
         phone_no: values.phone_no,
         password: values.password,
         confirm_password: values.confirm_password,
-        role: values.role ? "doctor" : "user",
+        role: 'user'
       };
 
       try {
@@ -183,21 +182,7 @@ const RegisterForm = () => {
             />
           </Box>
 
-          <Box mb={2}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id="role"
-                  name="role"
-                  checked={formik.values.role}
-                  onChange={(e) =>
-                    formik.setFieldValue("role", e.target.checked)
-                  }
-                />
-              }
-              label="I'm a Doctor"
-            />
-          </Box>
+          
 
           <Button
             fullWidth
