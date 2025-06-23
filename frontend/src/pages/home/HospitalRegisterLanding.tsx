@@ -10,7 +10,7 @@ import {
 const HospitalRegisterLanding = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
- 
+
   return (
     <Box
       sx={{
@@ -26,7 +26,12 @@ const HospitalRegisterLanding = () => {
       }}
     >
       {/* Text Section */}
-      <Box sx={{ flex: 1, width: '50%' }}>
+      <Box
+        sx={{
+          flex: 1,
+          width: { xs: "100%", md: "50%" },
+        }}
+      >
         <Typography
           sx={{
             fontSize: { xs: 28, sm: 32, md: 40 },
@@ -95,9 +100,9 @@ const HospitalRegisterLanding = () => {
         sx={{
           flex: 1,
           display: "flex",
-          justifyContent: "end",
-          width: '50%',
-         
+          justifyContent: { xs: "center", md: "end" },
+          width: { xs: "100%", md: "50%" },
+          mt: { xs: 4, md: 0 }, // Add margin top for smaller screens to separate image from text
         }}
       >
         <Box
@@ -107,8 +112,7 @@ const HospitalRegisterLanding = () => {
           sx={{
             width: "100%",
             maxWidth: 320,
-            borderRadius: 2, 
-
+            borderRadius: 2,
           }}
         />
       </Box>
