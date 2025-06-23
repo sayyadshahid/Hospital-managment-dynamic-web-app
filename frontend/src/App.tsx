@@ -20,7 +20,8 @@ import ProfileDetail from "./pages/profile/Profile";
 import { AvatarProvider } from "./hooks/AvtarContex";
 import AdminPanelLayout from "./pages/Admin/AdminLayout";
 import AdminProtectedRoute from "./routes/AdminProtectedRoute";
-import DoctorsByHospital from "./pages/Admin/get_docs_byId";
+import DoctorPanelLayout from "./pages/DoctorAdmin/DoctorLayout";
+import DoctorProtectedRoute from "./routes/DoctorProtectedRoute";
 
 
 function App() {
@@ -124,6 +125,16 @@ function App() {
               <AdminProtectedRoute>
                 <AdminPanelLayout />
               </AdminProtectedRoute>
+            }
+          />
+
+           <Route
+            path="/doctor"
+            element={
+              <DoctorProtectedRoute>
+                <DoctorPanelLayout />
+              </DoctorProtectedRoute>
+              
             }
           />
 

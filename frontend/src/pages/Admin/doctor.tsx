@@ -37,9 +37,12 @@ const DoctorTable = () => {
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "Doctor ID", width: 200 },
-    { field: "name", headerName: "Name", flex: 1 },
+    { field: "fullname", headerName: "Name", width: 180},
     { field: "degree", headerName: "Degree", width: 180 },
-    { field: "hospital_id", headerName: "Hospital ID", width: 200 },
+    { field: "email", headerName: "Email", width: 180 },
+    { field: "phone_no", headerName: "Phone", width: 200 },
+
+
   ];
 
   return (
