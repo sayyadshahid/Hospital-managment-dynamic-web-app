@@ -7,14 +7,11 @@ __pycache__/
 *.pyd
 *.log
 
-# Virtual environment
+# Virtual environments
 venv/
 env/
 ENV/
 .venv/
-.env/
-
-
 
 # VSCode settings
 .vscode/
@@ -33,22 +30,18 @@ Thumbs.db
 .pdm.lock
 .cache/
 
-# Jupyter Notebooks checkpoints
+# Jupyter Notebooks
 .ipynb_checkpoints/
 
-# Secrets & configs
+# Secrets & environment files
 .env
 *.env
-/.env
-/env
-env
-
 
 # Database files
 *.sqlite3
 *.db
 
-# Build
+# Build artifacts
 build/
 dist/
 *.tar.gz
