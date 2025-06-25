@@ -5,6 +5,7 @@ import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../../components/configs/API";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -40,8 +41,8 @@ const RegisterForm = () => {
       };
 
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/signup",
+        const res = await API.post(
+          "signup",
           payload
         );
 

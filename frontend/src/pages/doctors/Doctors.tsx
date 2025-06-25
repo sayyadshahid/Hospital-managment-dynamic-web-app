@@ -54,7 +54,6 @@ const Doctors = () => {
       } catch (error) {
         console.error(error);
         console.log(error);
-        
       } finally {
         setLoading(false);
       }
@@ -88,7 +87,7 @@ const Doctors = () => {
   };
 
   const getUniqueDates = (schedule: Schedule[]) => {
-    const today = new Date().toISOString().split("T")[0];  
+    const today = new Date().toISOString().split("T")[0];
     const futureDates = schedule
       .filter((s) => s.schedule_date >= today)
       .map((s) => s.schedule_date);
@@ -115,7 +114,6 @@ const Doctors = () => {
     });
   };
 
- 
   return (
     <Box sx={{ bgcolor: "#ffffff", minHeight: "100vh" }}>
       <NavBar />
@@ -149,8 +147,6 @@ const Doctors = () => {
                       position: "relative",
                     }}
                   >
-                   
-
                     <Box
                       sx={{
                         display: "flex",
@@ -174,7 +170,7 @@ const Doctors = () => {
                         }}
                       >
                         <img
-                          src={`http://localhost:8000/${doc.file_path}`}
+                          src={`${process.env.REACT_APP_FILE_BASE_URL}/${doc.file_path}`}
                           alt="Doctor"
                           style={{
                             width: "100%",
@@ -333,8 +329,7 @@ const Doctors = () => {
             )}
           </Paper>
         )}
-
-     c
+        c
         <Footer />
       </Container>
     </Box>

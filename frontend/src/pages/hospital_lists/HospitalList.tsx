@@ -42,7 +42,7 @@ const HospitalList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const role =JSON.parse(localStorage.getItem("user") || "{}").role;
+  const role = JSON.parse(localStorage.getItem("user") || "{}").role;
 
   const isDoctor = role === "doctor";
 
@@ -135,7 +135,6 @@ const HospitalList = () => {
           </Box>
         </Box>
 
-        
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
           {loading ? (
             Array.from({ length: 9 }).map((_, index) => (
@@ -203,7 +202,7 @@ const HospitalList = () => {
                   <CardMedia
                     component="img"
                     height="180"
-                    image={`http://localhost:8000/${hospital.file_path}`}
+                    image={`${process.env.REACT_APP_FILE_BASE_URL}/${hospital.file_path}`}
                     alt={hospital.title}
                     onClick={() => {
                       navigate(`/hospital/${hospital.id}`, {
@@ -211,6 +210,7 @@ const HospitalList = () => {
                       });
                     }}
                   />
+
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
                       {hospital.title}

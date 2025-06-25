@@ -38,7 +38,7 @@ const HospitalRegister = () => {
 
       try {
         const res = await API.post(
-          "http://localhost:8000/api/register-hospital/",
+          "register-hospital/",
           formData,
           {
             headers: {

@@ -60,7 +60,7 @@ const Hospital = () => {
             {/* Hospital Image */}
             <Box
               component="img"
-              src={`http://localhost:8000/${hospital.file_path}`}
+              src={`${process.env.REACT_APP_FILE_BASE_URL}/${hospital.file_path}`}
               alt={hospital.title}
               sx={{
                 width: "100%",

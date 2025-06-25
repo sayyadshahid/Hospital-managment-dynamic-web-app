@@ -5,6 +5,7 @@ import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../../components/configs/API";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const LoginForm = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const res = await axios.post("http://localhost:8000/api/login", values);
+        const res = await API.post("login", values);
 
         const { id, role, access_token, msg, fullname, email } = res.data;
 
