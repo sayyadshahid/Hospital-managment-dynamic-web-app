@@ -13,9 +13,7 @@ env/
 ENV/
 .venv/
 .env/
-/uploads/
-*/uploads/
-*./uploads/
+
 
 
 # VSCode settings

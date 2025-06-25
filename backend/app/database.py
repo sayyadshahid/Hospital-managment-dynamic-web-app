@@ -9,6 +9,7 @@ import os
 MONGO_DB_UR = os.getenv("MONGO_DB_URL")
 DATABASE_NAM = os.getenv("DATABASE_NAME")
  
+print(MONGO_DB_UR, "=========MONGO_DB_UR===")
 
 class Database:
     client: AsyncIOMotorClient = None
