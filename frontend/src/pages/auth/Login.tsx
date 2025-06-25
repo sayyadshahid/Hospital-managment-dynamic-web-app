@@ -5,7 +5,6 @@ import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Style } from "@mui/icons-material";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -37,31 +36,33 @@ const LoginForm = () => {
         };
 
         localStorage.setItem("user", JSON.stringify(user));
-      
+
         role == "admin" ? navigate("/admin") : navigate("/", { state: { id } });
         toast.success(msg || "Login Successful!");
       } catch (error: any) {
-        const errMsg =  
+        const errMsg =
           error?.response?.data?.detail || "Login failed. Please try again.";
         toast.error(errMsg);
-      }  
+      }
     },
   });
 
   return (
     <Box
       height="100vh"
-      
       display="flex"
       alignItems="center"
       justifyContent="center"
-      sx={{ paddingLeft: 2 }}
+      sx={{
+        paddingLeft: { xs: 2, sm: 3, md: 4 },
+        paddingRight: { xs: 2, sm: 3, md: 4 },
+      }}
     >
       <Paper
         elevation={3}
         sx={{
-          padding: 4,
-          width: 300,
+          padding: { xs: 3, sm: 4, md: 5 },
+          width: { xs: "100%", sm: 350, md: 400 },
           borderRadius: 2,
         }}
       >
@@ -117,8 +118,9 @@ const LoginForm = () => {
           >
             Login
           </Button>
+
           <Typography sx={{ textAlign: "center", mt: 2, fontSize: 15 }}>
-            Don't have any account?{" "}
+            Don't have an account?{" "}
             <span
               onClick={() => navigate("/register")}
               style={{ cursor: "pointer", fontWeight: 700 }}

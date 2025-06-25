@@ -1,14 +1,7 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +16,7 @@ const RegisterForm = () => {
       phone_no: "",
       password: "",
       confirm_password: "",
-      role: ""
+      role: "",
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Full name is required"),
@@ -35,7 +28,6 @@ const RegisterForm = () => {
       confirm_password: Yup.string()
         .oneOf([Yup.ref("password")], "Passwords must match")
         .required("Confirm your password"),
-       
     }),
     onSubmit: async (values) => {
       const payload = {
@@ -44,7 +36,7 @@ const RegisterForm = () => {
         phone_no: values.phone_no,
         password: values.password,
         confirm_password: values.confirm_password,
-        role: 'user'
+        role: "user",
       };
 
       try {
@@ -75,22 +67,21 @@ const RegisterForm = () => {
         justifyContent: "center",
         background: "linear-gradient(135deg, #ffffff 0%, #c9c5c5 )",
         borderRadius: 5,
-        padding: 2,
+        padding: { xs: 2, sm: 3, md: 4 }, // Responsive padding
       }}
     >
       <Paper
         elevation={4}
         sx={{
-          padding: 5,
-          width: "100%",
-          maxWidth: 400,
+          padding: { xs: 3, sm: 4, md: 5 }, // Responsive padding
+          width: { xs: "100%", sm: 350, md: 400 }, // Responsive width
           borderRadius: 4,
           backgroundColor: "#ffffff",
         }}
       >
         <form onSubmit={formik.handleSubmit}>
           <Box mb={3} textAlign="center">
-            <Typography variant="h5" fontWeight="bold" color={'grey'}>
+            <Typography variant="h5" fontWeight="bold" color={"grey"}>
               Sign Up
             </Typography>
             <Typography variant="body2" color="textSecondary">
@@ -104,7 +95,7 @@ const RegisterForm = () => {
               id="fullname"
               name="fullname"
               label="Full Name"
-              variant="outlined"
+              variant="standard" // Changed to "standard"
               size="small"
               value={formik.values.fullname}
               onChange={formik.handleChange}
@@ -119,7 +110,7 @@ const RegisterForm = () => {
               id="phone_no"
               name="phone_no"
               label="Phone Number"
-              variant="outlined"
+              variant="standard" // Changed to "standard"
               size="small"
               value={formik.values.phone_no}
               onChange={formik.handleChange}
@@ -134,7 +125,7 @@ const RegisterForm = () => {
               id="email"
               name="email"
               label="Email"
-              variant="outlined"
+              variant="standard" // Changed to "standard"
               size="small"
               type="email"
               value={formik.values.email}
@@ -150,7 +141,7 @@ const RegisterForm = () => {
               id="password"
               name="password"
               label="Password"
-              variant="outlined"
+              variant="standard" // Changed to "standard"
               size="small"
               type="password"
               value={formik.values.password}
@@ -166,7 +157,7 @@ const RegisterForm = () => {
               id="confirm_password"
               name="confirm_password"
               label="Confirm Password"
-              variant="outlined"
+              variant="standard" // Changed to "standard"
               size="small"
               type="password"
               value={formik.values.confirm_password}
@@ -181,8 +172,6 @@ const RegisterForm = () => {
               }
             />
           </Box>
-
-          
 
           <Button
             fullWidth
@@ -215,7 +204,11 @@ const RegisterForm = () => {
             <Box
               component="span"
               onClick={() => navigate("/login")}
-              sx={{ cursor: "pointer", fontWeight: 600, color: "#000000" }}
+              sx={{
+                cursor: "pointer",
+                fontWeight: 600,
+                color: "#000000",
+              }}
             >
               Login
             </Box>

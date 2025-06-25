@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+*.log
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+/uploads/
+*/uploads/
+*./uploads/
+
+
+# VSCode settings
+.vscode/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Pytest cache
+.pytest_cache/
+
+# MyPy cache
+.mypy_cache/
+
+# Pydantic cache
+.pdm.lock
+.cache/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Secrets & configs
+.env
+*.env
+/.env
+/env
+env
+
+
+# Database files
+*.sqlite3
+*.db
+
+# Build
+build/
+dist/
+*.tar.gz
+*.whl
