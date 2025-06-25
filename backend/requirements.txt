@@ -16,4 +16,6 @@ uvicorn[standard]==0.34.2
 motor
 pydantic[email]==2.11.4
 PyJWT
+passlib[bcrypt]
+
 
