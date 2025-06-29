@@ -27,7 +27,7 @@ const GuestNavBar = () => {
     { label: "Home", path: "/" },
     { label: "About", path: "/aboutUs" },
     { label: "Login", path: "/login" },
-    { label: "Signin", path: "/register" },
+    { label: "Signup", path: "/register" },
   ];
 
   const handleNavigation = (path: string) => {
