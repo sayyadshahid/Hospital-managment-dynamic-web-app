@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
@@ -6,9 +6,11 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -22,6 +24,8 @@ const LoginForm = () => {
         .required("Password is required"),
     }),
     onSubmit: async (values) => {
+      setLoading(true);  
+
       try {
         const res = await API.post("login", values);
 
@@ -44,6 +48,8 @@ const LoginForm = () => {
         const errMsg =
           error?.response?.data?.detail || "Login failed. Please try again.";
         toast.error(errMsg);
+      } finally {
+        setLoading(false); // Stop loader
       }
     },
   });
@@ -117,7 +123,7 @@ const LoginForm = () => {
               },
             }}
           >
-            Login
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
           </Button>
 
           <Typography sx={{ textAlign: "center", mt: 2, fontSize: 15 }}>

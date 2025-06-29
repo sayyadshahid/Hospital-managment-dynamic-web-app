@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
@@ -6,9 +6,11 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -40,12 +42,10 @@ const RegisterForm = () => {
         role: "user",
       };
 
-      try {
-        const res = await API.post(
-          "signup",
-          payload
-        );
+      setLoading(true); // Start loading
 
+      try {
+        const res = await API.post("signup", payload);
         toast.success(
           res.data.msg || "Registration successful! Please Login Again"
         );
@@ -55,6 +55,8 @@ const RegisterForm = () => {
           error?.response?.data?.msg ||
           "Registration failed. Please try again.";
         toast.error(errMsg);
+      } finally {
+        setLoading(false); // Stop loading
       }
     },
   });
@@ -190,7 +192,11 @@ const RegisterForm = () => {
               },
             }}
           >
-            Create Account
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Create Account"
+            )}
           </Button>
 
           <Typography
