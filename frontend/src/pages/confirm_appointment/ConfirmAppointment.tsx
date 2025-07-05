@@ -27,14 +27,21 @@ const ConfirmAppointment = () => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
-      phone: Yup.string().required("Phone is required"),
+      phone: Yup.string()
+        .required("Phone Number is required")
+        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
       email: Yup.string().email("Invalid email").required("Email is required"),
-      dob: Yup.string().required("Date of birth is required"),
+      dob: Yup.date()
+        .required("Date of birth is required")
+        .max(new Date(), "Date of birth cannot be in the future"),
+
       gender: Yup.string().required("Gender is required"),
-      address: Yup.string().required("Address is required"),
-      reasonForConsultation: Yup.string().required(
-        "Reason for consultation is required"
-      ),
+      address: Yup.string()
+        .required("Address is required")
+        .min(10, "Address must be at least 10 characters"),
+      reasonForConsultation: Yup.string()
+        .required("Reason for consultation is required")
+        .min(10, "reasonForConsultation must be at least 10 characters"),
     }),
     onSubmit: async (values) => {
       const formData = new FormData();
@@ -51,10 +58,10 @@ const ConfirmAppointment = () => {
       try {
         const res = await API.post(`create_appointment/${doctorId}`, formData);
         const appointmentId = res.data.appointment_id || null;
-        
+
         toast.success(res.data?.msg || "Appointment Confirmed!");
         formik.resetForm();
-          navigate("/appointment-successs", { state: { appointmentId } });
+        navigate("/appointment-successs", { state: { appointmentId } });
       } catch (error: any) {
         const getErrorMessage = (error: any) => {
           const detail = error?.response?.data?.detail;

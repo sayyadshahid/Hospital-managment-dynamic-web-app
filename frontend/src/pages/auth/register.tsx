@@ -11,6 +11,26 @@ import CircularProgress from "@mui/material/CircularProgress";
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const validationSchema = Yup.object({
+    fullname: Yup.string().required("Full name is required").trim(),
+
+    email: Yup.string()
+      .email("Invalid email")
+      .required("Email is required")
+      .trim(),
+
+    phone_no: Yup.string()
+      .required("Phone number is required")
+      .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+
+    password: Yup.string()
+      .required("Password is required")
+      .min(6, "Minimum 6 characters"),
+
+    confirm_password: Yup.string()
+      .required("Confirm your password")
+      .oneOf([Yup.ref("password")], "Passwords must match"),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -21,17 +41,7 @@ const RegisterForm = () => {
       confirm_password: "",
       role: "",
     },
-    validationSchema: Yup.object({
-      fullname: Yup.string().required("Full name is required"),
-      email: Yup.string().email("Invalid email").required("Email is required"),
-      phone_no: Yup.string().required("Phone number is required"),
-      password: Yup.string()
-        .min(6, "Minimum 6 characters")
-        .required("Password is required"),
-      confirm_password: Yup.string()
-        .oneOf([Yup.ref("password")], "Passwords must match")
-        .required("Confirm your password"),
-    }),
+    validationSchema,
     onSubmit: async (values) => {
       const payload = {
         fullname: values.fullname,
