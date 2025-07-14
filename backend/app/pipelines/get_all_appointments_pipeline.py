@@ -31,6 +31,7 @@ def get_all_appointments_pipeline():
                 'is_success':1,
                 'schedule_date':1,
                 'schedule_time':1,
+                'name': 1,
                 
             }
         }
@@ -69,7 +70,7 @@ def get_all_appointments_by_userId_pipeline(userId):
                 'is_success':1,
                 'schedule_date':1,
                 'schedule_time':1,
-                
+                'name': 1,
             }
         }
     ]

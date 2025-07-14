@@ -10,7 +10,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import API from "../../components/configs/API";
 
 interface Appointment {
-  appointment_id: string;
+  id: string;
   name: string;
   email: string;
   degree: string;
@@ -41,13 +41,13 @@ const AppointmentTable = () => {
     try {
       const updated = { ...appointment, is_success: !appointment.is_success };
 
-      await API.put(`update-appointment/${appointment.appointment_id}`, {
+      await API.put(`update-appointment/${appointment.id}`, {
         is_success: updated.is_success,
       });
 
       setAppointments((prev) =>
         prev.map((a) =>
-          a.appointment_id === appointment.appointment_id ? updated : a
+          a.id === appointment.id ? updated : a
         )
       );
     } catch (error) {
@@ -56,7 +56,7 @@ const AppointmentTable = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "appointment_id", headerName: "Appointment ID", width: 200 },
+    { field: "id", headerName: "Appointment ID", width: 200 },
     { field: "name", headerName: "Patient Name", flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
     { field: "docId", headerName: "Doctor ID", width: 200 },
@@ -105,7 +105,7 @@ const AppointmentTable = () => {
           <DataGrid
             rows={appointments}
             columns={columns}
-            getRowId={(row) => row.appointment_id}
+            getRowId={(row) => row.id}
             initialState={{
               pagination: {
                 paginationModel: { pageSize: 10, page: 0 },
