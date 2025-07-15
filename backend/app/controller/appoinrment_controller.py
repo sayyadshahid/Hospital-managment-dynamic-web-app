@@ -5,7 +5,7 @@ from fastapi import HTTPException, Request
 from app.database import get_database
 from app.constant.constants import DbCollections
 from app.models.appointment_model import  AppointmentModel, UpdateAppointmentModel
-
+from app.pipelines.get_all_appointments_pipeline import get_all_appointments_pipeline, get_all_appointments_by_userId_pipeline
 class Appointment():
 
     async def addAppointmentByDocId(data: AppointmentModel, request: Request, docId: str):
@@ -79,20 +79,24 @@ class Appointment():
             db = get_database()
             appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
             
-           
-            appointments = await appointment_collection.find({'user_id': userId}).to_list(length=None)
-            
+            pipeline = get_all_appointments_by_userId_pipeline(userId)
+            appointments = await appointment_collection.aggregate(pipeline).to_list(length=None)
             if not appointments:
-                raise HTTPException(status_code=404, detail="No appointment found")
+                raise HTTPException(status_code=400, detail="No appointments found")
+            return {"count": len(appointments), "appointments": appointments}
+            # appointments = await appointment_collection.find({'user_id': userId}).to_list(length=None)
+            
+            # if not appointments:
+            #     raise HTTPException(status_code=404, detail="No appointment found")
 
-            for appointment in appointments:
-                appointment['_id'] = str(appointment['_id'])  
-                appointment['appointment_id'] = appointment.pop('_id')
+            # for appointment in appointments:
+            #     appointment['_id'] = str(appointment['_id'])  
+            #     appointment['appointment_id'] = appointment.pop('_id')
 
-            return {
-                'count': len(appointments),
-                'appointments': appointments
-            }
+            # return {
+            #     'count': len(appointments),
+            #     'appointments': appointments
+            # }
 
         except HTTPException as exc:
             raise exc
@@ -133,18 +137,19 @@ class Appointment():
         try:
             db = get_database()
             appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
-            appointments =   appointment_collection.find()
-            appointment_list = []
-            
-            async for appointment in appointments:
-                appointment_id = str(appointment.pop('_id'))
-                appointment['appointment_id'] = appointment_id
-                appointment_list.append(appointment)
+            # appointments =   appointment_collection.find()
+            # appointment_list = []
+            pipeline = get_all_appointments_pipeline()
+            appointments = await appointment_collection.aggregate(pipeline).to_list(length=None)
+            if not appointments:
+                raise HTTPException(status_code=400, detail="No appointments found")
+            return {"count": len(appointments), "appointments": appointments}
+            # async for appointment in appointments:
+            #     appointment_id = str(appointment.pop('_id'))
+            #     appointment['appointment_id'] = appointment_id
+            #     appointment_list.append(appointment)
                 
-            return {
-                'count': len(appointment_list),
-                'appointments': appointment_list
-            }
+            
             
         except HTTPException as exc:
             raise exc

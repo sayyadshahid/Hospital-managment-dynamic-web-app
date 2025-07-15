@@ -16,6 +16,12 @@ interface Review {
   rating: string;
   user_id: string;
   hospital_id: string;
+  user: {
+    fullname: string;
+    email: string;
+    role: string;
+    phone_no: string;
+  };
 }
 
 const ReviewTable = () => {
@@ -47,10 +53,15 @@ const ReviewTable = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "Review ID", width: 200 },
     { field: "review", headerName: "Review Text", flex: 2 },
     { field: "rating", headerName: "Rating", width: 100 },
-    { field: "user_id", headerName: "User ID", width: 200 },
+    {
+      field: "userName",
+      headerName: "User Name",
+      width: 200,
+      renderCell: (params) => <span>{params.row.user?.fullname || "N/A"}</span>,
+    },
+
     { field: "hospital_id", headerName: "Hospital ID", width: 200 },
     {
       field: "actions",
