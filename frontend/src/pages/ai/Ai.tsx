@@ -14,6 +14,7 @@ import SendIcon from "@mui/icons-material/Send";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import API from "../../components/configs/API";
 import NavBar from "../../components/header";
+import useLocalStorage from "../../hooks/useLocalhost";
 
 type Message = {
   sender: "user" | "ai";
@@ -24,7 +25,8 @@ export default function ChatUI() {
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-  const name = JSON.parse(localStorage.getItem("user") || "{}").fullname;
+  // const name = JSON.parse(localStorage.getItem("user") || "{}").fullname;
+   const [user] = useLocalStorage("user", null)
 
 
   const getGeminiResponse = async (promptText: string): Promise<string> => {
@@ -71,7 +73,7 @@ export default function ChatUI() {
         {messages.length === 0 && !loading && (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
             <Typography variant="h6" sx={{ color: "#888" }}>
-              How can I assist you? {name}
+              How can I assist you? {user.fullname}
             </Typography>
           </Box>
         )}
