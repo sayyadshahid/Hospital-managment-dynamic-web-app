@@ -7,8 +7,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
 import CircularProgress from "@mui/material/CircularProgress";
+import useLocalStorage from "../../hooks/useLocalhost";
 
 const LoginForm = () => {
+  const [_, setUser] = useLocalStorage("user", null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -24,24 +26,21 @@ const LoginForm = () => {
         .required("Password is required"),
     }),
     onSubmit: async (values) => {
-      setLoading(true);  
+      setLoading(true);
 
       try {
         const res = await API.post("login", values);
 
         const { id, role, access_token, msg, fullname, email } = res.data;
 
-        const user = {
+        setUser({
           id,
           role,
           access_token,
           msg,
           fullname,
           email,
-        };
-
-        localStorage.setItem("user", JSON.stringify(user));
-
+        });
         role == "admin" ? navigate("/admin") : navigate("/", { state: { id } });
         toast.success(msg || "Login Successful!");
       } catch (error: any) {
