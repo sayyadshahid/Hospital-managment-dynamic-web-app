@@ -1,105 +1,50 @@
 from app.models.HospitalRegister_model import HospitalRegisterModel
 from fastapi import HTTPException
-from app.database import get_database
-from app.constant.constants import DbCollections
 import os
 from fastapi import UploadFile
-from fastapi import HTTPException
-from app.database import get_database
-from bson import ObjectId
+
+
+DUMMY_HOSPITALS = [
+    {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "City Hospital & Research Center",
+        "description": "A premier multi-specialty hospital with state-of-the-art facilities.",
+        "address": "123 Healthcare Ave, Medical District, NY 10001",
+        "about": "Founded in 1995, City Hospital has been at the forefront of healthcare innovation, providing top-notch medical services to the community.",
+        "file_path": "uploads/hospital1.jpg",
+        "rating": 4.5
+    },
+    {
+        "id": "550e8400-e29b-41d4-a716-446655440001",
+        "title": "Green Valley Medical Center",
+        "description": "Your trusted partner in health and wellness since 2002.",
+        "address": "456 Wellness Blvd, Green Valley, CA 95000",
+        "about": "Green Valley Medical Center offers comprehensive healthcare services with a patient-first approach.",
+        "file_path": "uploads/hospital2.jpg",
+        "rating": 3.8
+    },
+    {
+        "id": "550e8400-e29b-41d4-a716-446655440002",
+        "title": "Sunrise Children's Hospital",
+        "description": "Specialized pediatric care in a child-friendly environment.",
+        "address": "789 Kidcare Road, Sunnyvale, TX 75000",
+        "about": "Dedicated exclusively to children's health, Sunrise offers expert pediatricians and modern facilities.",
+        "file_path": "uploads/hospital3.jpg",
+        "rating": 4.2
+    }
+]
 
 class HospitalRegister:
-   
+
     async def hospital_register(data, file: UploadFile):
-        try:
-            # Save the uploaded file locally (optional)
-            upload_folder = "uploads/"
-            os.makedirs(upload_folder, exist_ok=True)  # create folder if not exists
-            file_location = os.path.join(upload_folder, file.filename)
+        return {"msg": "Hospital registered successfully"}
 
-            with open(file_location, "wb") as f:
-                content = await file.read()
-                f.write(content)
-
- 
-            hospital_data = data.dict()
-            hospital_data["filename"] = file.filename
-            hospital_data["file_path"] = file_location
- 
-            db = get_database()
-            hospital_collection = db[DbCollections.HOSPITAL_COLLECTION]
-            result = await hospital_collection.insert_one(hospital_data)
-
-            return {"msg": "Hospital registered successfully"}
-
-        except HTTPException as exc:
-            raise exc
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-    
-    
     async def get_hospital_by_id(id: str):
-        try:
-            db= get_database()
-            hospital_collection = db[DbCollections.HOSPITAL_COLLECTION]
-            if not ObjectId.is_valid(id):
-                  raise HTTPException(status_code=400, detail='Invalid user ID format')
+        hospital = DUMMY_HOSPITALS[0]
+        return {'hospital': hospital}
 
-            hospital = await hospital_collection.find_one({'_id': ObjectId(id)})
-            
-            if not hospital:
-                raise HTTPException(status_code=400, detail="User not found")
-                        
-            hospital['id'] = str(hospital.pop('_id'))
-            return {'hospital': hospital}
-        
-        except HTTPException as exc:
-            raise exc
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-    
-    
     async def get_all_hospitals():
-        try:
-            db = get_database()
-            hospital_collection = db[DbCollections.HOSPITAL_COLLECTION]
-            
-            Hospitals = hospital_collection.find()
-            Hospital_list = []
-            
-            async for Hospital in Hospitals:
-                Hospital['id'] = str(Hospital.pop('_id'))
-                Hospital_list.append(Hospital)
-                
-            if not Hospital_list:
-                raise HTTPException(status_code=404, detail="No Hospitals found")
+        return {'count': len(DUMMY_HOSPITALS), 'Hospitals': DUMMY_HOSPITALS}
 
-            return {'count': len(Hospital_list), 'Hospitals': Hospital_list}
-            
-        
-        
-        except HTTPException as exc:
-            raise exc
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-    
-    
     async def delete_hospital(id: str):
-        try:
-            db= get_database()
-            hospital_collection = db[DbCollections.HOSPITAL_COLLECTION]
-            
-            
-            result = await hospital_collection.delete_one({'_id': ObjectId(id)})
-            
-            if result.deleted_count == 0:
-                    raise HTTPException(status_code=404, detail="Hospital not found")
-
-            return {'massege': 'Hospital Successfully Deleted..'}
-         
-        except HTTPException as exc:
-            raise exc
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-    
-    
+        return {'massege': 'Hospital Successfully Deleted..'}

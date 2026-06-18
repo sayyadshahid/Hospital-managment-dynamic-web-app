@@ -1,93 +1,129 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
+const tokens = {
+  purple: "#7C3AED",
+  purpleLight: "#EDE9FE",
+  violet: "#8B5CF6",
+  indigo: "#4F46E5",
+  neutral: "#6B7280",
+  neutralDark: "#1F1635",
+  surface: "#FFFFFF",
+  borderPurple: "#DDD6FE",
+};
+
+const features = [
+  {
+    icon: "🕐",
+    title: "24/7 Availability",
+    body: "Book hospitals and consult with doctors anytime, from anywhere in the world.",
+    accent: "#7C3AED",
+    accentBg: "#EDE9FE",
+    hoverBorder: "#7C3AED",
+    hoverShadow: "rgba(124,58,237,0.18)",
+  },
+  {
+    icon: "✅",
+    title: "Verified Hospitals",
+    body: "Every hospital listed is thoroughly verified for quality, safety, and trust.",
+    accent: "#0D9488",
+    accentBg: "#CCFBF1",
+    hoverBorder: "#0D9488",
+    hoverShadow: "rgba(13,148,136,0.18)",
+  },
+  {
+    icon: "🔒",
+    title: "Secure Booking",
+    body: "Your data and appointments are protected with enterprise-grade security.",
+    accent: "#D97706",
+    accentBg: "#FEF3C7",
+    hoverBorder: "#D97706",
+    hoverShadow: "rgba(217,119,6,0.18)",
+  },
+  {
+    icon: "⚡",
+    title: "Instant Confirmation",
+    body: "Get real-time booking confirmation and reminders without any delay.",
+    accent: "#DB2777",
+    accentBg: "#FCE7F3",
+    hoverBorder: "#DB2777",
+    hoverShadow: "rgba(219,39,119,0.18)",
+  },
+];
+
 const WhyChooseUs = () => {
   return (
-    <Box
-      sx={{
-        py: 6,
-        px: { xs: 2, md: 10 },
-        backgroundColor: "#f9f9f9",
-        textAlign: "center",
-      }}
-    >
-      <Typography
-        variant="h5"
-        sx={{
-          fontWeight: 700,
-          mb: 4,
-          fontSize: { xs: 24, md: 32 },
-          fontFamily: "Montserrat",
-          color: 'grey'
-        }}
-      >
-        Why Choose Us?
+    <Box sx={{ py: { xs: 7, md: 10 }, px: { xs: 3, md: 10 }, bgcolor: tokens.surface, textAlign: "center" }}>
+
+      <Typography sx={{
+        fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 600,
+        letterSpacing: 2, textTransform: "uppercase", color: tokens.violet, mb: 1.5,
+      }}>
+        Why Jacsto
       </Typography>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          justifyContent: "space-around",
-          gap: 4,
-        }}
-      >
-        {/* Card 1 */}
-        <Box
-          sx={{
-            p: 3,
-            backgroundColor: "white",
-            borderRadius: 2,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            maxWidth: 300,
-            mx: "auto",
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            24/7 Availability
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Book hospitals and consult with doctors anytime, from anywhere.
-          </Typography>
+      <Typography component="h2" sx={{
+        fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800,
+        fontSize: { xs: 26, md: 38 }, color: tokens.neutralDark, lineHeight: 1.2, mb: 1.5,
+      }}>
+        Everything you need,{" "}
+        <Box component="span" sx={{
+          background: `linear-gradient(135deg, ${tokens.purple}, ${tokens.indigo})`,
+          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+        }}>
+          in one place.
         </Box>
+      </Typography>
 
-        {/* Card 2 */}
-        <Box
-          sx={{
-            p: 3,
-            backgroundColor: "white",
-            borderRadius: 2,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            maxWidth: 300,
-            mx: "auto",
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Verified Hospitals
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Every hospital listed is verified for quality and trust.
-          </Typography>
-        </Box>
+      <Typography sx={{
+        fontFamily: "Inter, sans-serif", fontSize: { xs: 14, md: 16 },
+        color: tokens.neutral, maxWidth: 520, mx: "auto", mb: 6, lineHeight: 1.7,
+      }}>
+        Jacsto is built around you — making hospital discovery, booking, and care management effortless.
+      </Typography>
 
-        {/* Card 3 */}
-        <Box
-          sx={{
-            p: 3,
-            backgroundColor: "white",
-            borderRadius: 2,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            maxWidth: 300,
-            mx: "auto",
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Secure Booking
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Your data and appointments are protected with top security.
-          </Typography>
-        </Box>
+      <Box sx={{
+        display: "grid",
+        gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "repeat(4, 1fr)" },
+        gap: 3, maxWidth: 1100, mx: "auto",
+      }}>
+        {features.map(({ icon, title, body, accent, accentBg, hoverBorder, hoverShadow }) => (
+          <Box key={title} sx={{
+            p: 3.5, bgcolor: tokens.surface,
+            border: `1px solid ${tokens.borderPurple}`,
+            borderRadius: "16px", textAlign: "left", cursor: "default",
+            transition: "all 0.25s ease",
+            "&:hover": {
+              borderColor: hoverBorder,
+              boxShadow: `0 8px 32px ${hoverShadow}`,
+              transform: "translateY(-4px)",
+            },
+          }}>
+            <Box sx={{
+              width: 48, height: 48, borderRadius: "12px", bgcolor: accentBg,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 22, mb: 2.5,
+            }}>
+              {icon}
+            </Box>
+
+            <Typography sx={{
+              fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 700,
+              fontSize: 16, color: tokens.neutralDark, mb: 1,
+            }}>
+              {title}
+            </Typography>
+
+            <Typography sx={{
+              fontFamily: "Inter, sans-serif", fontSize: 14,
+              color: tokens.neutral, lineHeight: 1.65,
+            }}>
+              {body}
+            </Typography>
+
+            <Box sx={{ mt: 2.5, height: 3, width: 32, borderRadius: 4, bgcolor: accent, opacity: 0.55 }} />
+          </Box>
+        ))}
       </Box>
     </Box>
   );

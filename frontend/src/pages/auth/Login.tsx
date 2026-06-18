@@ -3,9 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import toast from "react-hot-toast";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import API from "../../components/configs/API";
 import CircularProgress from "@mui/material/CircularProgress";
 import useLocalStorage from "../../hooks/useLocalhost";
 
@@ -28,28 +26,23 @@ const LoginForm = () => {
     onSubmit: async (values) => {
       setLoading(true);
 
-      try {
-        const res = await API.post("login", values);
+      // Dummy login — bypasses backend
+      const dummyUser = {
+        id: "111e8400-e29b-41d4-a716-446655440010",
+        role: "admin",
+        access_token: "dummy-token-bypassed",
+        msg: "Login Successful!",
+        fullname: "Alice Williams",
+        email: values.email,
+      };
 
-        const { id, role, access_token, msg, fullname, email } = res.data;
+      setUser(dummyUser);
+      dummyUser.role === "admin"
+        ? navigate("/admin")
+        : navigate("/", { state: { id: dummyUser.id } });
+      toast.success(dummyUser.msg);
 
-        setUser({
-          id,
-          role,
-          access_token,
-          msg,
-          fullname,
-          email,
-        });
-        role == "admin" ? navigate("/admin") : navigate("/", { state: { id } });
-        toast.success(msg || "Login Successful!");
-      } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.detail || "Login failed. Please try again.";
-        toast.error(errMsg);
-      } finally {
-        setLoading(false); // Stop loader
-      }
+      setLoading(false);
     },
   });
 
