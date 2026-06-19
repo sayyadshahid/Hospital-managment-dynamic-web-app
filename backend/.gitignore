@@ -9,8 +9,7 @@ __pycache__/
 
 # Virtual environments
 venv/
-env/
-ENV/
+
 .venv/
 
 # VSCode settings
@@ -33,9 +32,7 @@ Thumbs.db
 # Jupyter Notebooks
 .ipynb_checkpoints/
 
-# Secrets & environment files
-.env
-*.env
+
 
 # Database files
 *.sqlite3
