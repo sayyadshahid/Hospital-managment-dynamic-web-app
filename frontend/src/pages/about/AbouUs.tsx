@@ -1,15 +1,26 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Link,
-  TextField,
-  Container,
-} from "@mui/material";
+import { Box, Typography, Button, TextField, Container } from "@mui/material";
 import NavBar from "../../components/header";
 import Footer from "../../components/footer";
-// Team data
+
+/* ─── Design Tokens ─────────────────────────────────────────────── */
+const tokens = {
+  bg: "#FAF8FF",
+  purple: "#7C3AED",
+  purpleMid: "#6D28D9",
+  purpleLight: "#EDE9FE",
+  violet: "#8B5CF6",
+  violetLight: "#DDD6FE",
+  indigo: "#4F46E5",
+  indigoLight: "#E0E7FF",
+  teal: "#0D9488",
+  tealLight: "#CCFBF1",
+  neutral: "#6B7280",
+  neutralDark: "#1F1635",
+  surface: "#FFFFFF",
+  borderPurple: "#DDD6FE",
+};
+
 const teamMembers = [
   {
     name: "Dr. Amelia Chen",
@@ -28,84 +39,81 @@ const teamMembers = [
   },
 ];
 
+/* ─── Section Eyebrow + Heading helper ──────────────────────────── */
+const SectionHeading = ({ eyebrow, title }: { eyebrow: string; title: string }) => (
+  <Box sx={{ pt: 6, pb: 2 }}>
+    <Typography sx={{
+      fontFamily: "Inter, sans-serif", fontSize: 11.5, fontWeight: 600,
+      letterSpacing: 1.8, textTransform: "uppercase", color: tokens.violet, mb: 1,
+    }}>
+      {eyebrow}
+    </Typography>
+    <Typography sx={{
+      fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800,
+      fontSize: { xs: 22, md: 28 }, color: tokens.neutralDark,
+    }}>
+      {title}
+    </Typography>
+  </Box>
+);
+
 export default function AboutUs() {
   return (
-    <Box
-      sx={{
-        fontFamily: '"Public Sans", "Noto Sans", sans-serif',
-        bgcolor: "#f9fafb",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Header */}
-
+    <Box sx={{
+      fontFamily: '"Inter", sans-serif',
+      bgcolor: tokens.bg,
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+    }}>
       <NavBar />
-      {/* Main Content */}
-      <Container
-        maxWidth="md"
-        sx={{ flexGrow: 1, py: 5, px: { xs: 2, md: 10 } }}
-      >
-        {/* About Section */}
-        <Box sx={{ mb: 3, px: 2 }}>
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: 700,
-              fontSize: { xs: "2rem", md: "2.25rem" },
-              letterSpacing: "-0.015em",
-              color: "#101618",
-              minWidth: 288,
-              lineHeight: 1.1,
-            }}
-          >
-            About HealthAI
-          </Typography>
-        </Box>
-        <Typography
-          variant="body1"
-          sx={{
-            color: "#101618",
-            fontWeight: 400,
-            mb: 3,
-            px: 2,
-            lineHeight: 1.5,
-          }}
-        >
+
+      {/* Hero */}
+      <Box sx={{
+        background: "linear-gradient(135deg, #F3EEFF 0%, #FAF8FF 60%, #EEF2FF 100%)",
+        py: { xs: 7, md: 9 },
+        px: { xs: 3, md: 10 },
+        textAlign: "center",
+        borderBottom: `1px solid ${tokens.borderPurple}`,
+      }}>
+        <Typography sx={{
+          fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 600,
+          letterSpacing: 2, textTransform: "uppercase", color: tokens.violet, mb: 1.5,
+        }}>
+          About Us
+        </Typography>
+        <Typography sx={{
+          fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800,
+          fontSize: { xs: 32, md: 46 }, color: tokens.neutralDark,
+          lineHeight: 1.15, mb: 2,
+        }}>
+          About{" "}
+          <Box component="span" sx={{
+            background: `linear-gradient(135deg, ${tokens.purple}, ${tokens.indigo})`,
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>
+            HealthAI.
+          </Box>
+        </Typography>
+        <Typography sx={{
+          fontFamily: "Inter, sans-serif", fontSize: { xs: 15, md: 16.5 },
+          color: tokens.neutral, maxWidth: 640, mx: "auto", lineHeight: 1.75,
+        }}>
           HealthAI is a cutting-edge platform designed to revolutionize hospital
           management through the integration of advanced AI models. Our mission
           is to empower healthcare providers with the tools they need to enhance
-          efficiency, improve patient outcomes, and streamline operations. We
-          believe in the power of technology to transform healthcare, making it
-          more accessible, affordable, and effective for everyone.
+          efficiency, improve patient outcomes, and streamline operations.
         </Typography>
+      </Box>
+
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 2, px: { xs: 2, md: 10 } }}>
 
         {/* Mission Section */}
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 700,
-            fontSize: "1.375rem",
-            letterSpacing: "-0.015em",
-            color: "#101618",
-            pt: 5,
-            pb: 1,
-            px: 2,
-          }}
-        >
-          Our Mission
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            color: "#101618",
-            fontWeight: 400,
-            mb: 3,
-            px: 2,
-            lineHeight: 1.5,
-          }}
-        >
+        <SectionHeading eyebrow="Our Purpose" title="Our Mission" />
+        <Typography sx={{
+          fontFamily: "Inter, sans-serif", color: tokens.neutral,
+          fontWeight: 400, mb: 1, lineHeight: 1.75, fontSize: 15,
+        }}>
           Our mission is to bridge the gap between healthcare and artificial
           intelligence, providing hospitals with seamless access to AI-driven
           solutions. We aim to foster a collaborative environment where
@@ -117,117 +125,75 @@ export default function AboutUs() {
         </Typography>
 
         {/* Meet the Team Section */}
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 700,
-            fontSize: "1.375rem",
-            letterSpacing: "-0.015em",
-            color: "#101618",
-            pt: 5,
-            pb: 1,
-            px: 2,
-          }}
-        >
-          Meet the Team
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 3,
-            px: 2,
-            pb: 3,
-            justifyContent: { xs: "center", md: "flex-start" },
-          }}
-        >
-          {teamMembers.map(({ name, role, img }) => (
-            <Box
-              key={name}
-              sx={{
+        <SectionHeading eyebrow="The People" title="Meet the Team" />
+        <Box sx={{
+          display: "flex", flexWrap: "wrap", gap: 3, pb: 3,
+          justifyContent: { xs: "center", md: "flex-start" },
+        }}>
+          {teamMembers.map(({ name, role, img }, i) => {
+            const ringColors = [
+              [tokens.purple, tokens.violet],
+              [tokens.teal, "#5EEAD4"],
+              [tokens.indigo, "#A5B4FC"],
+            ];
+            const [c1, c2] = ringColors[i % ringColors.length];
+            return (
+              <Box key={name} sx={{
                 flex: "1 1 158px",
-                maxWidth: {
-                  xs: "100%",
-                  sm: "calc(50% - 12px)",
-                  md: "calc(33.333% - 16px)",
-                },
+                maxWidth: { xs: "100%", sm: "calc(50% - 12px)", md: "calc(33.333% - 16px)" },
                 minWidth: 158,
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-                textAlign: "center",
-                pb: 3,
-                alignItems: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  width: "100%",
-                  maxWidth: 158,
-                  aspectRatio: "1",
-                  borderRadius: "50%",
-                  overflow: "hidden",
-                  backgroundImage: `url(${img})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  mb: 1.5,
-                }}
-              />
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 500, color: "#101618" }}
-              >
-                {name}
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#5c7e8a" }}>
-                {role}
-              </Typography>
-            </Box>
-          ))}
+                display: "flex", flexDirection: "column", gap: 0.5,
+                textAlign: "center", pb: 3, alignItems: "center",
+              }}>
+                <Box sx={{
+                  p: "3px", borderRadius: "50%",
+                  background: `linear-gradient(135deg, ${c1}, ${c2})`,
+                  mb: 1.5, width: "100%", maxWidth: 158,
+                }}>
+                  <Box sx={{
+                    width: "100%", aspectRatio: "1", borderRadius: "50%",
+                    overflow: "hidden",
+                    backgroundImage: `url(${img})`,
+                    backgroundSize: "cover", backgroundPosition: "center",
+                    border: `3px solid ${tokens.surface}`,
+                  }} />
+                </Box>
+                <Typography sx={{
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontWeight: 700, fontSize: 15, color: tokens.neutralDark,
+                }}>
+                  {name}
+                </Typography>
+                <Typography sx={{
+                  fontFamily: "Inter, sans-serif", fontSize: 13, color: c1,
+                  fontWeight: 600,
+                }}>
+                  {role}
+                </Typography>
+              </Box>
+            );
+          })}
         </Box>
 
         {/* Contact Us Section */}
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 700,
-            fontSize: "1.375rem",
-            letterSpacing: "-0.015em",
-            color: "#101618",
-            pt: 5,
-            pb: 1,
-            px: 2,
-          }}
-        >
-          Contact Us
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            color: "#101618",
-            fontWeight: 400,
-            mb: 3,
-            px: 2,
-            lineHeight: 1.5,
-          }}
-        >
+        <SectionHeading eyebrow="Get In Touch" title="Contact Us" />
+        <Typography sx={{
+          fontFamily: "Inter, sans-serif", color: tokens.neutral,
+          fontWeight: 400, mb: 3, lineHeight: 1.75, fontSize: 15,
+        }}>
           We'd love to hear from you! Whether you have questions about our
           platform, need support, or want to explore partnership opportunities,
           please reach out to us. Our team is dedicated to providing exceptional
           service and support to help you achieve your goals.
         </Typography>
+
         <Box
           component="form"
           noValidate
           autoComplete="off"
           sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
-            maxWidth: 480,
-            px: 2,
-            py: 1,
-            alignItems: "flex-end",
+            display: "flex", flexWrap: "wrap", gap: 2,
+            maxWidth: 480, py: 1, pb: 6, alignItems: "flex-end",
           }}
         >
           <TextField
@@ -236,53 +202,46 @@ export default function AboutUs() {
             variant="outlined"
             size="medium"
             sx={{
-              bgcolor: "#f9fafb",
+              bgcolor: tokens.surface,
               borderRadius: 2,
-              "& .MuiOutlinedInput-root": {
-                height: 56,
-                paddingRight: 0,
-              },
-              "& input": {
-                color: "#101618",
-                padding: "15px",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#d4dfe2",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#d4dfe2",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#d4dfe2",
-              },
-              "& input::placeholder": {
-                color: "#5c7e8a",
-              },
+              "& .MuiOutlinedInput-root": { height: 52, borderRadius: "10px" },
+              "& input": { color: tokens.neutralDark, padding: "15px", fontFamily: "Inter" },
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: tokens.borderPurple },
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: tokens.violet },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: tokens.purple, borderWidth: "1.5px" },
+              "& input::placeholder": { color: tokens.neutral, opacity: 1 },
             }}
           />
           <Button
             type="submit"
             variant="contained"
+            disableElevation
             sx={{
-              minWidth: 84,
-              maxWidth: 480,
-              bgcolor: "#b2d8e5",
-              color: "#101618",
-              fontWeight: 700,
+              minWidth: 110,
+              bgcolor: tokens.purple,
+              color: "#fff",
+              fontFamily: "Inter",
+              fontWeight: 600,
               fontSize: "0.875rem",
               textTransform: "none",
-              borderRadius: "9999px",
-              height: 40,
-              px: 4,
+              borderRadius: "10px",
+              height: 52,
+              px: 3.5,
               whiteSpace: "nowrap",
-              boxShadow: "none",
-              "&:hover": { bgcolor: "#a0c9d9", boxShadow: "none" },
+              boxShadow: `0 4px 14px ${tokens.purple}33`,
+              "&:hover": {
+                bgcolor: tokens.purpleMid,
+                boxShadow: `0 6px 18px ${tokens.purple}44`,
+                transform: "translateY(-1px)",
+                transition: "all 0.2s ease",
+              },
             }}
           >
             Submit
           </Button>
         </Box>
       </Container>
+
       <Footer />
     </Box>
   );

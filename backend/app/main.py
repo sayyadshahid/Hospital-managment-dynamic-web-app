@@ -3,6 +3,7 @@ load_dotenv()
 import os
 from fastapi import FastAPI, HTTPException,Request
 from fastapi.responses import JSONResponse
+from app.database import connect_to_mongo,close_mongo_connection
 from app.routes.auth_user_route import auth_router
 from app.routes.HospitalRegister_route import hospitalregister_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +15,8 @@ from app.routes.schedule_route import schedule_router
 from app.routes.appointment_route import appointment_router
 from app.routes.gemini_route import router as gemini_router
 
+
+print("Gemini API Key:", os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI()
 
@@ -36,8 +39,16 @@ app.include_router(gemini_router, prefix="/api", tags=["Gemini API"])
 
 
 
+
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+
+@app.on_event("startup") 
+async def startup_event():
+    await connect_to_mongo()
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_mongo_connection()
 
 
 @app.exception_handler(HTTPException)

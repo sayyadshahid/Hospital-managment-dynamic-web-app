@@ -114,8 +114,8 @@ const UserNavBar = () => {
                   borderRadius: "8px",
                   px: 1.8,
                   "&:hover": {
-                    bgcolor: tokens.purpleLight,
-                    color: tokens.purple,
+                    bgcolor: tokens.bg,
+                    color: "#000",
                   },
                 }}
               >

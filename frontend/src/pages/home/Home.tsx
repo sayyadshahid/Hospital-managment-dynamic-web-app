@@ -223,7 +223,7 @@ const LandingPage = () => {
             zIndex: 0,
           }} />
 
-          <Box component="img" src="./landingpage.jpg" alt="Hospital care illustration" sx={{
+          <Box component="img" src="./mainImage.png" alt="Hospital care illustration" sx={{
             position: "relative", zIndex: 1,
             width: { xs: "88%", sm: 440, md: 520 },
             height: { xs: 240, sm: 310, md: 380 },

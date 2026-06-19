@@ -1,65 +1,164 @@
+from datetime import datetime
+import re
+from bson import ObjectId
 from fastapi import HTTPException, Request
+from app.database import get_database
+from app.constant.constants import DbCollections
 from app.models.appointment_model import AppointmentModel, UpdateAppointmentModel
-
-
-DUMMY_APPOINTMENTS = [
-    {
-        "id": "880e8400-e29b-41d4-a716-446655440005",
-        "name": "John Doe",
-        "phone": "+91 1234567890",
-        "email": "john.doe@example.com",
-        "dob": "1990-05-20",
-        "gender": "Male",
-        "address": "456 Main Street, Apt 2B, New York, NY 10002",
-        "reasonForConsultation": "Chest pain and shortness of breath for the past week",
-        "schedule_date": "2026-07-15T00:00:00",
-        "schedule_time": "09:00 AM",
-        "status": "pending",
-        "is_success": False,
-        "user_id": "111e8400-e29b-41d4-a716-446655440010",
-        "docId": "660e8400-e29b-41d4-a716-446655440001",
-        "appointment_id": "880e8400-e29b-41d4-a716-446655440005"
-    },
-    {
-        "id": "880e8400-e29b-41d4-a716-446655440006",
-        "name": "Jane Smith",
-        "phone": "+91 9876543210",
-        "email": "jane.smith@example.com",
-        "dob": "1985-11-15",
-        "gender": "Female",
-        "address": "123 Oak Avenue, Los Angeles, CA 90001",
-        "reasonForConsultation": "Regular checkup and blood work",
-        "schedule_date": "2026-07-16T00:00:00",
-        "schedule_time": "10:30 AM",
-        "status": "pending",
-        "is_success": True,
-        "user_id": "111e8400-e29b-41d4-a716-446655440010",
-        "docId": "660e8400-e29b-41d4-a716-446655440002",
-        "appointment_id": "880e8400-e29b-41d4-a716-446655440006"
-    }
-]
-
+from app.pipelines.get_all_appointments_pipeline import get_all_appointments_pipeline, get_all_appointments_by_userId_pipeline
 class Appointment():
 
     async def addAppointmentByDocId(data: AppointmentModel, request: Request, docId: str):
-        return {
-            "msg": "appointment added successfully",
-            "appointment_id": "880e8400-e29b-41d4-a716-446655440005"
-        }
+        try:
+             
+            user_id = request.state.user_id
+            if not user_id:
+                raise HTTPException(status_code=400, detail="User not authenticated")
 
+            phone_regex = r"^\+91 \d{10}$"
+            data.phone = f"+91 {data.phone}" 
+            if not re.match(phone_regex, data.phone):
+                raise HTTPException(status_code=400, detail="Invalid phone number format.")
+
+            
+            data_dict = data.dict()
+            data_dict["schedule_date"] = data.schedule_date.isoformat()
+            data_dict["dob"] = data.dob.isoformat()
+            data_dict["user_id"] = user_id
+            data_dict["docId"] = docId
+
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+            result = await appointment_collection.insert_one(data_dict)
+
+            return {
+                "msg": "appointment added successfully",
+                "appointment_id": str(result.inserted_id)
+            }
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        
+    
     async def getAppointmentById(id: str):
-        appointment = DUMMY_APPOINTMENTS[0]
-        return {'details': appointment}
+        try:
+            db= get_database()
+            
+            if not ObjectId.is_valid(id):
+                raise HTTPException(status_code=400, detail="Invalid user ID format")
 
+            object_id = ObjectId(id)
+
+            appointment_collection= db[DbCollections.APPOINTMENT_COLLECTION]
+            appointment = await appointment_collection.find_one({'_id': object_id})
+             
+            
+            if appointment:
+                appointment['id'] = str(appointment.pop('_id'))
+                return {
+                    'details': appointment
+                }
+            raise HTTPException(status_code=404, detail="Appointment not found")
+          
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+            
+            
+            
+            
     async def getAllAppointmentsByUserId(userId: str):
-        return {"count": len(DUMMY_APPOINTMENTS), "appointments": DUMMY_APPOINTMENTS}
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+            
+            pipeline = get_all_appointments_by_userId_pipeline(userId)
+            appointments = await appointment_collection.aggregate(pipeline).to_list(length=None)
+            if not appointments:
+                raise HTTPException(status_code=400, detail="No appointments found")
+            return {"count": len(appointments), "appointments": appointments}
 
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+            
+            
     async def getAllAppointmentsByDocId(docId: str):
-        filtered = [a for a in DUMMY_APPOINTMENTS if a["docId"] == docId]
-        return {'count': len(filtered), 'appointments': filtered}
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+            
+           
+            appointments = await appointment_collection.find({'docId': docId}).to_list(length=None)
+            
+            if not appointments:
+                raise HTTPException(status_code=404, detail="No appointment found")
 
+            for appointment in appointments:
+                appointment['_id'] = str(appointment['_id'])  
+                appointment['appointment_id'] = appointment.pop('_id')
+
+            return {
+                'count': len(appointments),
+                'appointments': appointments
+            }
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+    
     async def getAllAppointments():
-        return {"count": len(DUMMY_APPOINTMENTS), "appointments": DUMMY_APPOINTMENTS}
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+            pipeline = get_all_appointments_pipeline()
+            appointments = await appointment_collection.aggregate(pipeline).to_list(length=None)
+            if not appointments:
+                raise HTTPException(status_code=400, detail="No appointments found")
+            return {"count": len(appointments), "appointments": appointments}
+            
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
+        
     async def UpdateAppointment(appointment_id: str, data: UpdateAppointmentModel):
-        return {"message": "Appointment fully overwritten"}
+        try:
+            db = get_database()
+            appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
+
+            existing = await appointment_collection.find_one({"_id": ObjectId(appointment_id)})
+
+            if not existing:
+                raise HTTPException(status_code=404, detail="Appointment not found")
+
+            
+            update_data = existing.copy()
+            for k, v in data.dict().items():
+                if v is not None:
+                    update_data[k] = v
+
+            update_data["updated_at"] = datetime.utcnow()
+
+            update_data["_id"] = ObjectId(appointment_id)
+
+            result = await appointment_collection.replace_one(
+                {"_id": ObjectId(appointment_id)},
+                update_data
+            )
+
+            return {"message": "Appointment fully overwritten"}
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
