@@ -1,5 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import { Box, Typography, Button, TextField, Rating } from "@mui/material";
+import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined";
+import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import NavBar from "../../components/header";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -115,7 +117,7 @@ const HospitalRegister = () => {
               bgcolor: tokens.purpleLight, fontSize: 24,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              🏥
+              <LocalHospitalOutlinedIcon sx={{ fontSize: 26, color: tokens.purple }} />
             </Box>
             <Typography sx={{
               fontFamily: "Plus Jakarta Sans, sans-serif",
@@ -158,7 +160,8 @@ const HospitalRegister = () => {
                 }}
               />
               <Typography sx={{ fontFamily: "Inter", fontSize: 13.5, color: tokens.violet, fontWeight: 600 }}>
-                📷 &nbsp;{selectedImage ? "Change Hospital Image" : "Upload Hospital Image"}
+                <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 18, color: tokens.violet, mr: 0.5 }} />
+                {selectedImage ? "Change Hospital Image" : "Upload Hospital Image"}
               </Typography>
             </Box>
             {selectedImage && (

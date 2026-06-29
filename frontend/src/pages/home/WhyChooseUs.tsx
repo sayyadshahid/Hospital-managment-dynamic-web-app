@@ -1,5 +1,9 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
+import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
+import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 
 const tokens = {
   purple: "#7C3AED",
@@ -14,7 +18,7 @@ const tokens = {
 
 const features = [
   {
-    icon: "🕐",
+    Icon: AccessTimeRoundedIcon,
     title: "24/7 Availability",
     body: "Book hospitals and consult with doctors anytime, from anywhere in the world.",
     accent: "#7C3AED",
@@ -23,7 +27,7 @@ const features = [
     hoverShadow: "rgba(124,58,237,0.18)",
   },
   {
-    icon: "✅",
+    Icon: VerifiedRoundedIcon,
     title: "Verified Hospitals",
     body: "Every hospital listed is thoroughly verified for quality, safety, and trust.",
     accent: "#0D9488",
@@ -32,7 +36,7 @@ const features = [
     hoverShadow: "rgba(13,148,136,0.18)",
   },
   {
-    icon: "🔒",
+    Icon: LockRoundedIcon,
     title: "Secure Booking",
     body: "Your data and appointments are protected with enterprise-grade security.",
     accent: "#D97706",
@@ -41,7 +45,7 @@ const features = [
     hoverShadow: "rgba(217,119,6,0.18)",
   },
   {
-    icon: "⚡",
+    Icon: BoltRoundedIcon,
     title: "Instant Confirmation",
     body: "Get real-time booking confirmation and reminders without any delay.",
     accent: "#DB2777",
@@ -87,7 +91,7 @@ const WhyChooseUs = () => {
         gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "repeat(4, 1fr)" },
         gap: 3, maxWidth: 1100, mx: "auto",
       }}>
-        {features.map(({ icon, title, body, accent, accentBg, hoverBorder, hoverShadow }) => (
+        {features.map(({ Icon, title, body, accent, accentBg, hoverBorder, hoverShadow }) => (
           <Box key={title} sx={{
             p: 3.5, bgcolor: tokens.surface,
             border: `1px solid ${tokens.borderPurple}`,
@@ -102,9 +106,9 @@ const WhyChooseUs = () => {
             <Box sx={{
               width: 48, height: 48, borderRadius: "12px", bgcolor: accentBg,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 22, mb: 2.5,
+              mb: 2.5,
             }}>
-              {icon}
+              <Icon sx={{ fontSize: 22, color: accent }} />
             </Box>
 
             <Typography sx={{

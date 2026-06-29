@@ -19,6 +19,9 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
+import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
+import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { useNavigate } from "react-router-dom";
 import { useAvatar } from "../../hooks/AvtarContex";
 
@@ -114,8 +117,8 @@ const UserNavBar = () => {
                   borderRadius: "8px",
                   px: 1.8,
                   "&:hover": {
-                    bgcolor: tokens.bg,
-                    color: "#000",
+                    bgcolor: tokens.purpleLight,
+                    color: tokens.purple,
                   },
                 }}
               >
@@ -146,7 +149,7 @@ const UserNavBar = () => {
                 },
               }}
             >
-              ✨ AI
+              <AutoAwesomeRoundedIcon sx={{ fontSize: 15, mr: 0.5 }} /> AI
             </Button>
 
             {/* Avatar + Menu */}
@@ -177,16 +180,16 @@ const UserNavBar = () => {
             >
               <MenuItem
                 onClick={() => { navigate("/profile"); handleMenuClose(); }}
-                sx={{ fontFamily: "Inter", fontSize: 14, color: tokens.neutralDark, borderRadius: "8px", mx: 0.5 }}
+                sx={{ fontFamily: "Inter", fontSize: 14, color: tokens.neutralDark, borderRadius: "8px", mx: 0.5, gap: 1 }}
               >
-                👤 &nbsp; Profile
+                <PersonOutlineRoundedIcon sx={{ fontSize: 17 }} /> Profile
               </MenuItem>
               <Divider sx={{ my: 0.5, borderColor: tokens.borderPurple }} />
               <MenuItem
                 onClick={handleLogout}
-                sx={{ fontFamily: "Inter", fontSize: 14, color: "#DC2626", borderRadius: "8px", mx: 0.5 }}
+                sx={{ fontFamily: "Inter", fontSize: 14, color: "#DC2626", borderRadius: "8px", mx: 0.5, gap: 1 }}
               >
-                🚪 &nbsp; Logout
+                <LogoutRoundedIcon sx={{ fontSize: 17 }} /> Logout
               </MenuItem>
             </Menu>
           </Box>
@@ -265,7 +268,7 @@ const UserNavBar = () => {
                       "&:hover": { bgcolor: tokens.purpleMid },
                     }}
                   >
-                    ✨ AI
+                    <AutoAwesomeRoundedIcon sx={{ fontSize: 15, mr: 0.5 }} /> AI
                   </Button>
                 </ListItem>
 

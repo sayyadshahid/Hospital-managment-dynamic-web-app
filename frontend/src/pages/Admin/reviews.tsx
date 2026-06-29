@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography, Paper, IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import API from "../../components/configs/API";
 import { tokens, paperSx, headingSx, dataGridSx, deleteIconSx } from "./tableTheme";
 
@@ -54,8 +55,8 @@ const ReviewTable = () => {
       headerName: "Rating",
       width: 110,
       renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.3, color: tokens.amber, fontFamily: "Inter", fontWeight: 600, fontSize: 13 }}>
-          ⭐ {params.value}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.4, color: tokens.amber, fontFamily: "Inter", fontWeight: 600, fontSize: 13 }}>
+          <StarRoundedIcon sx={{ fontSize: 15, color: tokens.amber }} /> {params.value}
         </Box>
       ),
     },

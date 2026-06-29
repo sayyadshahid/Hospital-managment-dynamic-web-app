@@ -101,12 +101,11 @@ const LandingPage = () => {
     <Box sx={{ bgcolor: tokens.bg, fontFamily: "Inter, sans-serif" }}>
       <style>{globalStyles}</style>
 
-      {/* NavBar */}
       <Box data-aos="fade-down" data-aos-delay="100">
         <NavBar />
       </Box>
 
-      {/* Hero */}
+
       <Box sx={{
         background: tokens.heroBg,
         minHeight: "92vh",
@@ -121,7 +120,7 @@ const LandingPage = () => {
         position: "relative",
         overflow: "hidden",
       }}>
-        {/* Blob decorations */}
+        
         <Box sx={{
           position: "absolute", width: 480, height: 480, borderRadius: "50%",
           background: "radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)",
@@ -133,15 +132,10 @@ const LandingPage = () => {
           bottom: 0, left: -80, pointerEvents: "none"
         }} />
 
-        {/* Left: Text */}
         <Box data-aos="fade-right" data-aos-delay="200"
           sx={{ flex: 1, textAlign: { xs: "center", md: "left" }, zIndex: 1 }}>
 
-          <Chip label="🏥  Trusted Hospital Network" size="small" sx={{
-            mb: 2.5, bgcolor: tokens.purpleLight, color: tokens.purple,
-            fontFamily: "Inter", fontWeight: 600, fontSize: 12, px: 1,
-            border: `1px solid ${tokens.violet}33`,
-          }} />
+        
 
           <Typography component="h1" sx={{
             fontFamily: "Plus Jakarta Sans",
@@ -253,29 +247,24 @@ const LandingPage = () => {
         </Box>
       </Box>
 
-      {/* Why Choose Us */}
+    
       <Box data-aos="fade-up" sx={{ bgcolor: tokens.surface, borderTop: `1px solid ${tokens.border}` }}>
         <WhyChooseUs />
       </Box>
 
-      {/* Testimonials */}
+      
       <Box data-aos="fade-up" data-aos-delay="100" sx={{ bgcolor: tokens.purplePale }}>
         <Testimonials />
       </Box>
 
-      {/* Register Sections */}
-      {!token && (
-        <>
+     
           <Box data-aos="fade-up" data-aos-delay="100" sx={{ bgcolor: tokens.purpleLight }}>
             <UserRegisterLanding />
           </Box>
           <Box data-aos="fade-up" data-aos-delay="100" sx={{ bgcolor: tokens.indigoLight }}>
             <HospitalRegisterLanding />
           </Box>
-        </>
-      )}
-
-      <Footer />
+       <Footer />
     </Box>
   );
 };

@@ -5,6 +5,9 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import NavBar from "../../components/header";
 import { useAvatar } from "../../hooks/AvtarContex";
 import API from "../../components/configs/API";
@@ -40,9 +43,9 @@ const MOCK_STATS = {
 
 /* ─── Editable Info Row ──────────────────────────────────────────── */
 const EditableRow = ({
-  icon, label, value, fieldKey, editingKey, onEditStart, onSave, onCancel, draft, setDraft, last,
+  Icon, label, value, fieldKey, editingKey, onEditStart, onSave, onCancel, draft, setDraft, last,
 }: {
-  icon: string; label: string; value: string; fieldKey: string;
+  Icon: React.ElementType; label: string; value: string; fieldKey: string;
   editingKey: string | null;
   onEditStart: (key: string, currentVal: string) => void;
   onSave: (key: string) => void;
@@ -57,7 +60,7 @@ const EditableRow = ({
       display: "flex", alignItems: "center", gap: 1.5,
       py: 1.5, borderBottom: last ? "none" : `1px solid ${tokens.borderPurple}`,
     }}>
-      <Box sx={{ fontSize: 16, width: 22 }}>{icon}</Box>
+      <Icon sx={{ fontSize: 18, color: tokens.neutral, width: 22 }} />
       <Box sx={{ textAlign: "left", overflow: "hidden", flex: 1 }}>
         <Typography sx={{ fontFamily: "Inter", fontSize: 11, color: tokens.neutral, lineHeight: 1.4 }}>
           {label}
@@ -253,17 +256,17 @@ export default function ProfileDetail() {
           {/* Editable Info — flat list, no nested box */}
           <Box sx={{ textAlign: "left" }}>
             <EditableRow
-              icon="👤" label="Full Name" value={userDetail.fullname} fieldKey="fullname"
+              Icon={PersonOutlineRoundedIcon} label="Full Name" value={userDetail.fullname} fieldKey="fullname"
               editingKey={editingKey} onEditStart={handleEditStart} onSave={handleSave} onCancel={handleCancel}
               draft={draft} setDraft={setDraft}
             />
             <EditableRow
-              icon="✉️" label="Email" value={userDetail.email} fieldKey="email"
+              Icon={EmailOutlinedIcon} label="Email" value={userDetail.email} fieldKey="email"
               editingKey={editingKey} onEditStart={handleEditStart} onSave={handleSave} onCancel={handleCancel}
               draft={draft} setDraft={setDraft}
             />
             <EditableRow
-              icon="📞" label="Phone" value={userDetail.phone_no} fieldKey="phone_no" last
+              Icon={PhoneOutlinedIcon} label="Phone" value={userDetail.phone_no} fieldKey="phone_no" last
               editingKey={editingKey} onEditStart={handleEditStart} onSave={handleSave} onCancel={handleCancel}
               draft={draft} setDraft={setDraft}
             />

@@ -1,5 +1,7 @@
 import React from "react";
 import { Box, Typography, Button, useTheme, useMediaQuery } from "@mui/material";
+import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
+import StethoscopeIcon from "@mui/icons-material/MedicalServicesOutlined";
 import { useNavigate } from "react-router-dom";
 
 /* ─── Design Tokens ─────────────────────────────────────────────── */
@@ -20,7 +22,7 @@ const tokens = {
 
 /* ─── Card ───────────────────────────────────────────────────────── */
 const CardBox = ({
-  icon,
+  Icon,
   title,
   description,
   buttonText,
@@ -31,7 +33,7 @@ const CardBox = ({
   btnHover,
   accentBg,
 }: {
-  icon: string;
+  Icon: React.ElementType;
   title: string;
   description: string;
   buttonText: string;
@@ -60,11 +62,11 @@ const CardBox = ({
       {/* Icon bubble */}
       <Box sx={{
         width: 56, height: 56, borderRadius: "14px",
-        bgcolor: accentBg, fontSize: 26,
+        bgcolor: accentBg,
         display: "flex", alignItems: "center", justifyContent: "center",
         mx: "auto", mb: 2.5,
       }}>
-        {icon}
+        <Icon sx={{ fontSize: 26, color: btnColor }} />
       </Box>
 
       <Typography sx={{
@@ -153,7 +155,7 @@ const RegisterLandingSection = () => {
         gap: 3,
       }}>
         <CardBox
-          icon="👤"
+          Icon={PersonOutlineRoundedIcon}
           title="Patient"
           description="Create your account to find verified hospitals and book appointments in minutes."
           buttonText="Register as Patient"
@@ -165,7 +167,7 @@ const RegisterLandingSection = () => {
           accentBg={tokens.purpleLight}
         />
         <CardBox
-          icon="🩺"
+          Icon={StethoscopeIcon}
           title="Doctor"
           description="Register as a doctor and connect with patients who need your expertise."
           buttonText="Register as Doctor"

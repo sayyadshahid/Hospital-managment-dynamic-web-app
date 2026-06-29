@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import NavBar from "../../components/header";
 import Footer from "../../components/footer";
 import { useEffect, useState } from "react";
@@ -233,9 +235,10 @@ export default function ReportDetails() {
                 width: 56, height: 56, borderRadius: "50%", mx: "auto", mb: 2,
                 bgcolor: detail?.is_success ? tokens.tealLight : tokens.amberLight,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 26,
               }}>
-                {detail?.is_success ? "✅" : "⏳"}
+                {detail?.is_success
+                  ? <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: tokens.teal }} />
+                  : <HourglassEmptyRoundedIcon sx={{ fontSize: 28, color: tokens.amber }} />}
               </Box>
 
               <Typography sx={{

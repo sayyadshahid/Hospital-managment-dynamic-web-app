@@ -1,5 +1,8 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
+import VerifiedUserOutlinedIcon from "@mui/icons-material/VerifiedUserOutlined";
 
 /* ─── Design Tokens ─────────────────────────────────────────────── */
 const tokens = {
@@ -20,15 +23,15 @@ const tokens = {
 };
 
 /* ─── Perk Badge ─────────────────────────────────────────────────── */
-const Perk = ({ icon, text }: { icon: string; text: string }) => (
+const Perk = ({ Icon, text }: { Icon: React.ElementType; text: string }) => (
   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
     <Box sx={{
       width: 36, height: 36, borderRadius: "10px",
-      bgcolor: tokens.tealLight, fontSize: 18,
+      bgcolor: tokens.tealLight,
       display: "flex", alignItems: "center", justifyContent: "center",
       flexShrink: 0,
     }}>
-      {icon}
+      <Icon sx={{ fontSize: 18, color: tokens.teal }} />
     </Box>
     <Typography sx={{
       fontFamily: "Inter, sans-serif", fontSize: 14,
@@ -94,9 +97,9 @@ const HospitalRegisterLanding = () => {
           display: "flex", flexDirection: "column", gap: 1.8,
           mb: 4, alignItems: { xs: "center", md: "flex-start" },
         }}>
-          <Perk icon="📋" text="Easy online appointment & doctor management" />
-          <Perk icon="🌍" text="Reach patients nationwide on one platform" />
-          <Perk icon="🔒" text="Secure, verified hospital listing process" />
+          <Perk Icon={AssignmentOutlinedIcon} text="Easy online appointment & doctor management" />
+          <Perk Icon={PublicRoundedIcon} text="Reach patients nationwide on one platform" />
+          <Perk Icon={VerifiedUserOutlinedIcon} text="Secure, verified hospital listing process" />
         </Box>
 
         {/* Email nudge */}
