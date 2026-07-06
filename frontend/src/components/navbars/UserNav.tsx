@@ -30,7 +30,7 @@ const tokens = {
   bg: "#FAF8FF",
   purple: "#7C3AED",
   purpleMid: "#6D28D9",
-  purpleLight: "#EDE9FE",
+  purpleLight: "#f5f3fd",
   violet: "#8B5CF6",
   violetLight: "#DDD6FE",
   indigo: "#4F46E5",
@@ -118,7 +118,7 @@ const UserNavBar = () => {
                   px: 1.8,
                   "&:hover": {
                     bgcolor: tokens.purpleLight,
-                    color: tokens.purple,
+                    color: "#000",
                   },
                 }}
               >

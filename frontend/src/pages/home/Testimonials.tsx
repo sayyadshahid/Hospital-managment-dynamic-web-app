@@ -110,7 +110,6 @@ const Testimonials = () => {
             transition: "all 0.25s ease",
             "&:hover": {
               borderColor: hoverBorder,
-              boxShadow: `0 8px 32px ${hoverShadow}`,
               transform: "translateY(-4px)",
             },
           }}>

@@ -28,7 +28,6 @@ const CardBox = ({
   buttonText,
   navigateTo,
   hoverBorder,
-  hoverShadow,
   btnColor,
   btnHover,
   accentBg,
@@ -39,7 +38,6 @@ const CardBox = ({
   buttonText: string;
   navigateTo: string;
   hoverBorder: string;
-  hoverShadow: string;
   btnColor: string;
   btnHover: string;
   accentBg: string;
@@ -55,7 +53,6 @@ const CardBox = ({
       transition: "all 0.25s ease",
       "&:hover": {
         borderColor: hoverBorder,
-        boxShadow: `0 8px 32px ${hoverShadow}`,
         transform: "translateY(-4px)",
       },
     }}>
@@ -94,7 +91,6 @@ const CardBox = ({
           fontFamily: "Inter", fontWeight: 600,
           borderRadius: "8px", px: 3, py: 1.2,
           fontSize: 14, textTransform: "none",
-          boxShadow: `0 4px 14px ${hoverShadow}`,
           "&:hover": {
             bgcolor: btnHover,
             transform: "translateY(-1px)",
@@ -161,7 +157,6 @@ const RegisterLandingSection = () => {
           buttonText="Register as Patient"
           navigateTo="/register"
           hoverBorder="#7C3AED"
-          hoverShadow="rgba(124,58,237,0.18)"
           btnColor={tokens.purple}
           btnHover={tokens.purpleMid}
           accentBg={tokens.purpleLight}
@@ -173,7 +168,6 @@ const RegisterLandingSection = () => {
           buttonText="Register as Doctor"
           navigateTo="/register"
           hoverBorder="#0D9488"
-          hoverShadow="rgba(13,148,136,0.18)"
           btnColor="#0D9488"
           btnHover="#0F766E"
           accentBg="#CCFBF1"

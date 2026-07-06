@@ -218,22 +218,19 @@ export default function AboutUs() {
             disableElevation
             sx={{
               minWidth: 110,
-              bgcolor: tokens.purple,
-              color: "#fff",
+              bgcolor: "#fff",
+              color: "#000",
+              border:"1px solid #000",
               fontFamily: "Inter",
               fontWeight: 600,
               fontSize: "0.875rem",
               textTransform: "none",
               borderRadius: "10px",
-              height: 52,
-              px: 3.5,
+              height: 42,
+              px: 1.5,
               whiteSpace: "nowrap",
-              boxShadow: `0 4px 14px ${tokens.purple}33`,
               "&:hover": {
-                bgcolor: tokens.purpleMid,
-                boxShadow: `0 6px 18px ${tokens.purple}44`,
-                transform: "translateY(-1px)",
-                transition: "all 0.2s ease",
+                bgcolor: "#f1f1f1",
               },
             }}
           >

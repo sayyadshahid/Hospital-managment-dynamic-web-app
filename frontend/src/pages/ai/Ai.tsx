@@ -141,12 +141,12 @@ export default function ChatUI() {
             px: 2,
             py: 1,
             flexGrow: 1,
-            backgroundColor: "grey",
+            backgroundColor: "#f4f4f4",
             borderRadius: 4,
           }}
         >
           <InputBase
-            sx={{ flex: 1, color: "#ffffff" }}
+            sx={{ flex: 1, color: "#000" }}
             placeholder="Type your message..."
             multiline
             maxRows={4}
@@ -163,7 +163,7 @@ export default function ChatUI() {
           />
           <IconButton
             type="submit"
-            sx={{ color: "#ff0000" }}
+            sx={{ color: "rgb(109, 136, 255)" }}
             disabled={loading}
           >
             <SendIcon />

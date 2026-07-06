@@ -14,6 +14,7 @@ const tokens = {
   neutralDark: "#1F1635",
   surface: "#FFFFFF",
   borderPurple: "#DDD6FE",
+  hoverBorder: "#999",
 };
 
 const features = [
@@ -23,7 +24,7 @@ const features = [
     body: "Book hospitals and consult with doctors anytime, from anywhere in the world.",
     accent: "#7C3AED",
     accentBg: "#EDE9FE",
-    hoverBorder: "#7C3AED",
+      hoverBorder: "#999",
     hoverShadow: "rgba(124,58,237,0.18)",
   },
   {
@@ -32,7 +33,7 @@ const features = [
     body: "Every hospital listed is thoroughly verified for quality, safety, and trust.",
     accent: "#0D9488",
     accentBg: "#CCFBF1",
-    hoverBorder: "#0D9488",
+      hoverBorder: "#999",
     hoverShadow: "rgba(13,148,136,0.18)",
   },
   {
@@ -41,7 +42,7 @@ const features = [
     body: "Your data and appointments are protected with enterprise-grade security.",
     accent: "#D97706",
     accentBg: "#FEF3C7",
-    hoverBorder: "#D97706",
+      hoverBorder: "#999",
     hoverShadow: "rgba(217,119,6,0.18)",
   },
   {
@@ -50,7 +51,7 @@ const features = [
     body: "Get real-time booking confirmation and reminders without any delay.",
     accent: "#DB2777",
     accentBg: "#FCE7F3",
-    hoverBorder: "#DB2777",
+      hoverBorder: "#999",
     hoverShadow: "rgba(219,39,119,0.18)",
   },
 ];
@@ -99,7 +100,6 @@ const WhyChooseUs = () => {
             transition: "all 0.25s ease",
             "&:hover": {
               borderColor: hoverBorder,
-              boxShadow: `0 8px 32px ${hoverShadow}`,
               transform: "translateY(-4px)",
             },
           }}>

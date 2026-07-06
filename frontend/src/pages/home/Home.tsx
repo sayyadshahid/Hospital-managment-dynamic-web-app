@@ -167,7 +167,7 @@ const LandingPage = () => {
           {/* CTAs */}
           <Box sx={{
             display: "flex", justifyContent: { xs: "center", md: "flex-start" },
-            gap: 2, flexWrap: "wrap", mt: 4, mb: 5,
+            gap: 3, flexWrap: "wrap", mt: 4, mb: 5,
           }}>
             <div className="pulse-wrap">
               <Button variant="contained" onClick={() => navigate("/hospitalList")} disableElevation sx={{
@@ -187,11 +187,11 @@ const LandingPage = () => {
             </div>
 
             <Button onClick={() => navigate("/login")} variant="outlined" disableElevation sx={{
-              borderColor: tokens.violet, color: tokens.violet,
+              borderColor: "#000", color: "#000",
               fontFamily: "Inter", fontWeight: 600, borderRadius: "8px",
               fontSize: "14px", px: 3, py: 1.4, textTransform: "none",
               "&:hover": {
-                bgcolor: tokens.violetLight, borderColor: tokens.violet,
+                 borderColor: "#000",color:"#000",
                 transform: "translateY(-1px)", transition: "all 0.2s ease",
               },
             }}>
