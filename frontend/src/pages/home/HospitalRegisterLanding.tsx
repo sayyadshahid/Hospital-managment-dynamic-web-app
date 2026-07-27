@@ -164,7 +164,7 @@ const HospitalRegisterLanding = () => {
           alt="List your hospital"
           sx={{
             position: "relative", zIndex: 1,
-            width: "100%", maxWidth: 320,
+            width: "100%", maxWidth: 520,
             borderRadius: "16px",
             boxShadow: "0 16px 48px rgba(124,58,237,0.12)",
           }}
