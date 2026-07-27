@@ -4,7 +4,7 @@ from bson import ObjectId
 from fastapi import HTTPException, Request
 from app.database import get_database
 from app.constant.constants import DbCollections
-from app.models.appointment_model import  AppointmentModel, UpdateAppointmentModel
+from app.models.appointment_model import AppointmentModel, UpdateAppointmentModel
 from app.pipelines.get_all_appointments_pipeline import get_all_appointments_pipeline, get_all_appointments_by_userId_pipeline
 class Appointment():
 
@@ -21,14 +21,12 @@ class Appointment():
                 raise HTTPException(status_code=400, detail="Invalid phone number format.")
 
             
-            # Prepare data
             data_dict = data.dict()
             data_dict["schedule_date"] = data.schedule_date.isoformat()
             data_dict["dob"] = data.dob.isoformat()
             data_dict["user_id"] = user_id
             data_dict["docId"] = docId
 
-            # Save to DB
             db = get_database()
             appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
             result = await appointment_collection.insert_one(data_dict)
@@ -52,8 +50,6 @@ class Appointment():
                 raise HTTPException(status_code=400, detail="Invalid user ID format")
 
             object_id = ObjectId(id)
-
-
 
             appointment_collection= db[DbCollections.APPOINTMENT_COLLECTION]
             appointment = await appointment_collection.find_one({'_id': object_id})
@@ -84,19 +80,6 @@ class Appointment():
             if not appointments:
                 raise HTTPException(status_code=400, detail="No appointments found")
             return {"count": len(appointments), "appointments": appointments}
-            # appointments = await appointment_collection.find({'user_id': userId}).to_list(length=None)
-            
-            # if not appointments:
-            #     raise HTTPException(status_code=404, detail="No appointment found")
-
-            # for appointment in appointments:
-            #     appointment['_id'] = str(appointment['_id'])  
-            #     appointment['appointment_id'] = appointment.pop('_id')
-
-            # return {
-            #     'count': len(appointments),
-            #     'appointments': appointments
-            # }
 
         except HTTPException as exc:
             raise exc
@@ -104,8 +87,7 @@ class Appointment():
             raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
-
-           
+            
             
     async def getAllAppointmentsByDocId(docId: str):
         try:
@@ -137,19 +119,11 @@ class Appointment():
         try:
             db = get_database()
             appointment_collection = db[DbCollections.APPOINTMENT_COLLECTION]
-            # appointments =   appointment_collection.find()
-            # appointment_list = []
             pipeline = get_all_appointments_pipeline()
             appointments = await appointment_collection.aggregate(pipeline).to_list(length=None)
             if not appointments:
                 raise HTTPException(status_code=400, detail="No appointments found")
             return {"count": len(appointments), "appointments": appointments}
-            # async for appointment in appointments:
-            #     appointment_id = str(appointment.pop('_id'))
-            #     appointment['appointment_id'] = appointment_id
-            #     appointment_list.append(appointment)
-                
-            
             
         except HTTPException as exc:
             raise exc
@@ -175,10 +149,8 @@ class Appointment():
 
             update_data["updated_at"] = datetime.utcnow()
 
-            
             update_data["_id"] = ObjectId(appointment_id)
 
-            
             result = await appointment_collection.replace_one(
                 {"_id": ObjectId(appointment_id)},
                 update_data

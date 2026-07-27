@@ -12,9 +12,11 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
 import API from "../../components/configs/API";
-import DoctorByHospitalId from "./get_docs_byId"; // doctor popup component
+import DoctorByHospitalId from "./get_docs_byId";
 import { useNavigate } from "react-router-dom";
+import { tokens, paperSx, headingSx, dataGridSx, primaryButtonSx, deleteIconSx } from "./tableTheme";
 
 interface Hospital {
   id: string;
@@ -28,9 +30,7 @@ const HospitalTable = () => {
   const [users, setUsers] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedHospitalId, setSelectedHospitalId] = useState<string | null>(
-    null
-  );
+  const [selectedHospitalId, setSelectedHospitalId] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -78,10 +78,15 @@ const HospitalTable = () => {
       sortable: false,
       renderCell: (params) => (
         <Button
-          variant="outlined"
-          color="primary"
           size="small"
           onClick={() => handleOpenDialog(params.row.id)}
+          sx={{
+            borderColor: tokens.violet, color: tokens.violet,
+            border: `1px solid ${tokens.violet}`,
+            fontFamily: "Inter", fontWeight: 600, fontSize: 12.5,
+            borderRadius: "8px", textTransform: "none", px: 1.6,
+            "&:hover": { bgcolor: tokens.purpleLight, borderColor: tokens.purple },
+          }}
         >
           View
         </Button>
@@ -93,8 +98,8 @@ const HospitalTable = () => {
       width: 100,
       sortable: false,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
-          <DeleteIcon />
+        <IconButton sx={deleteIconSx} onClick={() => handleDelete(params.row.id)}>
+          <DeleteIcon fontSize="small" />
         </IconButton>
       ),
     },
@@ -102,40 +107,28 @@ const HospitalTable = () => {
 
   return (
     <>
-      <Paper
-        elevation={3}
-        sx={{ p: 3, m: 2, borderRadius: 3, backgroundColor: "#f9f9f9" }}
-      >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={2}
-        >
-          <Typography variant="h5" fontWeight={600}>
+      <Paper elevation={0} sx={paperSx}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2.5}>
+          <Typography sx={headingSx}>
             Hospital Management
           </Typography>
           <Button
             variant="contained"
-            sx={{ fontWeight: 600, color: "#ffffff", bgcolor: "red" }}
+            disableElevation
+            sx={primaryButtonSx}
             onClick={() => (window.location.href = "/hospitalregister")}
           >
-            Add Hospital
+            + Add Hospital
           </Button>
         </Box>
 
         <Box height={{ xs: 400, sm: 500, md: 600 }} width="100%">
           {loading ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-            >
-              <CircularProgress />
+            <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+              <CircularProgress sx={{ color: tokens.purple }} />
             </Box>
           ) : users.length === 0 ? (
-            <Typography variant="body1" align="center" mt={5}>
+            <Typography sx={{ fontFamily: "Inter", color: tokens.neutral, textAlign: "center", mt: 5 }}>
               No hospitals found.
             </Typography>
           ) : (
@@ -143,11 +136,9 @@ const HospitalTable = () => {
               rows={users}
               columns={columns}
               getRowId={(row) => row.id}
-              initialState={{
-                pagination: { paginationModel: { pageSize: 10, page: 0 } },
-              }}
+              initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
               pageSizeOptions={[10, 20, 50, 100]}
-              sx={{ backgroundColor: "white", borderRadius: 2 }}
+              sx={dataGridSx}
             />
           )}
         </Box>
@@ -159,31 +150,32 @@ const HospitalTable = () => {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="md"
+        PaperProps={{ sx: { borderRadius: "16px", border: `1px solid ${tokens.borderPurple}` } }}
       >
-        <DialogTitle>
-          <Button
-            color="error"
-            onClick={handleCloseDialog}
-            sx={{ float: "right", fontWeight: 600 }}
-          >
-            Close
-          </Button>
+        <DialogTitle sx={{ borderBottom: `1px solid ${tokens.borderPurple}`, py: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography sx={{ fontFamily: "Plus Jakarta Sans", fontWeight: 700, fontSize: 16, color: tokens.neutralDark }}>
+              Hospital Doctors
+            </Typography>
+            <IconButton onClick={handleCloseDialog} size="small" sx={{ color: tokens.neutral }}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ pt: 3 }}>
           {selectedHospitalId && (
             <>
               <Box display="flex" justifyContent="flex-end" mb={2}>
                 <Button
                   variant="contained"
-                  sx={{ bgcolor: "red", fontWeight: 700 }}
+                  disableElevation
                   size="large"
+                  sx={primaryButtonSx}
                   onClick={() =>
-                    navigate("/doctor-register", {
-                       state: { hospital_id: selectedHospitalId },
-                    })
+                    navigate("/doctor-register", { state: { hospital_id: selectedHospitalId } })
                   }
                 >
-                  Add Doctor
+                  + Add Doctor
                 </Button>
               </Box>
               <DoctorByHospitalId hospitalId={selectedHospitalId} />

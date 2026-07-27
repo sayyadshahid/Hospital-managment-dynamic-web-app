@@ -37,4 +37,3 @@ class JWTAuthenticationMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         return response
- 

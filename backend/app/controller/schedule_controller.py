@@ -1,4 +1,4 @@
-from fastapi import HTTPException,BackgroundTasks, Request
+from fastapi import HTTPException, Request
 from app.database import get_database
 from app.constant.constants import DbCollections
 from app.models.schedule_model import ScheduleModel
@@ -48,7 +48,7 @@ class Schedule():
 
             return {'count': len(schedule_list), 'schedules': schedule_list}
             
-                                
+                                 
         except HTTPException as exc:
             raise exc
         except Exception as e:

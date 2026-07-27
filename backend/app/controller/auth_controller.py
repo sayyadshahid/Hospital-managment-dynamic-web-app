@@ -72,7 +72,6 @@ class Auth():
         try:
             db = get_database()
 
-            # Check in USER collection
             user_collection = db[DbCollections.USER_COLLECTION]
             user = await user_collection.find_one({"email": data.email.lower(), "is_active": True})
             if user and verify_password(data.password, user["password"]):
@@ -94,14 +93,8 @@ class Auth():
 
             doctor_collection = db[DbCollections.DOCTOR_REGISTER_COLLECTION]
             doc_user = await doctor_collection.find_one({"email": data.email.lower()})
-            print(data.email)
             
-            
-            # print("Doctor doc_user:", doc_user)
-            if doc_user:
-                print("Stored Password:", doc_user["password"])
-                print("Password Match:", verify_password(data.password, doc_user["password"]))
-
+            if doc_user and verify_password(data.password, doc_user["password"]):
                 payload = {
                     "id": str(doc_user["_id"]),
                     "email": doc_user["email"],
@@ -113,6 +106,8 @@ class Auth():
                     "token_type": "bearer",
                     "id": str(doc_user["_id"]),
                     "role": 'doctor',
+                    "fullname": doc_user.get("fullname", 'N/A'),
+                    "email": doc_user.get("email", 'N/A'),
                     "msg": "Login successful"
                 }
 
@@ -170,14 +165,12 @@ class Auth():
             async for doctor in doctors_cursor:
                 doctor["id"] = str(doctor.pop("_id"))
 
-                # Manually convert ObjectId fields (if needed)
                 if "registered_by" in doctor and isinstance(doctor["registered_by"], ObjectId):
                     doctor["registered_by"] = str(doctor["registered_by"])
 
                 doctor["role"] = "doctor"
                 doctors.append(doctor)
 
-            # Fetch all users
             users_cursor = db[DbCollections.USER_COLLECTION].find({}, {"password": 0})
             users = []
             async for user in users_cursor:
@@ -191,10 +184,3 @@ class Auth():
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error retrieving users: {str(e)}")
-        
-        
-        
-        
-        
-        
-        

@@ -1,7 +1,6 @@
 from google.generativeai import GenerativeModel, configure
 import os
 
-# Configure Gemini using environment variable
 configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = GenerativeModel("gemini-1.5-flash")
 

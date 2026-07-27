@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  CircularProgress,
-  Typography,
-  Paper,
-  IconButton,
-} from "@mui/material";
+import { Box, CircularProgress, Typography, Paper, IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import API from "../../components/configs/API";
 import DeleteIcon from "@mui/icons-material/Delete";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import API from "../../components/configs/API";
+import { tokens, paperSx, headingSx, dataGridSx, deleteIconSx } from "./tableTheme";
 
 interface Review {
   id: string;
@@ -46,62 +42,56 @@ const ReviewTable = () => {
   const handleDelete = async (id: string) => {
     try {
       await API.delete(`delete-review/${id}`);
-      setReviews((prev) => prev.filter((user) => user.id !== id));
+      setReviews((prev) => prev.filter((r) => r.id !== id));
     } catch (error) {
-      console.error("Failed to delete hospital:", error);
+      console.error("Failed to delete review:", error);
     }
   };
 
   const columns: GridColDef[] = [
     { field: "review", headerName: "Review Text", flex: 2 },
-    { field: "rating", headerName: "Rating", width: 100 },
+    {
+      field: "rating",
+      headerName: "Rating",
+      width: 110,
+      renderCell: (params) => (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.4, color: tokens.amber, fontFamily: "Inter", fontWeight: 600, fontSize: 13 }}>
+          <StarRoundedIcon sx={{ fontSize: 15, color: tokens.amber }} /> {params.value}
+        </Box>
+      ),
+    },
     {
       field: "userName",
       headerName: "User Name",
       width: 200,
       renderCell: (params) => <span>{params.row.user?.fullname || "N/A"}</span>,
     },
-
     { field: "hospital_id", headerName: "Hospital ID", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
-      width: 120,
+      width: 100,
       sortable: false,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
-          <DeleteIcon />
+        <IconButton sx={deleteIconSx} onClick={() => handleDelete(params.row.id)}>
+          <DeleteIcon fontSize="small" />
         </IconButton>
       ),
     },
   ];
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        p: 3,
-        m: 2,
-        borderRadius: 3,
-        backgroundColor: "#f9f9f9",
-      }}
-    >
-      <Typography variant="h5" fontWeight={600} mb={2}>
+    <Paper elevation={0} sx={paperSx}>
+      <Typography sx={{ ...headingSx, mb: 2.5 }}>
         Hospital Reviews
       </Typography>
-
       <Box height={{ xs: 400, sm: 500, md: 600 }} width="100%">
         {loading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="100%"
-          >
-            <CircularProgress />
+          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+            <CircularProgress sx={{ color: tokens.purple }} />
           </Box>
         ) : reviews.length === 0 ? (
-          <Typography variant="body1" align="center" mt={5}>
+          <Typography sx={{ fontFamily: "Inter", color: tokens.neutral, textAlign: "center", mt: 5 }}>
             No reviews found.
           </Typography>
         ) : (
@@ -109,16 +99,9 @@ const ReviewTable = () => {
             rows={reviews}
             columns={columns}
             getRowId={(row) => row.id}
-            initialState={{
-              pagination: {
-                paginationModel: { pageSize: 10, page: 0 },
-              },
-            }}
+            initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
             pageSizeOptions={[10, 25, 50, 100]}
-            sx={{
-              backgroundColor: "white",
-              borderRadius: 2,
-            }}
+            sx={dataGridSx}
           />
         )}
       </Box>

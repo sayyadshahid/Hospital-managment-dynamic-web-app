@@ -4,7 +4,7 @@ from app.database import get_database
 from app.constant.constants import DbCollections
 from bson import ObjectId
 import os
-from app.services.auth_service import  get_password_hash
+from app.services.auth_service import get_password_hash
 
 class DoctorRegister:
     async def doctor_register(self, hospital_id: str, request: Request, data: DoctorRegisterModel, file: UploadFile):
@@ -77,10 +77,8 @@ class DoctorRegister:
 
             doctors_list = []
             async for doctor in doctors:
-                # Convert _id
                 doctor['id'] = str(doctor.pop('_id'))
 
-                # Convert all ObjectId fields to string
                 for key, value in doctor.items():
                     if isinstance(value, ObjectId):
                         doctor[key] = str(value)
@@ -112,7 +110,6 @@ class DoctorRegister:
             if not doctor:
                 raise HTTPException(status_code=404, detail="Doctor not found")
 
-            # Convert MongoDB ObjectId fields to strings
             doctor['id'] = str(doctor.pop('_id'))
             for key, value in doctor.items():
                 if isinstance(value, ObjectId):
@@ -126,7 +123,6 @@ class DoctorRegister:
             raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
         
         
-       
 
     async def getAllDoctorsByHospitalId(hospital_id: str):
         try:
@@ -137,7 +133,6 @@ class DoctorRegister:
             doctors_list = []
 
             async for doctor in doctors_cursor:
-                # Convert _id and other ObjectIds to string
                 doctor['id'] = str(doctor.pop('_id'))
 
                 if 'registered_by' in doctor and isinstance(doctor['registered_by'], ObjectId):

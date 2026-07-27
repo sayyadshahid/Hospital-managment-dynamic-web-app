@@ -4,17 +4,14 @@ from app.database import get_database
 from app.constant.constants import DbCollections
 import os
 from fastapi import UploadFile
-from fastapi import HTTPException
-from app.database import get_database
 from bson import ObjectId
 
 class HospitalRegister:
    
     async def hospital_register(data, file: UploadFile):
         try:
-            # Save the uploaded file locally (optional)
             upload_folder = "uploads/"
-            os.makedirs(upload_folder, exist_ok=True)  # create folder if not exists
+            os.makedirs(upload_folder, exist_ok=True)
             file_location = os.path.join(upload_folder, file.filename)
 
             with open(file_location, "wb") as f:
@@ -101,5 +98,3 @@ class HospitalRegister:
             raise exc
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-    
-    

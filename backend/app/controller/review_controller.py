@@ -16,7 +16,6 @@ class Review:
             data_dict["user_id"] = user_id
             data_dict["hospital_id"] = hospital_id
             
-            # Database logic
             db = get_database()
             review_collection = db[DbCollections.REVIEW_COLLECTION]
             result = await review_collection.insert_one(data_dict)
@@ -33,7 +32,6 @@ class Review:
             db = get_database()
             review_collection = db[DbCollections.REVIEW_COLLECTION]
 
-            # Get all reviews
             reviews_cursor = review_collection.find()
             review_list = []
 
@@ -42,7 +40,6 @@ class Review:
                 review['id'] = review_id
                 review_list.append(review)
 
-            # Get all doctors
             doctors_cursor = db[DbCollections.DOCTOR_COLLECTION].find({}, {"password": 0})
             doctors = []
             async for doctor in doctors_cursor:
@@ -50,7 +47,6 @@ class Review:
                 doctor["role"] = "doctor"
                 doctors.append(doctor)
 
-            # Get all users
             users_cursor = db[DbCollections.USER_COLLECTION].find({}, {"password": 0})
             users = []
             async for user in users_cursor:
@@ -58,10 +54,8 @@ class Review:
                 user["role"] = "user"
                 users.append(user)
 
-            # Combine users and doctors into a lookup dictionary
             user_map = {person["id"]: person for person in (doctors + users)}
 
-            # Attach user info to each review
             reviews = []
             for review in review_list:
                 user_id = review.get("user_id")
@@ -72,23 +66,18 @@ class Review:
                         "email": user.get("email"),
                         "role": user.get("role"),
                         "phone_no": user.get("phone_no"),
-                        # "is_active": user.get("is_active"),
-                        # "created_at": user.get("created_at"),
-                        # "updated_at": user.get("updated_at"),
                     }
                 reviews.append(review)
 
             return {
                 "count": len(reviews),
-                "reviews":     reviews
+                "reviews": reviews
             }
 
         except HTTPException as exc:
             raise exc
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-        
-        
         
         
         
@@ -141,7 +130,7 @@ class Review:
 
             return {
                 "count": len(reviews),
-                "reviews":     reviews
+                "reviews": reviews
             }
 
         except HTTPException as exc:
@@ -160,6 +149,4 @@ class Review:
 
             return {'massege': 'Review Successfully Deleted..'}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")    
-        
-            
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")

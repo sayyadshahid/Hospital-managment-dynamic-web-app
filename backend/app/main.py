@@ -15,9 +15,7 @@ from app.routes.schedule_route import schedule_router
 from app.routes.appointment_route import appointment_router
 from app.routes.gemini_route import router as gemini_router
 
-# Load .env
 
-# Test if the key loads
 print("Gemini API Key:", os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI()
@@ -44,7 +42,7 @@ app.include_router(gemini_router, prefix="/api", tags=["Gemini API"])
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-#mongoDB only:
+
 @app.on_event("startup") 
 async def startup_event():
     await connect_to_mongo()
