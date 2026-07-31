@@ -10,13 +10,11 @@ import {
 } from "@mui/material";
 import NavBar from "../../components/header";
 import UserTable from "./user";
-import DoctorTable from "./doctor";
 import HospitalTable from "./hospitals";
 import ReviewTable from "./reviews";
-import AppointmentTable from "./appointment";
 
 const AdminPanelLayout = () => {
-  const [selectedSection, setSelectedSection] = useState("users");
+  const [selectedSection, setSelectedSection] = useState("hospitals");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -26,30 +24,23 @@ const AdminPanelLayout = () => {
         return <HospitalTable />;
       case "users":
         return <UserTable />;
-      case "doctors":
-        return <DoctorTable />;
       case "reviews":
         return <ReviewTable />;
-      case "appointments":
-        return <AppointmentTable />;
       default:
         return <Typography>Section not found</Typography>;
     }
   };
 
   const sections = [
-    { key: "users", label: "Users" },
-    { key: "doctors", label: "Doctors" },
     { key: "hospitals", label: "Hospitals" },
+    { key: "users", label: "Users" },
     { key: "reviews", label: "Reviews" },
-    { key: "appointments", label: "Appointments" },
   ];
 
   return (
     <>
       <NavBar />
       <Box display="flex" flexDirection={isMobile ? "column" : "row"} height="100vh">
-        {/* Sidebar */}
         <Box
           width={isMobile ? "100%" : "20%"}
           bgcolor="#f5f5f5"
@@ -83,7 +74,6 @@ const AdminPanelLayout = () => {
           </Stack>
         </Box>
 
-        {/* Content */}
         <Box
           width={isMobile ? "100%" : "80%"}
           p={2}

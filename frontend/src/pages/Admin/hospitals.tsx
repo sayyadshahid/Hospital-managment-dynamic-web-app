@@ -171,23 +171,7 @@ const HospitalTable = () => {
         </DialogTitle>
         <DialogContent>
           {selectedHospitalId && (
-            <>
-              <Box display="flex" justifyContent="flex-end" mb={2}>
-                <Button
-                  variant="contained"
-                  sx={{ bgcolor: "red", fontWeight: 700 }}
-                  size="large"
-                  onClick={() =>
-                    navigate("/doctor-register", {
-                       state: { hospital_id: selectedHospitalId },
-                    })
-                  }
-                >
-                  Add Doctor
-                </Button>
-              </Box>
-              <DoctorByHospitalId hospitalId={selectedHospitalId} />
-            </>
+            <DoctorByHospitalId hospitalId={selectedHospitalId} />
           )}
         </DialogContent>
       </Dialog>

@@ -1,8 +1,14 @@
 class DbCollections:
-    USER_COLLECTION="user"
-    HOSPITAL_COLLECTION='hospital'
-    REVIEW_COLLECTION='reviews'
-    DOCTOR_COLLECTION='doctor'
-    DOCTOR_REGISTER_COLLECTION= 'doctor_register'
-    SCHEDULE_COLLECTION= 'schedules'
-    APPOINTMENT_COLLECTION= 'appointments'
+    USER_COLLECTION = "user"
+    HOSPITAL_COLLECTION = "hospital"
+    REVIEW_COLLECTION = "reviews"
+    DOCTOR_COLLECTION = "doctor"
+    DOCTOR_REGISTER_COLLECTION = "doctor_register"
+    SCHEDULE_COLLECTION = "schedules"
+    APPOINTMENT_COLLECTION = "appointments"
+
+class UserRole:
+    SUPER_ADMIN = "super_admin"
+    HOSPITAL_ADMIN = "hospital_admin"
+    DOCTOR = "doctor"
+    PATIENT = "patient"

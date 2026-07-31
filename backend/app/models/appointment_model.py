@@ -1,10 +1,11 @@
 from typing import Literal, Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from datetime import datetime, date, time 
- 
+from datetime import datetime, date
+
+
 class AppointmentModel(BaseModel):
     name: str = Field(..., description='name')
-    phone:  str = Field(..., min_length=10, max_length=15, description ="User's phone number")
+    phone: str = Field(..., min_length=10, max_length=15, description="User's phone number")
     email: EmailStr = Field(..., description="user's email address")
     dob: date = Field(..., description='date of birth')
     gender: Literal["Male", "Female"] = Field(..., description="Gender")
@@ -16,14 +17,15 @@ class AppointmentModel(BaseModel):
     is_success: bool = Field(default=False)
     schedule_date: date = Field(..., description='Schedule date')
     schedule_time: str = Field(..., description='Schedule time')
-    
+
     @field_validator("schedule_date")
     @classmethod
     def validate_schedule_date(cls, v: date) -> date:
         if v < date.today():
             raise ValueError("Schedule date must be today or in the future.")
         return v
- 
+
+
 class UpdateAppointmentModel(BaseModel):
     name: Optional[str] = Field(None, description='Name')
     phone: Optional[str] = Field(None, min_length=10, max_length=15)
@@ -36,5 +38,7 @@ class UpdateAppointmentModel(BaseModel):
     is_success: Optional[bool] = Field(None)
     schedule_date: Optional[date] = Field(None)
     schedule_time: Optional[str] = Field(None)
+    payment_status: Optional[str] = Field(None)
+    payment_id: Optional[str] = Field(None)
+    razorpay_order_id: Optional[str] = Field(None)
     updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
-

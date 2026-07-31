@@ -7,6 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
+import { extractErrorMsg } from "../../components/configs/API/errorUtils";
 
 const HospitalRegister = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -20,12 +21,24 @@ const HospitalRegister = () => {
       address: "",
       about: "",
       rating: 0,
+      admin_name: "",
+      admin_email: "",
+      admin_phone: "",
+      admin_password: "",
+      confirm_admin_password: "",
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is required"),
       description: Yup.string().required("Description is required"),
       address: Yup.string().required("Address is required"),
       about: Yup.string().required("about field is required"),
+      admin_name: Yup.string().required("Admin name is required"),
+      admin_email: Yup.string().email("Invalid email").required("Admin email is required"),
+      admin_phone: Yup.string().min(10, "Phone must be at least 10 digits").required("Admin phone is required"),
+      admin_password: Yup.string().min(8, "Minimum 8 characters").required("Admin password is required"),
+      confirm_admin_password: Yup.string()
+        .oneOf([Yup.ref("admin_password")], "Passwords must match")
+        .required("Confirm password is required"),
     }),
     onSubmit: async (values) => {
       const formData = new FormData();
@@ -33,7 +46,11 @@ const HospitalRegister = () => {
       formData.append("description", values.description);
       formData.append("address", values.address);
       formData.append("about", values.about);
-      formData.append("file", file as File);
+      formData.append("admin_name", values.admin_name);
+      formData.append("admin_email", values.admin_email);
+      formData.append("admin_phone", values.admin_phone);
+      formData.append("admin_password", values.admin_password);
+      if (file) formData.append("file", file);
       formData.append("is_active", "true");
 
       try {
@@ -49,10 +66,7 @@ const HospitalRegister = () => {
         toast.success(res.data?.msg || "Registered Successfully!");
         navigate(`/hospitalList`);
       } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.detail ||
-          "Hospital Registration Failed. Please try again.";
-        toast.error(errMsg);
+        toast.error(extractErrorMsg(error, "Hospital Registration Failed. Please try again."));
       } finally {
         console.log("Form submission attempt completed.");
       }
@@ -163,6 +177,63 @@ const HospitalRegister = () => {
             fullWidth
             error={formik.touched.about && Boolean(formik.errors.about)}
             helperText={formik.touched.about && formik.errors.about}
+          />
+
+          <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>
+            Hospital Admin Details
+          </Typography>
+
+          <TextField
+            label="Admin Name"
+            name="admin_name"
+            onChange={formik.handleChange}
+            value={formik.values.admin_name}
+            fullWidth
+            error={formik.touched.admin_name && Boolean(formik.errors.admin_name)}
+            helperText={formik.touched.admin_name && formik.errors.admin_name}
+          />
+
+          <TextField
+            label="Admin Email"
+            name="admin_email"
+            type="email"
+            onChange={formik.handleChange}
+            value={formik.values.admin_email}
+            fullWidth
+            error={formik.touched.admin_email && Boolean(formik.errors.admin_email)}
+            helperText={formik.touched.admin_email && formik.errors.admin_email}
+          />
+
+          <TextField
+            label="Admin Phone"
+            name="admin_phone"
+            onChange={formik.handleChange}
+            value={formik.values.admin_phone}
+            fullWidth
+            error={formik.touched.admin_phone && Boolean(formik.errors.admin_phone)}
+            helperText={formik.touched.admin_phone && formik.errors.admin_phone}
+          />
+
+          <TextField
+            label="Admin Password"
+            name="admin_password"
+            type="password"
+            onChange={formik.handleChange}
+            value={formik.values.admin_password}
+            fullWidth
+            error={formik.touched.admin_password && Boolean(formik.errors.admin_password)}
+            helperText={formik.touched.admin_password && formik.errors.admin_password}
+          />
+
+          <TextField
+            label="Confirm Admin Password"
+            name="confirm_admin_password"
+            type="password"
+            onChange={formik.handleChange}
+            value={formik.values.confirm_admin_password}
+            fullWidth
+            error={formik.touched.confirm_admin_password && Boolean(formik.errors.confirm_admin_password)}
+            helperText={formik.touched.confirm_admin_password && formik.errors.confirm_admin_password}
           />
 
           <Rating

@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
+import { extractErrorMsg } from "../../components/configs/API/errorUtils";
 import Grid from "@mui/material/Grid";
 
 const DoctorRegister = () => {
@@ -66,10 +67,7 @@ const DoctorRegister = () => {
         setFile(null);
         // navigate("/doctors");
       } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.detail ||
-          "Doctor Registration Failed. Please try again.";
-        toast.error(errMsg);
+        toast.error(extractErrorMsg(error, "Doctor Registration Failed. Please try again."));
       }
     },
   });

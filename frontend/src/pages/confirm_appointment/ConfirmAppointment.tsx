@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Typography, Button, TextField, MenuItem } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Button, TextField, MenuItem, CircularProgress } from "@mui/material";
 import NavBar from "../../components/header";
 import Footer from "../../components/footer";
 import { useFormik } from "formik";
@@ -8,73 +8,98 @@ import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 const ConfirmAppointment = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { doctorId, schedule_date, schedule_time } = location.state || {};
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      id: "",
-      name: "",
-      phone: "",
-      email: "",
-      dob: "",
-      gender: "",
-      address: "",
-      reasonForConsultation: "",
+      name: "", phone: "", email: "", dob: "", gender: "",
+      address: "", reasonForConsultation: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
-      phone: Yup.string()
-        .required("Phone Number is required")
-        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+      phone: Yup.string().required("Phone Number is required").matches(/^[0-9]{10}$/, "Must be 10 digits"),
       email: Yup.string().email("Invalid email").required("Email is required"),
-      dob: Yup.date()
-        .required("Date of birth is required")
-        .max(new Date(), "Date of birth cannot be in the future"),
-
+      dob: Yup.date().required("Date of birth is required").max(new Date(), "Cannot be in the future"),
       gender: Yup.string().required("Gender is required"),
-      address: Yup.string()
-        .required("Address is required")
-        .min(10, "Address must be at least 10 characters"),
-      reasonForConsultation: Yup.string()
-        .required("Reason for consultation is required")
-        .min(10, "reasonForConsultation must be at least 10 characters"),
+      address: Yup.string().required("Address is required").min(10, "At least 10 characters"),
+      reasonForConsultation: Yup.string().required("Reason is required").min(10, "At least 10 characters"),
     }),
     onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("phone", values.phone);
-      formData.append("email", values.email);
-      formData.append("dob", values.dob);
-      formData.append("gender", values.gender);
-      formData.append("address", values.address);
-      formData.append("reasonForConsultation", values.reasonForConsultation);
-      formData.append("schedule_date", schedule_date);
-      formData.append("schedule_time", schedule_time);
-
+      setLoading(true);
       try {
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, val]) => formData.append(key, val));
+        formData.append("schedule_date", schedule_date);
+        formData.append("schedule_time", schedule_time);
+
         const res = await API.post(`create_appointment/${doctorId}`, formData);
-        const appointmentId = res.data.appointment_id || null;
+        const appointmentId = res.data.appointment_id;
 
-        toast.success(res.data?.msg || "Appointment Confirmed!");
-        formik.resetForm();
-        navigate("/appointment-successs", { state: { appointmentId } });
-      } catch (error: any) {
-        const getErrorMessage = (error: any) => {
-          const detail = error?.response?.data?.detail;
-          if (!detail) return "Appointment booking failed. Please try again.";
+        if (!appointmentId) {
+          toast.success("Appointment Confirmed!");
+          navigate("/appointment-successs");
+          return;
+        }
 
-          if (typeof detail === "string") return detail;
+        const payRes = await API.post("create-payment-order", {
+          appointment_id: appointmentId,
+          amount: 49900,
+        });
 
-          if (Array.isArray(detail)) return detail.map((e) => e.msg).join(", ");
+        const { order_id, amount, currency, key_id } = payRes.data;
 
-          return JSON.stringify(detail);
+        const options = {
+          key: key_id,
+          amount: amount,
+          currency: currency,
+          name: "Hospital Management",
+          description: "Appointment Booking",
+          order_id: order_id,
+          handler: async function (response: any) {
+            try {
+              await API.post("verify-payment", {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                appointment_id: appointmentId,
+              });
+              toast.success("Payment successful! Appointment confirmed.");
+              navigate("/appointment-successs", {
+                state: { appointmentId, paymentId: response.razorpay_payment_id },
+              });
+            } catch {
+              toast.error("Payment verification failed. Contact support.");
+            }
+          },
+          modal: {
+            ondismiss: function () {
+              toast("Payment cancelled. You can pay later.");
+              navigate("/appointment-successs", { state: { appointmentId } });
+            },
+          },
+          prefill: { name: values.name, email: values.email, contact: values.phone },
+          theme: { color: "#fa6039" },
         };
 
-        toast.error(getErrorMessage(error));
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } catch (error: any) {
+        const detail = error?.response?.data?.detail;
+        const msg = Array.isArray(detail) ? detail.map((e: any) => e.msg).join(", ")
+          : detail || "Booking failed. Please try again.";
+        toast.error(msg);
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -82,141 +107,36 @@ const ConfirmAppointment = () => {
   return (
     <Box>
       <NavBar />
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "100vh",
-          backgroundColor: "#f5f5f5",
-          p: 2,
-        }}
-      >
-        <Box
-          component="form"
-          onSubmit={formik.handleSubmit}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            width: "100%",
-            maxWidth: 500,
-            p: 3,
-            backgroundColor: "white",
-            borderRadius: 2,
-            boxShadow: 3,
-          }}
-        >
-          <Typography variant="h6" align="center">
-            Confirm Appointment
-          </Typography>
-
-          <TextField
-            label="Appointment Date"
-            value={schedule_date || ""}
-            fullWidth
-            disabled
-          />
-
-          <TextField
-            label="Time Slot"
-            value={schedule_time || ""}
-            fullWidth
-            disabled
-          />
-
-          <TextField
-            label="Name"
-            name="name"
-            onChange={formik.handleChange}
-            value={formik.values.name}
-            fullWidth
-            error={formik.touched.name && Boolean(formik.errors.name)}
-            helperText={formik.touched.name && formik.errors.name}
-          />
-
-          <TextField
-            label="Phone"
-            name="phone"
-            onChange={formik.handleChange}
-            value={formik.values.phone}
-            fullWidth
-            error={formik.touched.phone && Boolean(formik.errors.phone)}
-            helperText={formik.touched.phone && formik.errors.phone}
-          />
-
-          <TextField
-            label="Email"
-            name="email"
-            onChange={formik.handleChange}
-            value={formik.values.email}
-            fullWidth
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-
-          <TextField
-            label="Date of Birth"
-            name="dob"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            onChange={formik.handleChange}
-            value={formik.values.dob}
-            fullWidth
-            error={formik.touched.dob && Boolean(formik.errors.dob)}
-            helperText={formik.touched.dob && formik.errors.dob}
-          />
-
-          <TextField
-            select
-            label="Gender"
-            name="gender"
-            onChange={formik.handleChange}
-            value={formik.values.gender}
-            fullWidth
-            error={formik.touched.gender && Boolean(formik.errors.gender)}
-            helperText={formik.touched.gender && formik.errors.gender}
-          >
-            <MenuItem value="Male">Male</MenuItem>
-            <MenuItem value="Female">Female</MenuItem>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "#f5f5f5", p: 2 }}>
+        <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%", maxWidth: 500, p: 3, backgroundColor: "white", borderRadius: 2, boxShadow: 3 }}>
+          <Typography variant="h6" align="center">Confirm Appointment</Typography>
+          <TextField label="Date" value={schedule_date || ""} fullWidth disabled />
+          <TextField label="Time" value={schedule_time || ""} fullWidth disabled />
+          <TextField label="Name" name="name" onChange={formik.handleChange} value={formik.values.name} fullWidth
+            error={formik.touched.name && Boolean(formik.errors.name)} helperText={formik.touched.name && formik.errors.name} />
+          <TextField label="Phone" name="phone" onChange={formik.handleChange} value={formik.values.phone} fullWidth
+            error={formik.touched.phone && Boolean(formik.errors.phone)} helperText={formik.touched.phone && formik.errors.phone} />
+          <TextField label="Email" name="email" onChange={formik.handleChange} value={formik.values.email} fullWidth
+            error={formik.touched.email && Boolean(formik.errors.email)} helperText={formik.touched.email && formik.errors.email} />
+          <TextField label="DOB" name="dob" type="date" InputLabelProps={{ shrink: true }} onChange={formik.handleChange}
+            value={formik.values.dob} fullWidth error={formik.touched.dob && Boolean(formik.errors.dob)}
+            helperText={formik.touched.dob && formik.errors.dob} />
+          <TextField select label="Gender" name="gender" onChange={formik.handleChange} value={formik.values.gender} fullWidth
+            error={formik.touched.gender && Boolean(formik.errors.gender)} helperText={formik.touched.gender && formik.errors.gender}>
+            <MenuItem value="Male">Male</MenuItem><MenuItem value="Female">Female</MenuItem>
           </TextField>
-
-          <TextField
-            label="Address"
-            name="address"
-            onChange={formik.handleChange}
-            value={formik.values.address}
-            multiline
-            rows={2}
-            fullWidth
-            error={formik.touched.address && Boolean(formik.errors.address)}
-            helperText={formik.touched.address && formik.errors.address}
-          />
-
-          <TextField
-            label="Reason for Consultation"
-            name="reasonForConsultation"
-            onChange={formik.handleChange}
-            value={formik.values.reasonForConsultation}
-            multiline
-            rows={2}
-            fullWidth
-            error={
-              formik.touched.reasonForConsultation &&
-              Boolean(formik.errors.reasonForConsultation)
-            }
-            helperText={
-              formik.touched.reasonForConsultation &&
-              formik.errors.reasonForConsultation
-            }
-          />
-
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ bgcolor: "red", color: "white", fontWeight: 600 }}
-          >
-            Submit
+          <TextField label="Address" name="address" onChange={formik.handleChange} value={formik.values.address} multiline rows={2} fullWidth
+            error={formik.touched.address && Boolean(formik.errors.address)} helperText={formik.touched.address && formik.errors.address} />
+          <TextField label="Reason for Consultation" name="reasonForConsultation" onChange={formik.handleChange}
+            value={formik.values.reasonForConsultation} multiline rows={2} fullWidth
+            error={formik.touched.reasonForConsultation && Boolean(formik.errors.reasonForConsultation)}
+            helperText={formik.touched.reasonForConsultation && formik.errors.reasonForConsultation} />
+          <Typography variant="body2" color="text.secondary" textAlign="center">
+            Fee: ₹499 (Pay via Razorpay)
+          </Typography>
+          <Button type="submit" variant="contained" disabled={loading}
+            sx={{ bgcolor: "#fa6039", color: "white", fontWeight: 600 }}>
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Pay ₹499 & Confirm"}
           </Button>
         </Box>
       </Box>
