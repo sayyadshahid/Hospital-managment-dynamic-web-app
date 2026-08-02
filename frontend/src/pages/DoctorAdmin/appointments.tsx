@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import API from "../../components/configs/API";
+import ScheduleDialog from "../../components/ui/ScheduleDialog";
 
 interface Appointment {
   appointment_id: string;
@@ -22,6 +23,7 @@ interface Appointment {
 const AppointmentTable = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
 
   const id = JSON.parse(localStorage.getItem("user") || "{}").id;
 
@@ -98,7 +100,7 @@ const AppointmentTable = () => {
         <Button
           variant="contained"
           sx={{ fontWeight: 600, color: "#ffffff", bgcolor: "red" }}
-          onClick={() => (window.location.href = "/schedule-form")}
+          onClick={() => setScheduleDialogOpen(true)}
         >
           Add Schedule
         </Button>
@@ -136,6 +138,13 @@ const AppointmentTable = () => {
           />
         )}
       </Box>
+
+      <ScheduleDialog
+        open={scheduleDialogOpen}
+        docId={id}
+        onClose={() => setScheduleDialogOpen(false)}
+        onCreated={fetchAppointments}
+      />
     </Paper>
   );
 };

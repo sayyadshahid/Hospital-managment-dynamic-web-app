@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, CircularProgress, Stack, Divider, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, CircularProgress, Stack, Divider, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import API from "../../components/configs/API";
 import { extractErrorMsg } from "../../components/configs/API/errorUtils";
 import NavBar from "../../components/header";
+import ScheduleDialog from "../../components/ui/ScheduleDialog";
+import ConfirmDeleteDialog from "../../components/ui/ConfirmDeleteDialog";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import toast from "react-hot-toast";
 
 const DoctorDashboard = () => {
@@ -10,6 +14,11 @@ const DoctorDashboard = () => {
   const docId = user.id;
   const [selectedSection, setSelectedSection] = useState("dashboard");
   const [appointments, setAppointments] = useState<any[]>([]);
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [scheduleToEdit, setScheduleToEdit] = useState<any | null>(null);
+  const [scheduleToDelete, setScheduleToDelete] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -40,6 +49,31 @@ const DoctorDashboard = () => {
       fetchAppointments();
     } catch (err: any) {
       toast.error(extractErrorMsg(err, "Update failed"));
+    }
+  };
+
+  const fetchSchedules = async () => {
+    setScheduleLoading(true);
+    try {
+      if (!docId) return;
+      const res = await API.get(`get_all_schedules/${docId}`).catch(() => ({ data: { schedules: [] } }));
+      setSchedules(res.data.schedules || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchSchedules(); }, []);
+
+  const handleDeleteSchedule = async (id: string) => {
+    try {
+      await API.delete(`delete_schedule/${id}`);
+      toast.success("Schedule deleted");
+      fetchSchedules();
+    } catch (err: any) {
+      toast.error(extractErrorMsg(err, "Delete failed"));
     }
   };
 
@@ -90,10 +124,56 @@ const DoctorDashboard = () => {
 
   const renderSchedule = () => (
     <Box>
-      <Typography variant="h6" mb={2}>My Schedule</Typography>
-      <Button variant="contained" sx={{ backgroundColor: "#fa6039" }} onClick={() => window.location.href = "/schedule-form"}>
-        Manage Schedule
-      </Button>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h6">My Schedule</Typography>
+        <Button variant="contained" sx={{ backgroundColor: "#fa6039" }} onClick={() => setScheduleDialogOpen(true)}>
+          Add Schedule
+        </Button>
+      </Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead><TableRow>
+            <TableCell>Schedule Date</TableCell><TableCell>Schedule Time</TableCell><TableCell>Actions</TableCell>
+          </TableRow></TableHead>
+          <TableBody>
+            {scheduleLoading ? (
+              <TableRow><TableCell colSpan={3} align="center"><CircularProgress size={24} /></TableCell></TableRow>
+            ) : schedules.length === 0 ? (
+              <TableRow><TableCell colSpan={3} align="center">No schedules found.</TableCell></TableRow>
+            ) : (
+              schedules.map((s: any) => (
+                <TableRow key={s.schedule_id || s._id}>
+                  <TableCell>{s.schedule_date}</TableCell>
+                  <TableCell>{s.schedule_time}</TableCell>
+                  <TableCell>
+                    <IconButton size="small" color="primary" onClick={() => { setScheduleToEdit(s); setScheduleDialogOpen(true); }}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" color="error" onClick={() => setScheduleToDelete(s)}>
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <ScheduleDialog
+        open={scheduleDialogOpen}
+        docId={docId}
+        schedule={scheduleToEdit}
+        onClose={() => { setScheduleDialogOpen(false); setScheduleToEdit(null); }}
+        onCreated={fetchSchedules}
+      />
+
+      <ConfirmDeleteDialog
+        open={!!scheduleToDelete}
+        message={`Are you sure you want to delete the schedule on "${scheduleToDelete?.schedule_date || ""}" at "${scheduleToDelete?.schedule_time || ""}"? This action cannot be undone.`}
+        onClose={() => setScheduleToDelete(null)}
+        onConfirm={() => scheduleToDelete && handleDeleteSchedule(scheduleToDelete.schedule_id)}
+      />
     </Box>
   );
 

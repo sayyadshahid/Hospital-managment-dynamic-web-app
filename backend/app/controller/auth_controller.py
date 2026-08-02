@@ -39,7 +39,7 @@ class Auth:
                 {"$set": {
                     "signup_otp": otp, "signup_otp_expiry": otp_expiry,
                     "fullname": data.fullname, "phone_no": phone,
-                    "password": get_password_hash(data.password), "role": UserRole.PATIENT,
+                    "password": get_password_hash(data.password), "role": "user",
                     "is_active": False, "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()
                 }},
                 upsert=True

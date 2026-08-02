@@ -13,6 +13,7 @@ const roleRoutes: Record<string, string> = {
   hospital_admin: "/hospital-admin",
   doctor: "/doctor",
   patient: "/patient",
+  user: "/patient",
 };
 
 const LoginForm = () => {

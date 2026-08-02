@@ -11,3 +11,11 @@ async def createScheduleByDocID(docId: str, data: ScheduleModel, request: Reques
 @schedule_router.get('/get_all_schedules/{docId}')
 async def get_all_schedule_by_docId(docId: str):
     return await Schedule.getAllSchedulesByDocId(docId=docId)
+
+@schedule_router.put('/update_schedule/{schedule_id}')
+async def update_schedule(schedule_id: str, data: ScheduleModel):
+    return await Schedule.updateSchedule(schedule_id=schedule_id, data=data)
+
+@schedule_router.delete('/delete_schedule/{schedule_id}')
+async def delete_schedule(schedule_id: str):
+    return await Schedule.deleteSchedule(schedule_id=schedule_id)

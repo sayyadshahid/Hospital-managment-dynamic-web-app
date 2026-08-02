@@ -34,7 +34,7 @@ export const DoctorRoute = ({ children }: { children: React.ReactNode }) => {
 export const PatientRoute = ({ children }: { children: React.ReactNode }) => {
   const { token, role } = useAuth();
   if (!token) return <Navigate to="/login" />;
-  if (role !== "patient") return <Navigate to="/" />;
+  if (role !== "patient" && role !== "user") return <Navigate to="/" />;
   return <>{children}</>;
 };
 

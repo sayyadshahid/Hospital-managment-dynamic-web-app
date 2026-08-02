@@ -2,6 +2,8 @@ from fastapi import HTTPException,BackgroundTasks, Request
 from app.database import get_database
 from app.constant.constants import DbCollections
 from app.models.schedule_model import ScheduleModel
+from bson import ObjectId
+from datetime import datetime
 
 class Schedule():
     async def createScheduleByDocId(data: ScheduleModel, docId: str, request: Request):
@@ -29,6 +31,57 @@ class Schedule():
             raise HTTPException(
                 status_code=500, 
                 detail=f"Error during schedule : error: {str(e)}"
+            )
+
+    async def updateSchedule(schedule_id: str, data: ScheduleModel):
+        try:
+            db = get_database()
+            schedule_collection = db[DbCollections.SCHEDULE_COLLECTION]
+            if not ObjectId.is_valid(schedule_id):
+                raise HTTPException(status_code=400, detail="Invalid schedule ID format")
+
+            existing = await schedule_collection.find_one({"_id": ObjectId(schedule_id)})
+            if not existing:
+                raise HTTPException(status_code=404, detail="Schedule not found")
+
+            data_dict = data.dict()
+            data_dict["schedule_date"] = data.schedule_date.isoformat()
+            data_dict["schedule_time"] = data.schedule_time.strftime("%I:%M %p")
+            data_dict["scheduled_at"] = data.get_scheduled_at()
+            data_dict["updated_at"] = datetime.utcnow()
+
+            await schedule_collection.update_one(
+                {"_id": ObjectId(schedule_id)}, {"$set": data_dict}
+            )
+            return {"msg": "Schedule updated successfully"}
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error during schedule update : error: {str(e)}"
+            )
+
+    async def deleteSchedule(schedule_id: str):
+        try:
+            db = get_database()
+            schedule_collection = db[DbCollections.SCHEDULE_COLLECTION]
+            if not ObjectId.is_valid(schedule_id):
+                raise HTTPException(status_code=400, detail="Invalid schedule ID format")
+
+            result = await schedule_collection.delete_one({"_id": ObjectId(schedule_id)})
+            if result.deleted_count == 0:
+                raise HTTPException(status_code=404, detail="Schedule not found")
+
+            return {"msg": "Schedule deleted successfully"}
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error during schedule deletion : error: {str(e)}"
             )
 
     async def getAllSchedulesByDocId(docId: str):
