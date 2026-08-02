@@ -4,7 +4,6 @@ from app.database import get_database
 from app.constant.constants import DbCollections
 from bson import ObjectId
 import os
-from app.services.auth_service import  get_password_hash
 
 class DoctorRegister:
     async def doctor_register(self, hospital_id: str, request: Request, data: DoctorRegisterModel, file: UploadFile):
@@ -23,10 +22,6 @@ class DoctorRegister:
                 content = await file.read()
                 f.write(content)
 
-             
-            hashed_password = get_password_hash(data.password)
-
-             
             doctor_data = {
                 "fullname": data.fullname,
                 "experties": data.experties,
@@ -34,7 +29,7 @@ class DoctorRegister:
                 "about": data.about,
                 "email": data.email.lower(),
                 "phone_no": data.phone_no,
-                "password": hashed_password,
+                "password": data.password,
                 "role": "doctor",
                 "is_active": data.is_active,
                 "created_at": data.created_at,
