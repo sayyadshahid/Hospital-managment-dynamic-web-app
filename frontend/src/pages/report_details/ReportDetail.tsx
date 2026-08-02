@@ -16,8 +16,18 @@ import { useEffect, useState } from "react";
 import API from "../../components/configs/API";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+import toast from "react-hot-toast";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+const APPOINTMENT_FEE = 49900;
 
 interface AppointmentDetail {
+  id: string;
   name: string;
   phone: string;
   email: string;
@@ -29,6 +39,8 @@ interface AppointmentDetail {
   schedule_time: string;
   status: string;
   is_success: boolean;
+  is_approved: boolean;
+  payment_status: string;
 }
 
 const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
@@ -40,10 +52,70 @@ export default function ReportDetails() {
   const [error, setError] = useState("");
   const [detail, setDetail] = useState<AppointmentDetail | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handlePayment = async (appointment: AppointmentDetail) => {
+    setPayingId(appointment.id);
+    try {
+      const payRes = await API.post("create-payment-order", {
+        appointment_id: appointment.id,
+        amount: APPOINTMENT_FEE,
+      });
+
+      const { order_id, amount, currency, key_id } = payRes.data;
+
+      const options = {
+        key: key_id,
+        amount: amount,
+        currency: currency,
+        name: "Hospital Management",
+        description: "Appointment Booking",
+        order_id: order_id,
+        handler: async function (response: any) {
+          try {
+            await API.post("verify-payment", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              appointment_id: appointment.id,
+            });
+            toast.success("Payment successful! Appointment booked.");
+            const res = await API.get(`/get-all-appointments-by-userid/${userId}`);
+            setAppointments(res.data.appointments || []);
+            const updated = (res.data.appointments || []).find((x: any) => x.id === appointment.id);
+            if (updated) setDetail(updated);
+          } catch {
+            toast.error("Payment verification failed. Contact support.");
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            toast("Payment cancelled. You can pay later.");
+          },
+        },
+        prefill: { name: appointment.name, email: appointment.email, contact: appointment.phone },
+        theme: { color: "#fa6039" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail || "Payment could not be initiated.");
+    } finally {
+      setPayingId(null);
+    }
+  };
+
+  const statusText = (a: AppointmentDetail | null) => {
+    if (!a) return "";
+    if (a.is_success) return "Approved";
+    if (a.is_approved) return "Approved - Pay now";
+    return "Pending";
+  };
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -209,12 +281,14 @@ export default function ReportDetails() {
                   gutterBottom
                   sx={{ fontWeight: "bold" }}
                 >
-                  {detail?.is_success ? "Approved" : "Pending"}
+                  {statusText(detail)}
                 </Typography>
 
                 <Typography variant="body1" sx={{ color: "#555", mb: 3 }}>
                   {detail?.is_success
-                    ? "Your appointment has been approved."
+                    ? "Your appointment has been approved and booked."
+                    : detail?.is_approved
+                    ? "Doctor has approved your appointment. Complete the payment to confirm your booking."
                     : "Your appointment request is pending. It will be confirmed after doctor approval."}
                 </Typography>
 
@@ -278,11 +352,29 @@ export default function ReportDetails() {
                     fontWeight: "bold",
                     textTransform: "none",
                     mt: 3,
+                    mr: 1,
                   }}
                   onClick={() => navigate("/")}
                 >
                   Back to Home
                 </Button>
+
+                {detail?.is_approved && !detail.is_success && (
+                  <Button
+                    variant="contained"
+                    disabled={payingId === detail.id}
+                    sx={{
+                      bgcolor: "#fa6039",
+                      borderRadius: "20px",
+                      fontWeight: "bold",
+                      textTransform: "none",
+                      mt: 3,
+                    }}
+                    onClick={() => handlePayment(detail)}
+                  >
+                    {payingId === detail.id ? "Processing..." : "Pay ₹499"}
+                  </Button>
+                )}
               </Box>
             </Box>
           </Box>

@@ -38,8 +38,8 @@ const AppointmentSuccess = () => {
             </>
           ) : (
             <>
-              <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>Pending</Typography>
-              <Typography variant="body1" sx={{ color: "#555", mb: 3 }}>Your appointment request is pending. You can complete payment later.</Typography>
+              <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>Appointment Submitted</Typography>
+              <Typography variant="body1" sx={{ color: "#555", mb: 3 }}>Your appointment request is waiting for doctor approval. Once approved, you can complete the payment from your appointments tab.</Typography>
             </>
           )}
           <Divider sx={{ mb: 3 }} />

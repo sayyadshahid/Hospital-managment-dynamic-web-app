@@ -8,12 +8,6 @@ import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../../components/configs/API";
 
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
-
 const ConfirmAppointment = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,55 +38,8 @@ const ConfirmAppointment = () => {
 
         const res = await API.post(`create_appointment/${doctorId}`, formData);
         const appointmentId = res.data.appointment_id;
-
-        if (!appointmentId) {
-          toast.success("Appointment Confirmed!");
-          navigate("/appointment-successs");
-          return;
-        }
-
-        const payRes = await API.post("create-payment-order", {
-          appointment_id: appointmentId,
-          amount: 49900,
-        });
-
-        const { order_id, amount, currency, key_id } = payRes.data;
-
-        const options = {
-          key: key_id,
-          amount: amount,
-          currency: currency,
-          name: "Hospital Management",
-          description: "Appointment Booking",
-          order_id: order_id,
-          handler: async function (response: any) {
-            try {
-              await API.post("verify-payment", {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                appointment_id: appointmentId,
-              });
-              toast.success("Payment successful! Appointment confirmed.");
-              navigate("/appointment-successs", {
-                state: { appointmentId, paymentId: response.razorpay_payment_id },
-              });
-            } catch {
-              toast.error("Payment verification failed. Contact support.");
-            }
-          },
-          modal: {
-            ondismiss: function () {
-              toast("Payment cancelled. You can pay later.");
-              navigate("/appointment-successs", { state: { appointmentId } });
-            },
-          },
-          prefill: { name: values.name, email: values.email, contact: values.phone },
-          theme: { color: "#fa6039" },
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+        toast.success("Appointment submitted! Awaiting doctor approval.");
+        navigate("/appointment-successs", { state: { appointmentId } });
       } catch (error: any) {
         const detail = error?.response?.data?.detail;
         const msg = Array.isArray(detail) ? detail.map((e: any) => e.msg).join(", ")
@@ -132,11 +79,11 @@ const ConfirmAppointment = () => {
             error={formik.touched.reasonForConsultation && Boolean(formik.errors.reasonForConsultation)}
             helperText={formik.touched.reasonForConsultation && formik.errors.reasonForConsultation} />
           <Typography variant="body2" color="text.secondary" textAlign="center">
-            Fee: ₹499 (Pay via Razorpay)
+            Fee: ₹499 (Pay after doctor approval)
           </Typography>
           <Button type="submit" variant="contained" disabled={loading}
             sx={{ bgcolor: "#fa6039", color: "white", fontWeight: 600 }}>
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Pay ₹499 & Confirm"}
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Submit Appointment"}
           </Button>
         </Box>
       </Box>

@@ -29,6 +29,9 @@ def get_all_appointments_pipeline():
                 'created_at':1,
                 'updated_at':1,
                 'is_success':1,
+                'is_approved':1,
+                'payment_status':1,
+                'docId':1,
                 'schedule_date':1,
                 'schedule_time':1,
                 'name': 1,
@@ -38,13 +41,6 @@ def get_all_appointments_pipeline():
     ]
     
     return pipeline
-
-
-#   {
-#                 "$match": {
-#                     "user_id": userId
-#                 }
-#             },
 
 
 def get_all_appointments_by_userId_pipeline(userId):
@@ -68,6 +64,9 @@ def get_all_appointments_by_userId_pipeline(userId):
                 'created_at':1,
                 'updated_at':1,
                 'is_success':1,
+                'is_approved':1,
+                'payment_status':1,
+                'docId':1,
                 'schedule_date':1,
                 'schedule_time':1,
                 'name': 1,

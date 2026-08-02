@@ -34,7 +34,8 @@ const DoctorDashboard = () => {
     try {
       if (docId) {
         const res = await API.get(`get-all-appointments-by-docId/${docId}`).catch(() => ({ data: [] }));
-        setAppointments(res.data || []);
+        const data = res.data?.appointments || res.data || [];
+        setAppointments(data.map((x: any) => ({ ...x, id: x.id || x.appointment_id })));
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -50,6 +51,22 @@ const DoctorDashboard = () => {
     } catch (err: any) {
       toast.error(extractErrorMsg(err, "Update failed"));
     }
+  };
+
+  const handleApprove = async (id: string) => {
+    try {
+      await API.put(`update-appointment/${id}`, { is_approved: true });
+      toast.success("Appointment approved");
+      fetchAppointments();
+    } catch (err: any) {
+      toast.error(extractErrorMsg(err, "Approval failed"));
+    }
+  };
+
+  const appointmentStatus = (a: any) => {
+    if (a.is_success) return { label: "Booked", color: "#4CAF50" };
+    if (a.is_approved) return { label: "Approved", color: "#FF9800" };
+    return { label: "Pending", color: "#757575" };
   };
 
   const fetchSchedules = async () => {
@@ -98,24 +115,29 @@ const DoctorDashboard = () => {
       <TableContainer component={Paper}>
         <Table>
           <TableHead><TableRow>
-            <TableCell>Patient</TableCell><TableCell>Email</TableCell><TableCell>Date</TableCell><TableCell>Time</TableCell><TableCell>Payment</TableCell><TableCell>Status</TableCell><TableCell>Action</TableCell>
+            <TableCell>Patient</TableCell><TableCell>Email</TableCell><TableCell>Date</TableCell><TableCell>Time</TableCell><TableCell>Status</TableCell><TableCell>Action</TableCell>
           </TableRow></TableHead>
           <TableBody>
-            {appointments.map((a: any) => (
-              <TableRow key={a.id}>
-                <TableCell>{a.name}</TableCell>
-                <TableCell>{a.email}</TableCell>
-                <TableCell>{a.schedule_date}</TableCell>
-                <TableCell>{a.schedule_time}</TableCell>
-                <TableCell>{a.payment_status || "Pending"}</TableCell>
-                <TableCell>{a.is_success ? "Completed" : "Pending"}</TableCell>
-                <TableCell>
-                  {!a.is_success && (
-                    <Button size="small" sx={{ backgroundColor: "#4CAF50", color: "#fff" }} onClick={() => handleComplete(a.id)}>Complete</Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+            {appointments.map((a: any) => {
+              const st = appointmentStatus(a);
+              return (
+                <TableRow key={a.id}>
+                  <TableCell>{a.name}</TableCell>
+                  <TableCell>{a.email}</TableCell>
+                  <TableCell>{a.schedule_date}</TableCell>
+                  <TableCell>{a.schedule_time}</TableCell>
+                  <TableCell><Typography color={st.color} fontWeight={600}>{st.label}</Typography></TableCell>
+                  <TableCell>
+                    {!a.is_approved && (
+                      <Button size="small" sx={{ backgroundColor: "#fa6039", color: "#fff", mr: 1 }} onClick={() => handleApprove(a.id)}>Approve</Button>
+                    )}
+                    {a.is_approved && !a.is_success && (
+                      <Button size="small" sx={{ backgroundColor: "#4CAF50", color: "#fff" }} onClick={() => handleComplete(a.id)}>Complete</Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

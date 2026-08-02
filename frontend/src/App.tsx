@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AvatarProvider } from "./hooks/AvtarContex";
 import { SuperAdminRoute, HospitalAdminRoute, DoctorRoute, PatientRoute, ProtectedRoute } from "./routes/RoleRoutes";
+import { Navigate } from "react-router-dom";
 
 const RegisterForm = lazy(() => import("./pages/auth/register"));
 const LoginForm = lazy(() => import("./pages/auth/Login"));
@@ -26,7 +27,6 @@ const DoctorRegister = lazy(() => import("./pages/doctor_register/AddDoctors"));
 const SuperAdminDashboard = lazy(() => import("./pages/SuperAdmin/SuperAdminDashboard"));
 const HospitalAdminDashboard = lazy(() => import("./pages/HospitalAdmin/HospitalAdminDashboard"));
 const DoctorDashboard = lazy(() => import("./pages/DoctorDashboard/DoctorDashboard"));
-const PatientDashboard = lazy(() => import("./pages/PatientDashboard/PatientDashboard"));
 const AdminPanelLayout = lazy(() => import("./pages/Admin/AdminLayout"));
 
 function App() {
@@ -58,7 +58,7 @@ function App() {
             <Route path="/super-admin" element={<SuperAdminRoute><AdminPanelLayout /></SuperAdminRoute>} />
             <Route path="/hospital-admin/*" element={<HospitalAdminRoute><HospitalAdminDashboard /></HospitalAdminRoute>} />
             <Route path="/doctor/*" element={<DoctorRoute><DoctorDashboard /></DoctorRoute>} />
-            <Route path="/patient/*" element={<PatientRoute><PatientDashboard /></PatientRoute>} />
+            <Route path="/patient/*" element={<PatientRoute><Navigate to="/report-details" replace /></PatientRoute>} />
           </Routes>
         </Suspense>
         <Toaster position="bottom-center" toastOptions={{ duration: 3000, style: { fontFamily: "Poppins, sans-serif" } }} />

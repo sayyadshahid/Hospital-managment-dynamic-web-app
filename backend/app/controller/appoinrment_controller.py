@@ -27,6 +27,9 @@ class Appointment():
             data_dict["dob"] = data.dob.isoformat()
             data_dict["user_id"] = user_id
             data_dict["docId"] = docId
+            data_dict["payment_status"] = "Pending"
+            data_dict["is_approved"] = False
+            data_dict["is_success"] = False
 
             # Save to DB
             db = get_database()

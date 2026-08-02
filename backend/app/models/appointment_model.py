@@ -15,6 +15,7 @@ class AppointmentModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     is_success: bool = Field(default=False)
+    is_approved: bool = Field(default=False)
     schedule_date: date = Field(..., description='Schedule date')
     schedule_time: str = Field(..., description='Schedule time')
 
@@ -36,6 +37,7 @@ class UpdateAppointmentModel(BaseModel):
     reasonForConsultation: Optional[str] = Field(None, min_length=5)
     is_active: Optional[bool] = Field(None)
     is_success: Optional[bool] = Field(None)
+    is_approved: Optional[bool] = Field(None)
     schedule_date: Optional[date] = Field(None)
     schedule_time: Optional[str] = Field(None)
     payment_status: Optional[str] = Field(None)
