@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ./backend
+    container_name: hospital-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      MONGO_DB_URL: mongodb+srv://shahidsayyed0212:shahid%40212@cluster0.5nahamz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      DATABASE_NAME: hospital-managment
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Keep in sync with frontend/.env. Backend is reached via the browser,
+        # so use localhost:<backend port> here.
+        REACT_APP_API_BASE_URL: http://localhost:8000/api/
+        REACT_APP_FILE_BASE_URL: http://localhost:8000
+    container_name: hospital-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
