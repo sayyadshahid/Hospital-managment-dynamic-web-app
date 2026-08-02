@@ -9,6 +9,7 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import API from "../../components/configs/API";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmDeleteDialog from "../../components/ui/ConfirmDeleteDialog";
 
 interface Review {
   id: string;
@@ -27,6 +28,7 @@ interface Review {
 const ReviewTable = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
 
   const fetchReviews = async () => {
     try {
@@ -69,7 +71,7 @@ const ReviewTable = () => {
       width: 120,
       sortable: false,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+        <IconButton color="error" onClick={() => setReviewToDelete(params.row)}>
           <DeleteIcon />
         </IconButton>
       ),
@@ -122,6 +124,13 @@ const ReviewTable = () => {
           />
         )}
       </Box>
+
+      <ConfirmDeleteDialog
+        open={!!reviewToDelete}
+        message="Are you sure you want to delete this review? This action cannot be undone."
+        onClose={() => setReviewToDelete(null)}
+        onConfirm={() => reviewToDelete && handleDelete(reviewToDelete.id)}
+      />
     </Paper>
   );
 };

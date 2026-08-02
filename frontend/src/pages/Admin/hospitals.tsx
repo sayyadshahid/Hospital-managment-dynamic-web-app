@@ -14,6 +14,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import API from "../../components/configs/API";
 import DoctorByHospitalId from "./get_docs_byId"; // doctor popup component
+import ConfirmDeleteDialog from "../../components/ui/ConfirmDeleteDialog";
 import { useNavigate } from "react-router-dom";
 
 interface Hospital {
@@ -31,6 +32,7 @@ const HospitalTable = () => {
   const [selectedHospitalId, setSelectedHospitalId] = useState<string | null>(
     null
   );
+  const [hospitalToDelete, setHospitalToDelete] = useState<any | null>(null);
 
   const navigate = useNavigate();
 
@@ -93,7 +95,7 @@ const HospitalTable = () => {
       width: 100,
       sortable: false,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+        <IconButton color="error" onClick={() => setHospitalToDelete(params.row)}>
           <DeleteIcon />
         </IconButton>
       ),
@@ -175,6 +177,13 @@ const HospitalTable = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <ConfirmDeleteDialog
+        open={!!hospitalToDelete}
+        message={`Are you sure you want to delete the hospital "${hospitalToDelete?.title || ""}"? This action cannot be undone.`}
+        onClose={() => setHospitalToDelete(null)}
+        onConfirm={() => hospitalToDelete && handleDelete(hospitalToDelete.id)}
+      />
     </>
   );
 };

@@ -3,6 +3,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import API from "../../components/configs/API";
 import { extractErrorMsg } from "../../components/configs/API/errorUtils";
 import Sidebar from "../../components/Sidebar";
+import ConfirmDeleteDialog from "../../components/ui/ConfirmDeleteDialog";
 import toast from "react-hot-toast";
 
 const menuItems = [
@@ -21,6 +22,7 @@ const SuperAdminDashboard = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({ title: "", description: "", address: "", about: "", admin_name: "", admin_email: "", admin_phone: "", admin_password: "" });
   const [file, setFile] = useState<File | null>(null);
+  const [hospitalToDelete, setHospitalToDelete] = useState<any | null>(null);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -114,7 +116,7 @@ const SuperAdminDashboard = () => {
                 <TableCell>{h.address}</TableCell>
                 <TableCell>{h.admin_email || "-"}</TableCell>
                 <TableCell>
-                  <Button size="small" color="error" onClick={() => handleDeleteHospital(h.id)}>Delete</Button>
+                  <Button size="small" color="error" onClick={() => setHospitalToDelete(h)}>Delete</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -133,6 +135,13 @@ const SuperAdminDashboard = () => {
           <Button fullWidth variant="contained" sx={{ mt: 2, backgroundColor: "#fa6039" }} onClick={handleCreateHospital}>Create Hospital</Button>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDeleteDialog
+        open={!!hospitalToDelete}
+        message={`Are you sure you want to delete the hospital "${hospitalToDelete?.title || ""}"? This action cannot be undone.`}
+        onClose={() => setHospitalToDelete(null)}
+        onConfirm={() => hospitalToDelete && handleDeleteHospital(hospitalToDelete.id)}
+      />
     </Box>
   );
 

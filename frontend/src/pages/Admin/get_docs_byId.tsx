@@ -3,13 +3,17 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import API from "../../components/configs/API";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmDeleteDialog from "../../components/ui/ConfirmDeleteDialog";
 import { IconButton } from "@mui/material";
 
 
 interface Doctor {
   id: string;
   name: string;
+  fullname?: string;
   degree: string;
+  phone_no?: string;
+  email?: string;
 }
 
 interface Props {
@@ -19,6 +23,7 @@ interface Props {
 const DoctorByHospitalId: React.FC<Props> = ({ hospitalId }) => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [doctorToDelete, setDoctorToDelete] = useState<Doctor | null>(null);
 
   useEffect(() => {
     const fetchAllDoctors = async () => {
@@ -60,7 +65,7 @@ const DoctorByHospitalId: React.FC<Props> = ({ hospitalId }) => {
       width: 100,
       sortable: false,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+        <IconButton color="error" onClick={() => setDoctorToDelete(params.row)}>
           <DeleteIcon />
         </IconButton>
       ),
@@ -92,6 +97,13 @@ const DoctorByHospitalId: React.FC<Props> = ({ hospitalId }) => {
           sx={{ backgroundColor: "white", borderRadius: 2 }}
         />
       )}
+
+      <ConfirmDeleteDialog
+        open={!!doctorToDelete}
+        message={`Are you sure you want to delete the doctor "${doctorToDelete?.fullname || ""}"? This action cannot be undone.`}
+        onClose={() => setDoctorToDelete(null)}
+        onConfirm={() => doctorToDelete && handleDelete(doctorToDelete.id)}
+      />
     </Box>
   );
 };
