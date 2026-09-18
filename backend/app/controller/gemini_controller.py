@@ -1,13 +1,8 @@
-from google.generativeai import GenerativeModel, configure
-import os
+from typing import Optional
 
-# Configure Gemini using environment variable
-configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = GenerativeModel("gemini-1.5-flash")
+from app.services.assistant_service import answer_question
 
-def generate_ai_response(prompt: str) -> str:
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return "Error generating response. Please try again later."
+
+async def generate_ai_response(question: str, user_id: Optional[str] = None,
+                               conversation=None, conversation_id: Optional[str] = None) -> dict:
+    return await answer_question(question, user_id, conversation, conversation_id)

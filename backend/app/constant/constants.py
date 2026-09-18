@@ -6,6 +6,7 @@ class DbCollections:
     DOCTOR_REGISTER_COLLECTION = "doctor_register"
     SCHEDULE_COLLECTION = "schedules"
     APPOINTMENT_COLLECTION = "appointments"
+    AI_CONVERSATIONS_COLLECTION = "ai_conversations"
 
 class UserRole:
     SUPER_ADMIN = "super_admin"
