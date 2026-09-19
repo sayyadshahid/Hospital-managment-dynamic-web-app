@@ -69,18 +69,6 @@ type Conversation = {
   message_count: number;
 };
 
-type Session = { id: string; token: string; fullname: string; email: string };
-
-const readSession = (): Session => {
-  const u = JSON.parse(localStorage.getItem("user") || "{}");
-  return {
-    id: u.id || "",
-    token: u.access_token || "",
-    fullname: u.fullname || "",
-    email: u.email || "",
-  };
-};
-
 const pulse = keyframes`
   0%, 100% { opacity: 0.4; transform: scale(0.95); }
   50% { opacity: 1; transform: scale(1.05); }
@@ -112,8 +100,8 @@ function AssistantAvatar({ size = 32 }: { size?: number }) {
       sx={{
         width: size,
         height: size,
-        background: C.gradient,
-        boxShadow: "0 2px 8px rgba(220,38,38,0.25)",
+        bgcolor: C.primary,
+        boxShadow: "0 2px 6px rgba(220,38,38,0.2)",
       }}
       aria-label="AI Logo"
     >
@@ -127,7 +115,9 @@ export default function ChatUI() {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<Session>(readSession);
+  const [user] = useState<{ fullname?: string; email?: string }>(() =>
+    JSON.parse(localStorage.getItem("user") || "{}")
+  );
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -149,7 +139,6 @@ export default function ChatUI() {
 
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const prevSessionRef = useRef<string>("");
 
   const loadConversations = useCallback(async () => {
     try {
@@ -165,36 +154,9 @@ export default function ChatUI() {
     }
   }, []);
 
-  // Keep the session in sync with localStorage so switching accounts (even in
-  // another tab) never shows another user's chats.
   useEffect(() => {
-    const sync = () =>
-      setUser((prev) => {
-        const next = readSession();
-        return prev.id === next.id && prev.token === next.token ? prev : next;
-      });
-    window.addEventListener("storage", sync);
-    const timer = window.setInterval(sync, 2000);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.clearInterval(timer);
-    };
-  }, []);
-
-  const sessionKey = `${user.id}|${user.token}`;
-
-  useEffect(() => {
-    if (prevSessionRef.current === sessionKey) return;
-    prevSessionRef.current = sessionKey;
-    setMessages([]);
-    setConversations([]);
-    setActiveId(null);
-    setInput("");
-    setSearchQuery("");
-    setDeleteTarget(null);
     loadConversations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionKey]);
+  }, [loadConversations]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -312,7 +274,7 @@ export default function ChatUI() {
 
   const hasMessages = messages.length > 0;
 
-  // ChatGPT White & Red Sidebar
+  // ChatGPT White & Solid Red Sidebar
   const sidebarContent = (
     <Box
       sx={{
@@ -326,7 +288,7 @@ export default function ChatUI() {
         fontFamily: FONT,
       }}
     >
-      {/* Top Header: Logo + Search Icon + Sidebar Toggle / Close Icon */}
+      {/* Top Header: Text Logo (No Icon) + Search Icon + Sidebar Toggle */}
       <Box
         sx={{
           px: 2,
@@ -339,18 +301,14 @@ export default function ChatUI() {
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1.25,
             cursor: "pointer",
           }}
           onClick={() => navigate("/")}
         >
-          <AssistantAvatar size={28} />
           <Typography
             sx={{
               fontWeight: 700,
-              fontSize: 16,
+              fontSize: 17,
               letterSpacing: "-0.02em",
               color: C.text,
               fontFamily: FONT,
@@ -395,7 +353,7 @@ export default function ChatUI() {
         </Box>
       </Box>
 
-      {/* Expandable Search Input Bar with Close Icon beside Search */}
+      {/* Expandable Search Input Bar */}
       <Collapse in={searchOpen}>
         <Box sx={{ px: 1.5, py: 1 }}>
           <Box
@@ -424,7 +382,6 @@ export default function ChatUI() {
                 "& input": { p: 0 },
               }}
             />
-            {/* Close / Clear Icon beside Search input */}
             <IconButton
               size="small"
               onClick={() => {
@@ -558,7 +515,7 @@ export default function ChatUI() {
         )}
       </Box>
 
-      {/* User Profile Section with 3 Dots -> Logout Menu */}
+      {/* User Profile Section (Solid Red Avatar) */}
       <Divider sx={{ borderColor: C.borderLight }} />
       <Box
         onClick={(e) => setProfileMenuAnchor(e.currentTarget)}
@@ -600,7 +557,7 @@ export default function ChatUI() {
                 textOverflow: "ellipsis",
               }}
             >
-              {user.fullname ? user.fullname : "shahid132"}
+              {user.fullname ? user.fullname : "Shahid Sayyed"}
             </Typography>
             <Typography
               sx={{
@@ -640,7 +597,7 @@ export default function ChatUI() {
 
       {/* Main Right Section */}
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", minWidth: 0, height: "100%" }}>
-        {/* Top Header Bar */}
+        {/* Top Header Bar (No Icon in Pill Badge) */}
         <Box
           sx={{
             height: 52,
@@ -653,7 +610,6 @@ export default function ChatUI() {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {/* Sidebar toggle button when collapsed */}
             {(!sidebarOpen || !isDesktop) && (
               <IconButton
                 size="small"
@@ -668,12 +624,11 @@ export default function ChatUI() {
               </IconButton>
             )}
 
-            {/* Top Header Single Badge: Health AI */}
+            {/* Clean Health AI Badge (No Icon) */}
             <Box
               sx={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 0.75,
                 bgcolor: C.primaryLight,
                 border: `1px solid ${C.primaryBorder}`,
                 borderRadius: "16px",
@@ -681,7 +636,6 @@ export default function ChatUI() {
                 py: 0.4,
               }}
             >
-              <LocalHospitalOutlinedIcon sx={{ fontSize: 15, color: C.primary }} />
               <Typography
                 sx={{
                   fontWeight: 600,
@@ -798,7 +752,7 @@ export default function ChatUI() {
                     pt: 0.5,
                   }}
                 >
-                  {/* Left: Think pill badge toggle */}
+                  {/* Left: Think pill badge */}
                   <Button
                     size="small"
                     onClick={() => setThinkingMode((prev) => !prev)}
@@ -822,7 +776,7 @@ export default function ChatUI() {
                     Think
                   </Button>
 
-                  {/* Right: Red Send Button */}
+                  {/* Right: Solid Red Send Button */}
                   <IconButton
                     onClick={() => send()}
                     disabled={!input.trim() || loading}
