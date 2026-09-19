@@ -43,26 +43,6 @@ const DoctorDashboard = () => {
 
   useEffect(() => { fetchAppointments(); }, []);
 
-  const handleComplete = async (id: string) => {
-    try {
-      await API.put(`update-appointment/${id}`, { is_success: true });
-      toast.success("Appointment marked completed");
-      fetchAppointments();
-    } catch (err: any) {
-      toast.error(extractErrorMsg(err, "Update failed"));
-    }
-  };
-
-  const handleApprove = async (id: string) => {
-    try {
-      await API.put(`update-appointment/${id}`, { is_approved: true });
-      toast.success("Appointment approved");
-      fetchAppointments();
-    } catch (err: any) {
-      toast.error(extractErrorMsg(err, "Approval failed"));
-    }
-  };
-
   const appointmentStatus = (a: any) => {
     if (a.is_success) return { label: "Booked", color: "#4CAF50" };
     if (a.is_approved) return { label: "Approved", color: "#FF9800" };
@@ -79,10 +59,31 @@ const DoctorDashboard = () => {
       console.error(err);
     } finally {
       setScheduleLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => { fetchSchedules(); }, []);
+
+  const handleApprove = async (id: string) => {
+    try {
+      await API.put(`update-appointment/${id}`, { is_approved: true });
+      toast.success("Appointment approved");
+      fetchAppointments();
+    } catch (err: any) {
+      toast.error(extractErrorMsg(err, "Approval failed"));
+    }
+  };
+
+  const handleComplete = async (id: string) => {
+    try {
+      await API.put(`update-appointment/${id}`, { is_success: true });
+      toast.success("Appointment marked completed");
+      fetchAppointments();
+    } catch (err: any) {
+      toast.error(extractErrorMsg(err, "Update failed"));
+    }
+  };
 
   const handleDeleteSchedule = async (id: string) => {
     try {

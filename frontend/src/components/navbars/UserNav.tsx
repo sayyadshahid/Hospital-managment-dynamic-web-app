@@ -30,16 +30,30 @@ const UserNavBar = () => {
   const { avatar } = useAvatar();
   const role = JSON.parse(localStorage.getItem("user") || "{}").role;
 
+  const dashboardPath =
+    role === "super_admin" || role === "admin"
+      ? "/admin"
+      : role === "hospital_admin"
+        ? "/hospital-admin"
+        : role === "doctor"
+          ? "/doctor"
+          : "/";
+
+  const isAdminRole =
+    role === "super_admin" || role === "admin" || role === "hospital_admin" || role === "doctor";
+
   const baseNavItems = [
     { label: "About", path: "/aboutUs" },
-    { label: "Dashboard", path: "/" },
-    { label: "Appointments", path: "/report-details" },
+    { label: "Dashboard", path: dashboardPath },
+    ...(isAdminRole ? [] : [{ label: "Appointments", path: "/report-details" }]),
   ];
 
   let navItems = baseNavItems;
 
-if (role === "admin") {
+if (role === "super_admin" || role === "admin") {
   navItems = [{ label: "Admin Panel", path: "/admin" }, ...baseNavItems];
+} else if (role === "hospital_admin") {
+  navItems = [{ label: "Hospital Panel", path: "/hospital-admin" }, ...baseNavItems];
 } else if (role === "doctor") {
   navItems = [{ label: "Doctor Panel", path: "/doctor" }, ...baseNavItems];
 }

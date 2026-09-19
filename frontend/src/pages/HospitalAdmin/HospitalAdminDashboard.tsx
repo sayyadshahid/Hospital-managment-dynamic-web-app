@@ -10,7 +10,6 @@ const HospitalAdminDashboard = () => {
   const hospitalId = user.hospital_id;
   const [selectedSection, setSelectedSection] = useState("dashboard");
   const [doctors, setDoctors] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({ fullname: "", experties: "", degree: "", about: "", email: "", phone_no: "", password: "", confirm_password: "", is_active: "true" });
@@ -21,19 +20,14 @@ const HospitalAdminDashboard = () => {
   const sections = [
     { key: "dashboard", label: "Dashboard" },
     { key: "doctors", label: "My Doctors" },
-    { key: "appointments", label: "Appointments" },
   ];
 
   const fetchData = async () => {
     setLoading(true);
     try {
       if (hospitalId) {
-        const [dRes, aRes] = await Promise.all([
-          API.get(`get-all-doctors-by/${hospitalId}`).catch(() => ({ data: { Doctors: [] } })),
-          API.get("get-all-appointments").catch(() => ({ data: [] })),
-        ]);
+        const dRes = await API.get(`get-all-doctors-by/${hospitalId}`).catch(() => ({ data: { Doctors: [] } }));
         setDoctors(dRes.data.Doctors || []);
-        setAppointments((aRes.data || []).filter((a: any) => doctors.some((d: any) => d.id === a.docId)));
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -59,7 +53,6 @@ const HospitalAdminDashboard = () => {
     <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 3 }}>
       {[
         { label: "My Doctors", value: doctors.length, color: "#fa6039" },
-        { label: "Total Appointments", value: appointments.length, color: "#4CAF50" },
       ].map((item) => (
         <Paper key={item.label} sx={{ p: 3, textAlign: "center", borderTop: `4px solid ${item.color}` }}>
           <Typography variant="h4">{item.value}</Typography>
@@ -106,35 +99,10 @@ const HospitalAdminDashboard = () => {
     </Box>
   );
 
-  const renderAppointments = () => (
-    <Box>
-      <Typography variant="h6" mb={2}>Hospital Appointments</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead><TableRow>
-            <TableCell>Patient</TableCell><TableCell>Doctor</TableCell><TableCell>Date</TableCell><TableCell>Time</TableCell><TableCell>Status</TableCell>
-          </TableRow></TableHead>
-          <TableBody>
-            {appointments.map((a: any) => (
-              <TableRow key={a.id}>
-                <TableCell>{a.name}</TableCell>
-                <TableCell>{doctors.find((d: any) => d.id === a.docId)?.fullname || a.docId}</TableCell>
-                <TableCell>{a.schedule_date}</TableCell>
-                <TableCell>{a.schedule_time}</TableCell>
-                <TableCell>{a.is_success ? "Completed" : a.payment_status === "paid" ? "Paid" : "Pending"}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-
   const renderContent = () => {
     switch (selectedSection) {
       case "dashboard": return renderDashboard();
       case "doctors": return renderDoctors();
-      case "appointments": return renderAppointments();
       default: return <Typography>Section not found</Typography>;
     }
   };

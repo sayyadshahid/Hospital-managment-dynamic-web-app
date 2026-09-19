@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 interface Hospital {
   id: string;
   title: string;
-  email?: string;
+  admin_email?: string;
   phone_no?: string;
   role?: string;
 }
@@ -73,6 +73,7 @@ const HospitalTable = () => {
   const columns: GridColDef[] = [
     { field: "id", headerName: "Hospital ID", width: 220 },
     { field: "title", headerName: "Hospital Name", flex: 1 },
+    { field: "admin_email", headerName: "Email", flex: 1 },
     {
       field: "viewDoctors",
       headerName: "Doctors",
