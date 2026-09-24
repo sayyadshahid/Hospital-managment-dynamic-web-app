@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, CircularProgress, Stack, Divider, IconButton, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, CircularProgress, Stack, Divider, IconButton, TextField, useTheme, useMediaQuery } from "@mui/material";
 import API from "../../components/configs/API";
 import { extractErrorMsg } from "../../components/configs/API/errorUtils";
 import NavBar from "../../components/header";
 import ScheduleDialog from "../../components/ui/ScheduleDialog";
 import ConfirmDeleteDialog from "../../components/ui/ConfirmDeleteDialog";
+import ChangeCredentials from "../../components/ui/ChangeCredentials";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import toast from "react-hot-toast";
 
 const DoctorDashboard = () => {
@@ -20,6 +23,10 @@ const DoctorDashboard = () => {
   const [scheduleToEdit, setScheduleToEdit] = useState<any | null>(null);
   const [scheduleToDelete, setScheduleToDelete] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [doctor, setDoctor] = useState<any>({});
+  const [doctorForm, setDoctorForm] = useState<any>({ fullname: "", phone_no: "", degree: "", experties: "", about: "" });
+  const [doctorImage, setDoctorImage] = useState<File | null>(null);
+  const [doctorSaving, setDoctorSaving] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -27,6 +34,8 @@ const DoctorDashboard = () => {
     { key: "dashboard", label: "Dashboard" },
     { key: "appointments", label: "Appointments" },
     { key: "schedule", label: "My Schedule" },
+    { key: "profile", label: "My Profile" },
+    { key: "credentials", label: "Change Credentials" },
   ];
 
   const fetchAppointments = async () => {
@@ -42,6 +51,26 @@ const DoctorDashboard = () => {
   };
 
   useEffect(() => { fetchAppointments(); }, []);
+
+  const fetchDoctorProfile = async () => {
+    try {
+      if (!docId) return;
+      const res = await API.get(`get-doctor-by-id/${docId}`).catch(() => ({ data: { doctor: {} } }));
+      const d = res.data.doctor || {};
+      setDoctor(d);
+      setDoctorForm({
+        fullname: d.fullname || "",
+        phone_no: d.phone_no || "",
+        degree: d.degree || "",
+        experties: d.experties || "",
+        about: d.about || "",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => { fetchDoctorProfile(); }, []);
 
   const appointmentStatus = (a: any) => {
     if (a.is_success) return { label: "Booked", color: "#4CAF50" };
@@ -92,6 +121,32 @@ const DoctorDashboard = () => {
       fetchSchedules();
     } catch (err: any) {
       toast.error(extractErrorMsg(err, "Delete failed"));
+    }
+  };
+
+  const handleSaveDoctorProfile = async () => {
+    setDoctorSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append("fullname", doctorForm.fullname || "");
+      fd.append("phone_no", doctorForm.phone_no || "");
+      if (doctorForm.degree) fd.append("degree", doctorForm.degree);
+      if (doctorForm.experties) fd.append("experties", doctorForm.experties);
+      if (doctorForm.about) fd.append("about", doctorForm.about);
+      if (doctorImage) fd.append("file", doctorImage);
+      const res = await API.put(`update-doctor/${docId}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+      toast.success(res.data.msg || "Profile updated successfully");
+      setDoctor(res.data.doctor);
+      setDoctorImage(null);
+      const stored = JSON.parse(localStorage.getItem("user") || "{}");
+      if (res.data.doctor?.fullname) {
+        stored.fullname = res.data.doctor.fullname;
+        localStorage.setItem("user", JSON.stringify(stored));
+      }
+    } catch (err: any) {
+      toast.error(extractErrorMsg(err, "Failed to update profile"));
+    } finally {
+      setDoctorSaving(false);
     }
   };
 
@@ -200,11 +255,82 @@ const DoctorDashboard = () => {
     </Box>
   );
 
+  const renderProfile = () => (
+    <Box sx={{ maxWidth: 720 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+        <EditIcon color="primary" />
+        <Typography variant="h6">My Professional Profile</Typography>
+      </Box>
+      <Paper sx={{ p: 3 }}>
+        <Box
+          sx={{
+            width: { xs: "100%", sm: 180 },
+            height: 180,
+            mb: 2,
+            borderRadius: 2,
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f1eeee",
+            mx: "auto",
+          }}
+        >
+          <img
+            src={
+              doctorImage
+                ? URL.createObjectURL(doctorImage)
+                : `${process.env.REACT_APP_FILE_BASE_URL}/${doctor?.file_path || ""}`
+            }
+            alt="Doctor"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </Box>
+        <Box sx={{ textAlign: "center" }}>
+          <label htmlFor="doctor-photo">
+            <input
+              type="file"
+              id="doctor-photo"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => setDoctorImage(e.target.files?.[0] || null)}
+            />
+            <Button variant="outlined" component="span" startIcon={<PhotoCamera />} sx={{ mb: 2, textTransform: "none" }}>
+              Change Photo
+            </Button>
+          </label>
+        </Box>
+        <Stack spacing={2}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+            <TextField label="Full Name" value={doctorForm.fullname} onChange={(e) => setDoctorForm({ ...doctorForm, fullname: e.target.value })} />
+            <TextField label="Phone Number" value={doctorForm.phone_no} onChange={(e) => setDoctorForm({ ...doctorForm, phone_no: e.target.value })} />
+            <TextField label="Degree" value={doctorForm.degree} onChange={(e) => setDoctorForm({ ...doctorForm, degree: e.target.value })} />
+            <TextField label="Area of Expertise" value={doctorForm.experties} onChange={(e) => setDoctorForm({ ...doctorForm, experties: e.target.value })} />
+          </Box>
+          <TextField label="About" value={doctorForm.about} onChange={(e) => setDoctorForm({ ...doctorForm, about: e.target.value })} multiline minRows={4} />
+        </Stack>
+        <Button
+          fullWidth variant="contained" startIcon={<SaveIcon />} sx={{ mt: 3, backgroundColor: "#fa6039" }}
+          onClick={handleSaveDoctorProfile} disabled={doctorSaving}
+        >
+          {doctorSaving ? "Saving..." : "Save Profile"}
+        </Button>
+        <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+          Changes you save here will be reflected immediately across the whole website (doctor listing on the hospitals page and your public profile).
+        </Typography>
+      </Paper>
+    </Box>
+  );
+
+  const renderCredentials = () => <ChangeCredentials />;
+
   const renderContent = () => {
     switch (selectedSection) {
       case "dashboard": return renderDashboard();
       case "appointments": return renderAppointments();
       case "schedule": return renderSchedule();
+      case "profile": return renderProfile();
+      case "credentials": return renderCredentials();
       default: return <Typography>Section not found</Typography>;
     }
   };

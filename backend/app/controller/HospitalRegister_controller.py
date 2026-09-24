@@ -1,10 +1,9 @@
 from app.constant.constants import DbCollections, UserRole
 from app.models.HospitalRegister_model import HospitalRegisterModel
 from app.services.auth_service import get_password_hash
-from fastapi import HTTPException
+from fastapi import HTTPException, Request, UploadFile
 from app.database import get_database
 import os
-from fastapi import UploadFile
 from bson import ObjectId
 from datetime import datetime
 
@@ -99,6 +98,51 @@ class HospitalRegister:
             await db[DbCollections.USER_COLLECTION].delete_many({"hospital_id": id, "role": UserRole.HOSPITAL_ADMIN})
             await db[DbCollections.HOSPITAL_COLLECTION].delete_one({"_id": ObjectId(id)})
             return {"msg": "Hospital and associated admin deleted successfully"}
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+    async def update_hospital(id: str, request: Request, title=None, description=None, address=None, about=None, file: UploadFile | None = None):
+        try:
+            db = get_database()
+            if not ObjectId.is_valid(id):
+                raise HTTPException(status_code=400, detail="Invalid ID format")
+            hospital = await db[DbCollections.HOSPITAL_COLLECTION].find_one({"_id": ObjectId(id)})
+            if not hospital:
+                raise HTTPException(status_code=404, detail="Hospital not found")
+
+            role = request.state.user_role
+            if role == UserRole.HOSPITAL_ADMIN and request.state.hospital_id != id:
+                raise HTTPException(status_code=403, detail="You are not authorized to edit this hospital")
+            if role not in [UserRole.HOSPITAL_ADMIN, UserRole.SUPER_ADMIN]:
+                raise HTTPException(status_code=403, detail="You are not authorized to edit this hospital")
+
+            update_data = {"updated_at": datetime.utcnow()}
+
+            if title is not None and str(title).strip():
+                update_data["title"] = str(title).strip()
+            if description is not None:
+                update_data["description"] = str(description).strip()
+            if address is not None and str(address).strip():
+                update_data["address"] = str(address).strip()
+            if about is not None:
+                update_data["about"] = str(about).strip()
+
+            if file:
+                upload_folder = "uploads/"
+                os.makedirs(upload_folder, exist_ok=True)
+                file_location = os.path.join(upload_folder, f"hospital_{id}_{file.filename}")
+                with open(file_location, "wb") as f:
+                    content = await file.read()
+                    f.write(content)
+                update_data["filename"] = file.filename
+                update_data["file_path"] = file_location
+
+            await db[DbCollections.HOSPITAL_COLLECTION].update_one({"_id": ObjectId(id)}, {"$set": update_data})
+            updated = await db[DbCollections.HOSPITAL_COLLECTION].find_one({"_id": ObjectId(id)})
+            updated["id"] = str(updated.pop("_id"))
+            return {"msg": "Hospital updated successfully", "hospital": updated}
         except HTTPException as exc:
             raise exc
         except Exception as e:

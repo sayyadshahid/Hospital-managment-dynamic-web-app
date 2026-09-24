@@ -1,9 +1,10 @@
 from app.controller.auth_controller import Auth
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, File, Form, Request, UploadFile
 from app.models.auth_model import (
     LoginRequestUser, SignupRequest, ForgotPasswordRequest,
     VerifyOTPRequest, ResetPasswordRequest, SignupOTPRequest,
-    VerifySignupOTPRequest, PaymentOrderRequest, PaymentVerifyRequest
+    VerifySignupOTPRequest, PaymentOrderRequest, PaymentVerifyRequest,
+    ChangeCredentialsRequest, UpdateProfileRequest
 )
 
 auth_router = APIRouter()
@@ -62,3 +63,24 @@ async def get_user_by_id(id: str):
 @auth_router.get('/get-all-users')
 async def get_all_user():
     return await Auth.get_all_users()
+
+
+@auth_router.put('/update-profile')
+async def update_profile(
+    request: Request,
+    fullname: str = Form(None),
+    phone_no: str = Form(None),
+    about: str = Form(None),
+    degree: str = Form(None),
+    experties: str = Form(None),
+    file: UploadFile | None = File(None),
+):
+    return await Auth.update_profile(
+        request=request, fullname=fullname, phone_no=phone_no,
+        about=about, degree=degree, experties=experties, file=file
+    )
+
+
+@auth_router.put('/change-credentials')
+async def change_credentials(data: ChangeCredentialsRequest, request: Request):
+    return await Auth.change_credentials(request=request, data=data)

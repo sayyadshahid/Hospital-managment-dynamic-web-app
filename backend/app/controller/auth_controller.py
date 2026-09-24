@@ -1,14 +1,16 @@
 from app.models.auth_model import (
     SignupRequest, LoginRequestUser, ForgotPasswordRequest,
     VerifyOTPRequest, ResetPasswordRequest, SignupOTPRequest,
-    VerifySignupOTPRequest, PaymentOrderRequest, PaymentVerifyRequest
+    VerifySignupOTPRequest, PaymentOrderRequest, PaymentVerifyRequest,
+    ChangeCredentialsRequest
 )
 from bson import ObjectId
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import HTTPException, BackgroundTasks, Request, UploadFile
 from app.database import get_database
 from app.constant.constants import DbCollections, UserRole
 import re
 import random
+import os
 from datetime import datetime, timedelta
 from app.services.auth_service import create_access_token, get_password_hash, verify_password
 from app.services.email_service import send_password_reset_otp, send_signup_otp
@@ -331,3 +333,93 @@ class Auth:
             return {"count": len(all_users), "users": all_users}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error retrieving users: {str(e)}")
+
+    async def update_profile(request: Request, fullname=None, phone_no=None, about=None, degree=None, experties=None, file: UploadFile | None = None):
+        try:
+            db = get_database()
+            user_id = request.state.user_id
+            role = request.state.user_role
+            if not user_id:
+                raise HTTPException(status_code=401, detail="Not authenticated")
+
+            collection_name = DbCollections.DOCTOR_REGISTER_COLLECTION if role == UserRole.DOCTOR else DbCollections.USER_COLLECTION
+            record = await db[collection_name].find_one({"_id": ObjectId(user_id)})
+            if not record:
+                raise HTTPException(status_code=404, detail="Account not found")
+
+            update_data = {"updated_at": datetime.utcnow()}
+
+            if fullname is not None and str(fullname).strip():
+                update_data["fullname"] = str(fullname).strip()
+
+            if phone_no is not None and str(phone_no).strip():
+                phone = str(phone_no).strip()
+                if not phone.startswith("+91"):
+                    if phone.isdigit() and len(phone) == 10:
+                        phone = f"+91{phone}"
+                    else:
+                        raise HTTPException(status_code=400, detail="Invalid phone number format")
+                if not re.match(r"^\+91\d{10}$", phone):
+                    raise HTTPException(status_code=400, detail="Invalid phone number format")
+                current_phone = record.get("phone_no")
+                if current_phone and current_phone != phone:
+                    dup = await db[collection_name].find_one({"phone_no": phone})
+                    if dup and str(dup["_id"]) != user_id:
+                        raise HTTPException(status_code=400, detail="Phone number already in use")
+                update_data["phone_no"] = phone
+
+            if about is not None:
+                update_data["about"] = str(about).strip()
+
+            if role == UserRole.DOCTOR:
+                if degree is not None and str(degree).strip():
+                    update_data["degree"] = str(degree).strip()
+                if experties is not None and str(experties).strip():
+                    update_data["experties"] = str(experties).strip()
+
+            if file:
+                upload_folder = "uploads/"
+                os.makedirs(upload_folder, exist_ok=True)
+                file_location = os.path.join(upload_folder, f"{user_id}_{file.filename}")
+                with open(file_location, "wb") as f:
+                    content = await file.read()
+                    f.write(content)
+                update_data["file_path"] = file_location
+                update_data["file_name"] = file.filename
+
+            await db[collection_name].update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
+            updated = await db[collection_name].find_one({"_id": ObjectId(user_id)}, {"password": 0})
+            updated["id"] = str(updated.pop("_id"))
+            return {"msg": "Profile updated successfully", "user": updated}
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error updating profile: {str(e)}")
+
+    async def change_credentials(request: Request, data: ChangeCredentialsRequest):
+        try:
+            db = get_database()
+            user_id = request.state.user_id
+            role = request.state.user_role
+            if not user_id:
+                raise HTTPException(status_code=401, detail="Not authenticated")
+            if role not in [UserRole.HOSPITAL_ADMIN, UserRole.DOCTOR]:
+                raise HTTPException(status_code=403, detail="Credential change is only allowed for doctor and hospital admin accounts")
+
+            collection_name = DbCollections.DOCTOR_REGISTER_COLLECTION if role == UserRole.DOCTOR else DbCollections.USER_COLLECTION
+            record = await db[collection_name].find_one({"_id": ObjectId(user_id)})
+            if not record:
+                raise HTTPException(status_code=404, detail="Account not found")
+            if not verify_password(data.current_password, record["password"]):
+                raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+            hashed = get_password_hash(data.new_password)
+            await db[collection_name].update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {"password": hashed, "updated_at": datetime.utcnow()}}
+            )
+            return {"msg": "Credentials changed successfully. Please login with your new password."}
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")

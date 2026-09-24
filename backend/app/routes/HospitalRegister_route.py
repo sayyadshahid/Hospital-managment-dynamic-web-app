@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, HTTPException, UploadFile, Form
+from fastapi import APIRouter, File, HTTPException, UploadFile, Form, Request
 from app.controller.HospitalRegister_controller import HospitalRegister
 from app.models.HospitalRegister_model import HospitalRegisterModel
 
@@ -43,3 +43,19 @@ async def get_all_hospitals():
 @hospitalregister_router.delete("/delete_hospital/{id}")
 async def delete_hospital(id: str):
     return await HospitalRegister.delete_hospital(id)
+
+
+@hospitalregister_router.put("/update-hospital/{id}")
+async def update_hospital(
+    id: str,
+    request: Request,
+    title: str = Form(None),
+    description: str = Form(None),
+    address: str = Form(None),
+    about: str = Form(None),
+    file: UploadFile | None = File(None),
+):
+    return await HospitalRegister.update_hospital(
+        id=id, request=request, title=title, description=description,
+        address=address, about=about, file=file
+    )

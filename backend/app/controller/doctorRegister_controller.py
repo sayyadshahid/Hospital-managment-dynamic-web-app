@@ -1,9 +1,11 @@
 from app.models.doctorRegister_model import DoctorRegisterModel
 from fastapi import HTTPException, Request, UploadFile
 from app.database import get_database
-from app.constant.constants import DbCollections
+from app.constant.constants import DbCollections, UserRole
 from bson import ObjectId
 import os
+import re
+from datetime import datetime
 
 class DoctorRegister:
     async def doctor_register(self, hospital_id: str, request: Request, data: DoctorRegisterModel, file: UploadFile):
@@ -144,6 +146,66 @@ class DoctorRegister:
                 raise HTTPException(status_code=404, detail="No doctors found for this hospital")
 
             return {'count': len(doctors_list), 'Doctors': doctors_list}
+
+        except HTTPException as exc:
+            raise exc
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+    async def update_doctor(self, id: str, request: Request, fullname=None, experties=None, degree=None, about=None, phone_no=None, file: UploadFile | None = None):
+        try:
+            db = get_database()
+            if not ObjectId.is_valid(id):
+                raise HTTPException(status_code=400, detail="Invalid doctor ID format")
+
+            doctor = await db[DbCollections.DOCTOR_REGISTER_COLLECTION].find_one({"_id": ObjectId(id)})
+            if not doctor:
+                raise HTTPException(status_code=404, detail="Doctor not found")
+
+            role = request.state.user_role
+            is_self = request.state.user_id == id
+            is_admin_of_hospital = role == UserRole.HOSPITAL_ADMIN and str(doctor.get("hospital_id")) == str(request.state.hospital_id)
+            if not (is_self or is_admin_of_hospital):
+                raise HTTPException(status_code=403, detail="You are not authorized to edit this doctor")
+
+            update_data = {"updated_at": datetime.utcnow()}
+
+            for field, value in [("fullname", fullname), ("experties", experties), ("degree", degree)]:
+                if value is not None and str(value).strip():
+                    update_data[field] = str(value).strip()
+            if about is not None:
+                update_data["about"] = str(about).strip()
+
+            if phone_no is not None and str(phone_no).strip():
+                phone = str(phone_no).strip()
+                if not phone.startswith("+91"):
+                    if phone.isdigit() and len(phone) == 10:
+                        phone = f"+91{phone}"
+                    else:
+                        raise HTTPException(status_code=400, detail="Invalid phone number format")
+                if not re.match(r"^\+91\d{10}$", phone):
+                    raise HTTPException(status_code=400, detail="Invalid phone number format")
+                current_phone = doctor.get("phone_no")
+                if current_phone and current_phone != phone:
+                    dup = await db[DbCollections.DOCTOR_REGISTER_COLLECTION].find_one({"phone_no": phone})
+                    if dup and str(dup["_id"]) != id:
+                        raise HTTPException(status_code=400, detail="Phone number already in use")
+                update_data["phone_no"] = phone
+
+            if file:
+                upload_folder = "uploads/"
+                os.makedirs(upload_folder, exist_ok=True)
+                file_location = os.path.join(upload_folder, f"doctor_{id}_{file.filename}")
+                with open(file_location, "wb") as f:
+                    content = await file.read()
+                    f.write(content)
+                update_data["file_name"] = file.filename
+                update_data["file_path"] = file_location
+
+            await db[DbCollections.DOCTOR_REGISTER_COLLECTION].update_one({"_id": ObjectId(id)}, {"$set": update_data})
+            updated = await db[DbCollections.DOCTOR_REGISTER_COLLECTION].find_one({"_id": ObjectId(id)}, {"password": 0})
+            updated["id"] = str(updated.pop("_id"))
+            return {"msg": "Doctor profile updated successfully", "doctor": updated}
 
         except HTTPException as exc:
             raise exc

@@ -196,7 +196,7 @@ export default function ReportDetails() {
   return (
     <Box>
       <NavBar />
-      <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", px: 2 }}>
+      <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: 2, borderRadius: 2 }}>
         <Typography
           sx={{ textAlign: "center", fontSize: 30, fontWeight: 700, mb: 4 }}
         >

@@ -61,3 +61,21 @@ async def get_all_doctors_by_hospital(hospital_id: str):
 @doctorregister_router.get('/get-doctor-by-id/{id}')
 async def get_doctor_by_id(id: str):
     return await DoctorRegister.getDoctorById(id)
+
+
+@doctorregister_router.put('/update-doctor/{id}')
+async def update_doctor(
+    id: str,
+    request: Request,
+    fullname: str = Form(None),
+    experties: str = Form(None),
+    degree: str = Form(None),
+    about: str = Form(None),
+    phone_no: str = Form(None),
+    file: UploadFile | None = File(None),
+):
+    doctor_instance = DoctorRegister()
+    return await doctor_instance.update_doctor(
+        id=id, request=request, fullname=fullname, experties=experties,
+        degree=degree, about=about, phone_no=phone_no, file=file
+    )

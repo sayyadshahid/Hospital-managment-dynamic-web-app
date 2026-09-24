@@ -31,6 +31,26 @@ class LoginRequestUser(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
 
+class ChangeCredentialsRequest(BaseModel):
+    current_password: str = Field(..., min_length=8)
+    new_password: str = Field(..., min_length=8)
+    confirm_password: str = Field(..., min_length=8)
+
+    @model_validator(mode="before")
+    def validate_passwords(cls, values):
+        if values.get("new_password") != values.get("confirm_password"):
+            raise HTTPException(status_code=400, detail="New passwords do not match")
+        if values.get("new_password") == values.get("current_password"):
+            raise HTTPException(status_code=400, detail="New password must be different from the current password")
+        return values
+
+class UpdateProfileRequest(BaseModel):
+    fullname: Optional[str] = None
+    phone_no: Optional[str] = None
+    about: Optional[str] = None
+    degree: Optional[str] = None
+    experties: Optional[str] = None
+
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
