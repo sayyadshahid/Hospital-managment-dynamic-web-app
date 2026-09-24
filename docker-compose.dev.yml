@@ -1,0 +1,37 @@
+# Development override. Run with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+#
+# - backend: mounts ./backend/app live + uvicorn --reload
+# - frontend: runs the CRA dev server with src/public mounted live (HMR)
+#
+# Local edits are reflected without rebuilding images. To go back to the
+# production stack, run `docker compose -f docker-compose.yml down` then
+# `docker compose up --build`.
+
+services:
+  backend:
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/uploads:/app/uploads
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: hospital-frontend-dev
+    restart: unless-stopped
+    # Replace (not append to) the base service's port mapping "3000:80".
+    ports: !override
+      - "3000:3000"
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost:8000/api/
+      REACT_APP_FILE_BASE_URL: http://localhost:8000
+      HOST: 0.0.0.0
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    depends_on:
+      - backend

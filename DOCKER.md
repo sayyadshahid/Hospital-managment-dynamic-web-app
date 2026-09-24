@@ -81,6 +81,32 @@ docker compose up --build frontend
 |----------------|--------------------|--------------------------------|
 | `uploads_data` | `/app/uploads`     | Persists uploaded/static files |
 
+## Development mode (hot reload)
+
+The default stack bakes code into the images (see "Rebuilding after changes"), so
+every edit requires a rebuild. For live development, use the override file
+`docker-compose.dev.yml`:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+
+This:
+- mounts `backend/app` into the container and runs `uvicorn --reload`, so `.py`
+  edits are picked up immediately;
+- builds the frontend from `frontend/Dockerfile.dev` (CRA dev server) with
+  `frontend/src` and `frontend/public` mounted, giving instant hot reload.
+
+Frontend runs on http://localhost:3000 (dev server), backend on :8000. To stop:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+```
+
+Then return to the production stack with the plain commands below. If you add a
+new npm package, rebuild the dev frontend image once:
+`docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build frontend`.
+
 ## Rebuilding after changes
 
 ```bash
